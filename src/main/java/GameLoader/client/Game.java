@@ -6,7 +6,8 @@ public interface Game {
     public interface Command extends Serializable {
 
     }
+
     public interface gameInstance {
-        
+
     }
 }

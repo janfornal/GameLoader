@@ -5,6 +5,6 @@ import GameLoader.common.Connection;
 import java.io.Serializable;
 
 public interface Message extends Serializable {
-    Connection c=null;
+    Connection c = null;
     //transient?
 }

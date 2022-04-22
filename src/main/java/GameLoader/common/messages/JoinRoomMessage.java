@@ -1,5 +1,5 @@
 package GameLoader.common.messages;
 
-public class JoinRoomMessage implements Message{
+public class JoinRoomMessage implements Message {
 
 }

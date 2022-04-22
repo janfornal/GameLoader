@@ -1,4 +1,4 @@
 package GameLoader.common.messages;
 
-public class LeaveRoomMessage implements Message{
+public class LeaveRoomMessage implements Message {
 }

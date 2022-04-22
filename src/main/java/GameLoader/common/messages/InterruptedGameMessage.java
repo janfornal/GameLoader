@@ -1,4 +1,4 @@
 package GameLoader.common.messages;
 
-public class InterruptedGameMessage implements Message{
+public class InterruptedGameMessage implements Message {
 }
