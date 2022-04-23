@@ -1,4 +1,4 @@
 package GameLoader.client;
 
-public class PlayViewModel {
+public interface PlayViewModel {
 }
