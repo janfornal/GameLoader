@@ -1,4 +1,4 @@
 package GameLoader.common.messages;
 
-public class ResignMessage implements Message {
+public class ResignMessage extends Message {
 }

@@ -2,6 +2,6 @@ package GameLoader.common.messages;
 
 import GameLoader.common.messages.Message;
 
-public class AuthorizationMessage implements Message {
+public class AuthorizationMessage extends Message {
     String name;
 }

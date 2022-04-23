@@ -4,6 +4,6 @@ import java.util.List;
 
 import GameLoader.client.Game;
 
-public class GetGamesListMessage implements Message {
+public class GetGamesListMessage extends Message {
     List<Class<? extends Game>> list;
 }

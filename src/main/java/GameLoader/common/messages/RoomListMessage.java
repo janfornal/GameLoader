@@ -2,6 +2,6 @@ package GameLoader.common.messages;
 
 import java.util.List;
 
-public class RoomListMessage implements Message {
+public class RoomListMessage extends Message {
     List<Object> list;
 }

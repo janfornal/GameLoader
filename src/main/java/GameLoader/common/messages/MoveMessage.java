@@ -1,4 +1,4 @@
 package GameLoader.common.messages;
 
-public class MoveMessage implements Message {
+public class MoveMessage extends Message {
 }

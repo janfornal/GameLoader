@@ -1,6 +1,6 @@
 package GameLoader.common.messages;
 
-public class CreateRoomMessage implements Message {
+public class CreateRoomMessage extends Message {
     int gameType;
 }
 
