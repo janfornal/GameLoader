@@ -1,4 +1,4 @@
-package GameLoader.client;
+package GameLoader.common;
 
 import java.io.Serializable;
 
@@ -7,7 +7,7 @@ public interface Game {
 
     }
 
-    public interface gameInstance {
+    public interface GameInstance {
 
     }
 }

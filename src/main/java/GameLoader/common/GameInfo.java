@@ -1,4 +1,4 @@
-package GameLoader.client;
+package GameLoader.common;
 
 import java.io.Serializable;
 
