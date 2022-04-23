@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 abstract public class AbstractService {
+    public static final ExecutorService execNormal = Executors.newCachedThreadPool();
     public static final ExecutorService execDaemon = Executors.newCachedThreadPool(run -> {
         Thread th = new Thread(run);
         th.setDaemon(true);

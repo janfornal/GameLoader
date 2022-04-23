@@ -1,7 +1,20 @@
 package GameLoader.common.messages;
 
-import GameLoader.common.messages.Message;
-
 public class ErrorMessage extends Message {
-    String info;
+    public String info;
+
+    public ErrorMessage(String s) {
+        info = s;
+    }
+
+    public ErrorMessage() {
+        this("Error encountered");
+    }
+
+    @Override
+    public String toString() {
+        return "ErrorMessage{" +
+                "info='" + info + '\'' +
+                '}';
+    }
 }
