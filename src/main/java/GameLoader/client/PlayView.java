@@ -1,9 +1,5 @@
 package GameLoader.client;
 
-import javafx.scene.layout.VBox;
+public interface PlayView extends GeneralView {
 
-public class PlayView extends VBox {
-
-    public PlayView(PlayViewModel model) {
-    }
 }

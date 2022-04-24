@@ -1,4 +1,4 @@
 package GameLoader.client;
 
-public interface PlayViewModel {
+public interface PlayViewModel extends ViewModel {
 }
