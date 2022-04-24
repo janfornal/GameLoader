@@ -6,7 +6,6 @@ import java.net.Socket;
 
 public class Client {
     ViewModel currentGame;
-    String maciej = "dziuba";
 
     public static void main(String[] args) {
         ClientGUI.main(args);
