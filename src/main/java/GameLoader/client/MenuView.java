@@ -58,8 +58,8 @@ public class MenuView extends GridPane implements GeneralView {
         }
     }
 
-    private ChoiceBox<?> choiceGameBox;
-    private ChoiceBox<?> choiceSizeBox;
+    private ChoiceBox<String> choiceGameBox;
+    private ChoiceBox<String> choiceSizeBox;
     private Label createRoomLabel;
     private TableView<Room> roomTableView;
     private Button createRoomButton;
@@ -108,6 +108,17 @@ public class MenuView extends GridPane implements GeneralView {
         roomTableView = new TableView<Room>();
         add(roomTableView, 0, 3, 1, 6);
 
+        roomTableView.setRowFactory( tv -> {
+            TableRow<Room> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    Room rowData = row.getItem();
+                    System.out.println("Go to the room");
+                }
+            });
+            return row;
+        });
+
         gameColumn = new TableColumn<Room, String>("Game");
         gameColumn.setCellValueFactory(
                 new PropertyValueFactory<Room, String>("Game"));
@@ -142,5 +153,20 @@ public class MenuView extends GridPane implements GeneralView {
         createRoomButton = new Button("Create Room");
         add(createRoomButton, 3, 8, 1, 1);
         setHalignment(createRoomButton, HPos.CENTER);
+
+        createRoomButton.setOnMouseClicked(event -> {
+            if (choiceSizeBox.getValue() == null || choiceSizeBox.getValue().equals("Please select size")) {
+                choiceSizeBox.setValue("Please select size");
+                if (choiceGameBox.getValue() == null || choiceGameBox.getValue().equals("Please select game")) {
+                    choiceGameBox.setValue("Please select game");
+                }
+            }
+            else if (choiceGameBox.getValue() == null || choiceGameBox.getValue().equals("Please select game")) {
+                choiceGameBox.setValue("Please select game");
+            }
+            else {
+                System.out.println("Create new room");
+            }
+        });
     }
 }
