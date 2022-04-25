@@ -68,6 +68,10 @@ public class Connection {
         });
     }
 
+    public void sendError(String cause) {
+        sendMessage(new Message.Error(cause));
+    }
+
     public void sendMessage(Message.Any message) {
         sendMessages(message);
     }

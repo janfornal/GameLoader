@@ -7,6 +7,10 @@ import GameLoader.common.Message;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
 
 public class Server implements AbstractService {
     private final int port;
@@ -32,9 +36,41 @@ public class Server implements AbstractService {
         });
     }
 
+    private final Map<String, Connection> connectionMap = new HashMap<>();
+
     @Override
-    public void processMessage(Message.Any message, Connection connection) {
-        System.err.println(message);
+    public void processMessage(Message.Any msg, Connection conn) {
+        Objects.requireNonNull(msg);
+        Objects.requireNonNull(conn);
+
+        System.err.println(msg);
+
+        if (msg instanceof Message.Authorization m) {
+            processAuthorizationMessage(m, conn);
+            return;
+        }
+        if (!conn.isAuthorized()) {
+            conn.sendError("You are not authorized");
+            return;
+        }
+
+        conn.sendError("Message not recognized");
+    }
+
+    private void processAuthorizationMessage(Message.Authorization msg, Connection conn) {
+        if (conn.isAuthorized())
+            conn.sendError("You are already authorized");
+        String pn = msg.name();
+
+        synchronized (connectionMap) {
+            if (connectionMap.containsKey(pn) || new Random().nextInt(5) == 0)
+                conn.sendError("Unsuccessful authorization");
+            else {
+                // conn.sendMessage(); send success info?
+                connectionMap.put(pn, conn);
+                conn.authorize(pn);
+            }
+        }
     }
 
     @Override
@@ -44,10 +80,15 @@ public class Server implements AbstractService {
 
     @Override
     public void reportConnectionClosed(Connection connection) {
+        if (!connection.isAuthorized())
+            return;
+
 
     }
 
+
+
     public static void main(String[] args) {
-        new Server();
+
     }
 }
