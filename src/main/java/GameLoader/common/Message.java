@@ -12,7 +12,7 @@ public interface Message extends Serializable {
     record GetRoomList(String player) implements Any{}
     record InterruptedGame(String cause) implements Any{}
     record JoinRoom(String player) implements Any{} //-kto dolacza
-    record LeaveRoom(String player) implements Any{} //-kto wychodzi
+    record LeaveRoom(String player) implements Any{}
     record Move(String move) implements Any{}
     record Resign(String player) implements Any{}
     record RoomList() implements Any{}
