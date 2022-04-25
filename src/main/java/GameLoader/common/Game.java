@@ -3,11 +3,13 @@ package GameLoader.common;
 import java.io.Serializable;
 
 public interface Game {
-    public interface Command extends Serializable {
+    interface Command extends Serializable {
 
     }
 
-    public interface GameInstance {
+    interface GameInfo extends Serializable {
+        String getInfo();
 
+        PlayerInfo getPlayer();
     }
 }

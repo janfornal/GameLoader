@@ -1,77 +1,103 @@
 package GameLoader.common;
 
-import GameLoader.common.messages.Message;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Consumer;
 
 public class Connection {
-    public static final ExecutorService execDaemon = AbstractService.execDaemon;
     public static final String defaultIP = "localhost";
     public static final int defaultPort = 6666;
-    private static final Consumer<Message> processMessage = AbstractService.getInstance()::processMessage;
+    private final AbstractService service;
     private final Socket socket;
-    private final ObjectOutputStream out;
-    private final ObjectInputStream inp;
-    private String name;
+    private final ObjectOutputStream output;
+    private final ObjectInputStream input;
+    private String playerName;
     private boolean authorized = false;
     private boolean closed = false;
 
-    public Connection(String ip, int port) throws IOException {
-        this(new Socket(ip, port));
+    public Connection(AbstractService service, String ip, int port) throws IOException {
+        this(service, new Socket(ip, port));
     }
 
-    public Connection(String ip) throws IOException {
-        this(ip, defaultPort);
+    public Connection(AbstractService service, String ip) throws IOException {
+        this(service, ip, defaultPort);
     }
 
-    public Connection(int port) throws IOException {
-        this(defaultIP, port);
+    public Connection(AbstractService service, int port) throws IOException {
+        this(service, defaultIP, port);
     }
 
-    public Connection() throws IOException {
-        this(defaultIP, defaultPort);
+    public Connection(AbstractService service) throws IOException {
+        this(service, defaultIP, defaultPort);
     }
 
-    public Connection(Socket s) throws IOException {
-        socket = s;
+    public Connection(AbstractService service, Socket socket) {
+        Objects.requireNonNull(service);
+        Objects.requireNonNull(socket);
 
-        out = new ObjectOutputStream(s.getOutputStream());
-        inp = new ObjectInputStream(s.getInputStream());
+        this.service = service;
+        this.socket = socket;
 
-        execDaemon.execute(new ListeningConnection());
-    }
+        ObjectOutputStream temp_output = null;
+        ObjectInputStream temp_input = null;
 
-    public void sendMessage(Message m) {
-        if (closed)
-            throw new RuntimeException("sending message via closed connection");
+        try {
+            temp_output = new ObjectOutputStream(socket.getOutputStream());
+            temp_input = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            close();
+        }
 
-        System.err.println("sendMessage() " + m);
-        execDaemon.execute(() -> {
-            synchronized (out) {
+        output = temp_output;
+        input = temp_input;
+
+        service.execDaemon.execute(() -> {
+            while (!closed) {
                 try {
-                    System.err.println("trying to send " + m);
-                    out.writeObject(m);
-                    System.err.println("sent " + m);
-                } catch (IOException e) {
+                    Message.Any message = (Message.Any) input.readObject();
+                    Objects.requireNonNull(message);
+                    service.processMessage(message, Connection.this);
+                } catch (IOException | ClassNotFoundException | ClassCastException | NullPointerException e) {
                     e.printStackTrace();
+                    close();
+                    return;
                 }
             }
         });
     }
 
-    public void authorize(String n) {
+    public void sendMessage(Message.Any message) {
+        sendMessages(message);
+    }
+
+    public void sendMessages(Message.Any... messages) {
+        if (closed)
+            return;
+
+        service.execDaemon.execute(() -> {
+            synchronized (output) {
+                for (Message.Any message : messages) {
+                    try {
+                        output.writeObject(message);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        close();
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    public void authorize(String pn) {
         authorized = true;
-        name = n;
+        playerName = pn;
     }
 
     public String getName() {
-        return name;
+        return playerName;
     }
 
     public boolean isAuthorized() {
@@ -83,30 +109,12 @@ public class Connection {
             return;
         closed = true;
         try {
-            inp.close();
-            out.close();
+            input.close();
+            output.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        service.reportConnectionClosed(this);
     }
-
-    class ListeningConnection implements Runnable {
-        @Override
-        public void run() {
-            while (!closed) {
-                try {
-                    Message m = (Message) inp.readObject();
-                    Objects.requireNonNull(m);
-                    m.c = Connection.this;
-                    processMessage.accept(m);
-                } catch (IOException | ClassNotFoundException | ClassCastException | NullPointerException e) {
-                    e.printStackTrace();
-                    close();
-                }
-            }
-        }
-    }
-
-
 }
