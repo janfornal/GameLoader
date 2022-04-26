@@ -1,9 +1,11 @@
 package GameLoader.common;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Objects;
 
 public class Connection {
@@ -59,10 +61,12 @@ public class Connection {
                     Message.Any message = (Message.Any) input.readObject();
                     Objects.requireNonNull(message);
                     service.processMessage(message, Connection.this);
-                } catch (IOException | ClassNotFoundException | ClassCastException | NullPointerException e) {
-                    e.printStackTrace();
+                } catch (EOFException | SocketException e) {
                     close();
                     return;
+                } catch (IOException | ClassNotFoundException | ClassCastException | NullPointerException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         });

@@ -7,17 +7,16 @@ import GameLoader.common.Message;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.net.Socket;
+import java.util.*;
 
 public class Server implements AbstractService {
     private final int port;
-
-    public int getPort() {
-        return port;
-    }
+    private final Object connectionLock = new Object();
+    private final Map<String, Connection> connectionMap = new HashMap<>();
+    private final Set<Connection> connectionSet = new HashSet<>();
+    private boolean closed = false;
+    private ServerSocket serverSocket;
 
     public Server() {
         this(Connection.defaultPort);
@@ -25,25 +24,62 @@ public class Server implements AbstractService {
 
     public Server(int port) {
         this.port = port;
+        try {
+            serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
+            closed = true;
+            return;
+        }
+
         execNormal.execute(() -> {
             try {
-                final ServerSocket serverSocket = new ServerSocket(port);
-                while (!serverSocket.isClosed())
-                    new Connection(Server.this, serverSocket.accept());
+                while (!serverSocket.isClosed()) {
+                    Socket received = serverSocket.accept();
+                    synchronized (connectionLock) {
+                        connectionSet.add(new Connection(Server.this, received));
+                    }
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                if (!closed) {
+                    e.printStackTrace();
+                    close();
+                }
             }
         });
     }
 
-    private final Map<String, Connection> connectionMap = new HashMap<>();
+    public static void main(String[] args) {
+
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void close() {
+        if (closed)
+            return;
+        synchronized (connectionLock) {
+            for (Connection c : connectionSet)
+                c.close();
+            closed = true;
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public void processMessage(Message.Any msg, Connection conn) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(conn);
-
-        System.err.println(msg);
 
         if (msg instanceof Message.Authorization m) {
             processAuthorizationMessage(m, conn);
@@ -62,8 +98,8 @@ public class Server implements AbstractService {
             conn.sendError("You are already authorized");
         String pn = msg.name();
 
-        synchronized (connectionMap) {
-            if (connectionMap.containsKey(pn) || new Random().nextInt(5) == 0)
+        synchronized (connectionLock) {
+            if (connectionMap.containsKey(pn))
                 conn.sendError("Unsuccessful authorization");
             else {
                 // conn.sendMessage(); send success info?
@@ -80,15 +116,9 @@ public class Server implements AbstractService {
 
     @Override
     public void reportConnectionClosed(Connection connection) {
-        if (!connection.isAuthorized())
-            return;
-
-
-    }
-
-
-
-    public static void main(String[] args) {
-
+        synchronized (connectionLock) {
+            connectionSet.remove(connection);
+            connectionMap.remove(connection.getName());
+        }
     }
 }
