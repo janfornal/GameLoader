@@ -9,7 +9,7 @@ public interface Game {
 
     interface GameInfo extends Serializable {
         String getInfo();
-
+        String getName();
         PlayerInfo getPlayer();
     }
 }
