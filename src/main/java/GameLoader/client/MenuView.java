@@ -1,13 +1,9 @@
 package GameLoader.client;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import GameLoader.common.Game;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
@@ -17,7 +13,6 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,53 +40,53 @@ public class MenuView extends GridPane implements GeneralView {
             this.getRowConstraints().get(i).setPercentHeight(rowHeight.get(i));
         }
 
-        nvm.guiVisual = new MenuViewModel.guiElements(
+        nvm.setElements(new MenuViewModel.guiElements(
             new ChoiceBox<String>(FXCollections.observableArrayList("Tic tac toe", "Dots and boxes")),
             new ChoiceBox<String>(FXCollections.observableArrayList("Small", "Medium",  "Big")),
             new Label("Create Room"),
-            new TableView<MenuViewModel.Room>(),
+            new TableView<Game.GameInfo>(),
             new Button("Create Room"),
-            new TableColumn<MenuViewModel.Room, String>("Game"),
-            new TableColumn<MenuViewModel.Room, String>("Size"),
-            new TableColumn<MenuViewModel.Room, Integer>("User"),
+            new TableColumn<Game.GameInfo, String>("Game"),
+            new TableColumn<Game.GameInfo, String>("Size"),
+            new TableColumn<Game.GameInfo, String>("User"),
             new Label("Game Server")
-        );
+        ));
 
-        nvm.guiVisual.titleLabel().setFont(new Font("Javanese Text", 24));
-        add(nvm.guiVisual.titleLabel(), 0, 0, 4, 1);
+        nvm.getElements().titleLabel().setFont(new Font("Javanese Text", 24));
+        add(nvm.getElements().titleLabel(), 0, 0, 4, 1);
 
-        add(nvm.guiVisual.roomTableView(), 0, 3, 1, 6);
+        add(nvm.getElements().roomTableView(), 0, 3, 1, 6);
 
-        nvm.guiVisual.gameColumn().setCellValueFactory(
-                new PropertyValueFactory<MenuViewModel.Room, String>("Game"));
+        nvm.getElements().gameColumn().setCellValueFactory(
+                new PropertyValueFactory<Game.GameInfo, String>("Game"));
 
-        nvm.guiVisual.sizeColumn().setCellValueFactory(
-                new PropertyValueFactory<MenuViewModel.Room, String>("Size"));
+        nvm.getElements().sizeColumn().setCellValueFactory(
+                new PropertyValueFactory<Game.GameInfo, String>("Size"));
 
-        nvm.guiVisual.userColumn().setCellValueFactory(
-                new PropertyValueFactory<MenuViewModel.Room, Integer>("User"));
+        nvm.getElements().userColumn().setCellValueFactory(
+                new PropertyValueFactory<Game.GameInfo, String>("User"));
 
-        nvm.guiVisual.roomTableView().getColumns().addAll(
-                nvm.guiVisual.gameColumn(),
-                nvm.guiVisual.sizeColumn(),
-                nvm.guiVisual.userColumn());
-        nvm.addGetToRoomHandler(nvm.guiVisual.roomTableView());
+        nvm.getElements().roomTableView().getColumns().addAll(
+                nvm.getElements().gameColumn(),
+                nvm.getElements().sizeColumn(),
+                nvm.getElements().userColumn());
+        nvm.addGetToRoomHandler(nvm.getElements().roomTableView());
 
-        add(nvm.guiVisual.createRoomLabel(), 2, 2, 1, 1);
-        nvm.guiVisual.createRoomLabel().setTextAlignment(TextAlignment.CENTER);
-        setHalignment(nvm.guiVisual.createRoomLabel(), HPos.CENTER);
+        add(nvm.getElements().createRoomLabel(), 2, 2, 1, 1);
+        nvm.getElements().createRoomLabel().setTextAlignment(TextAlignment.CENTER);
+        setHalignment(nvm.getElements().createRoomLabel(), HPos.CENTER);
 
-        add(nvm.guiVisual.choiceGameBox(),  2, 4, 1, 1);
-        setHalignment(nvm.guiVisual.choiceGameBox(), HPos.CENTER);
+        add(nvm.getElements().choiceGameBox(),  2, 4, 1, 1);
+        setHalignment(nvm.getElements().choiceGameBox(), HPos.CENTER);
 
-        add(nvm.guiVisual.choiceSizeBox(), 2, 6, 1, 1);
-        setFillWidth(nvm.guiVisual.choiceSizeBox(), true);
-        setHgrow(nvm.guiVisual.choiceSizeBox(), Priority.ALWAYS);
-        setHalignment(nvm.guiVisual.choiceSizeBox(), HPos.CENTER);
+        add(nvm.getElements().choiceSizeBox(), 2, 6, 1, 1);
+        setFillWidth(nvm.getElements().choiceSizeBox(), true);
+        setHgrow(nvm.getElements().choiceSizeBox(), Priority.ALWAYS);
+        setHalignment(nvm.getElements().choiceSizeBox(), HPos.CENTER);
 
-        add(nvm.guiVisual.createRoomButton(), 2, 8, 1, 1);
-        setHalignment(nvm.guiVisual.createRoomButton(), HPos.CENTER);
-        nvm.addCreateRoomHandler(nvm.guiVisual.createRoomButton());
+        add(nvm.getElements().createRoomButton(), 2, 8, 1, 1);
+        setHalignment(nvm.getElements().createRoomButton(), HPos.CENTER);
+        nvm.addCreateRoomHandler(nvm.getElements().createRoomButton());
 
     }
 }

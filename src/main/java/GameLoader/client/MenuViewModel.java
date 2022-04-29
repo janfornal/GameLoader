@@ -1,57 +1,57 @@
 package GameLoader.client;
 
-import GameLoader.common.Connection;
-import GameLoader.common.Message;
+import GameLoader.common.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 
 public class MenuViewModel implements ViewModel {
 
-    public record Room (
-        String game,
-        String size,
-        String user
-    ){ }
+    @Override
+    public Client getModelUser() {
+        return modelUser;
+    }
+
+    @Override
+    public void setElements(GuiElements fooElements) {
+        guiVisual = (guiElements) fooElements;
+    }
+
+    public guiElements getElements() {
+        return guiVisual;
+    }
 
     record guiElements(
-        ChoiceBox<String> choiceGameBox,
-        ChoiceBox<String> choiceSizeBox,
-        Label createRoomLabel,
-        TableView<Room> roomTableView,
-        Button createRoomButton,
-        TableColumn<Room, String> gameColumn,
-        TableColumn<Room, String> sizeColumn,
-        TableColumn<Room, Integer> userColumn,
-        Label titleLabel
-    ) { }
+            ChoiceBox<String> choiceGameBox,
+            ChoiceBox<String> choiceSizeBox,
+            Label createRoomLabel,
+            TableView<Game.GameInfo> roomTableView,
+            Button createRoomButton,
+            TableColumn<Game.GameInfo, String> gameColumn,
+            TableColumn<Game.GameInfo, String> sizeColumn,
+            TableColumn<Game.GameInfo, String> userColumn,
+            Label titleLabel
+    ) implements GuiElements {
+    }
 
     int prefWindowWidth = 600;
     int prefWindowHeight = 400;
-    guiElements guiVisual;
-    private Connection c;
+    private guiElements guiVisual;
+    private final Client modelUser;
 
-    public MenuViewModel(Connection c) {
-        this.c = c;
+    public MenuViewModel(Client user) {
+        modelUser = user;
     }
 
-//    private final ObservableList<Room> data =
-//            FXCollections.observableArrayList(
-//                    new Room("Dots and boxes", "Small", 2819),
-//                    new Room("Tic tac toe", "Big", 1782),
-//                    new Room("Tic tac toe", "Medium", 2144),
-//                    new Room("Dots and boxes", "Big", 839),
-//                    new Room("Tic tac toe", "Big", 1012)
-//            );
-
-    void addGetToRoomHandler(TableView<Room> table) {
+    void addGetToRoomHandler(TableView<Game.GameInfo> table) {
         table.setRowFactory(tv -> {
-            TableRow<Room> row = new TableRow<>();
+            TableRow<Game.GameInfo> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                    Room rowData = row.getItem();
-                    Message.Any jr = new Message.JoinRoom(rowData.user());
-                    record JoinRoom(String player) implements Message.Any {} //-kto dolacza
+                    Game.GameInfo rowData = row.getItem();
+                    modelUser.setChosenGame(rowData);
+                    Message.Any jr = new Message.JoinRoom(rowData.getPlayer());
+                    modelUser.sendMessage(jr);
                 }
             });
             return row;
@@ -65,15 +65,29 @@ public class MenuViewModel implements ViewModel {
                 if (guiVisual.choiceGameBox.getValue() == null || guiVisual.choiceGameBox.getValue().equals("Please select game")) {
                     guiVisual.choiceGameBox.setValue("Please select game");
                 }
-            }
-            else if (guiVisual.choiceGameBox.getValue() == null || guiVisual.choiceGameBox.getValue().equals("Please select game")) {
+            } else if (guiVisual.choiceGameBox.getValue() == null || guiVisual.choiceGameBox.getValue().equals("Please select game")) {
                 guiVisual.choiceGameBox.setValue("Please select game");
-            }
-            else {
-                Message.Any crm = new Message.CreateRoom(
-                    guiVisual.choiceGameBox.getValue() + "\n" + guiVisual.choiceSizeBox.getValue()
-                );
-                c.sendMessage(crm);
+            } else {
+                Game.GameInfo dataInfo = new Game.GameInfo() {
+                    @Override
+                    public String getInfo() {
+                        return guiVisual.choiceSizeBox().getValue();
+                    }
+
+                    @Override
+                    public String getName() {
+                        return guiVisual.choiceGameBox().getValue();
+                    }
+
+                    @Override
+                    public PlayerInfo getPlayer() {
+                        return modelUser.username;
+                    }
+                };
+                System.out.println(dataInfo.getClass());
+                Message.Any crm = new Message.CreateRoom(dataInfo);
+                modelUser.setChosenGame(dataInfo);
+                modelUser.sendMessage(crm);
             }
         });
     }
