@@ -12,9 +12,8 @@ import java.util.*;
 
 public class Server implements AbstractService {
     private final int port;
-    private final Object connectionLock = new Object();
-    private final Map<String, Connection> connectionMap = new HashMap<>();
-    private final Set<Connection> connectionSet = new HashSet<>();
+    private final GameManager gameManager = new GameManager(this);
+    private final ConnectionManager connectionManager = new ConnectionManager(this);
     private boolean closed = false;
     private ServerSocket serverSocket;
 
@@ -34,12 +33,8 @@ public class Server implements AbstractService {
 
         execNormal.execute(() -> {
             try {
-                while (!serverSocket.isClosed()) {
-                    Socket received = serverSocket.accept();
-                    synchronized (connectionLock) {
-                        connectionSet.add(new Connection(Server.this, received));
-                    }
-                }
+                while (!serverSocket.isClosed())
+                    connectionManager.createConnection(serverSocket.accept());
             } catch (IOException e) {
                 if (!closed) {
                     e.printStackTrace();
@@ -47,10 +42,6 @@ public class Server implements AbstractService {
                 }
             }
         });
-    }
-
-    public static void main(String[] args) {
-
     }
 
     public boolean isClosed() {
@@ -61,64 +52,57 @@ public class Server implements AbstractService {
         return port;
     }
 
-    public void close() {
+    synchronized public void close() {
         if (closed)
             return;
-        synchronized (connectionLock) {
-            for (Connection c : connectionSet)
-                c.close();
-            closed = true;
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        closed = true;
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        connectionManager.closeAllConnections();
     }
 
     @Override
-    public void processMessage(Message.Any msg, Connection conn) {
+    public void processMessage(Message.Any msg, Connection c) {
         Objects.requireNonNull(msg);
-        Objects.requireNonNull(conn);
+        Objects.requireNonNull(c);
 
         if (msg instanceof Message.Authorization m) {
-            processAuthorizationMessage(m, conn);
+            connectionManager.processAuthorizationMessage(m, c);
             return;
         }
-        if (!conn.isAuthorized()) {
-            conn.sendError("You are not authorized");
+        if (!c.isAuthorized()) {
+            c.sendError("You are not authorized");
             return;
         }
-
-        conn.sendError("Message not recognized");
-    }
-
-    private void processAuthorizationMessage(Message.Authorization msg, Connection conn) {
-        if (conn.isAuthorized())
-            conn.sendError("You are already authorized");
-        String pn = msg.name();
-
-        synchronized (connectionLock) {
-            if (connectionMap.containsKey(pn))
-                conn.sendError("Unsuccessful authorization");
-            else {
-                // conn.sendMessage(); send success info?
-                connectionMap.put(pn, conn);
-                conn.authorize(pn);
-            }
+        if (msg instanceof Message.Move m) {
+            gameManager.processMoveMessage(m, c);
+            return;
         }
+        if (msg instanceof Message.CreateRoom m) {
+            gameManager.processCreateRoomMessage(m, c);
+            return;
+        }
+        if (msg instanceof Message.GetRoomList m) {
+            gameManager.processGetRoomListMessage(m, c);
+            return;
+        }
+        if (msg instanceof Message.JoinRoom m) {
+            gameManager.processJoinRoomMessage(m, c);
+            return;
+        }
+        c.sendError("Message not recognized");
     }
 
     @Override
     public void reportGameEnded(Game game) {
-
+        throw new RuntimeException("do we need this?");
     }
 
     @Override
-    public void reportConnectionClosed(Connection connection) {
-        synchronized (connectionLock) {
-            connectionSet.remove(connection);
-            connectionMap.remove(connection.getName());
-        }
+    public void reportConnectionClosed(Connection c) {
+        connectionManager.unregisterConnection(c);
     }
 }

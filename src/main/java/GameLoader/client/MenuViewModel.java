@@ -50,7 +50,7 @@ public class MenuViewModel implements ViewModel {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Game.GameInfo rowData = row.getItem();
                     modelUser.setChosenGame(rowData);
-                    Message.Any jr = new Message.JoinRoom(rowData.getPlayer());
+                    Message.Any jr = new Message.JoinRoom(rowData);
                     modelUser.sendMessage(jr);
                 }
             });

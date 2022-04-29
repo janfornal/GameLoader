@@ -67,11 +67,10 @@ public class GameLoaderTests {
             Server s = new Server();
             MockClient a = new MockClient();
             MockClient b = new MockClient();
-            MockClient c = new MockClient();
             s.close();
         }
-        @Test(timeout = 500)
-        public void closeSimpleTest3() throws Throwable {
+        @Test(timeout = 2000)
+        public void simpleMessageTest() throws Throwable {
             Server s = new Server();
             wait50();
             MockClient a = new MockClient();
