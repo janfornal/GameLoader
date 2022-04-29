@@ -13,7 +13,7 @@ public interface Message extends Serializable {
     record RoomList(ArrayList<Game.GameInfo> rooms) implements Any {} // przesyłamy listę obiektów typu GameInfo które mówią o nierozpoczętych jeszcze grach
     record GetRoomList() implements Any {} // prośba do serwera o powyższe
     record InterruptedGame(String cause) implements Any {} // to jest na razie nieistotne
-    record JoinRoom(Game.GameInfo player) implements Any {} // kto dolacza do pokoju który stworzyliśmy
+    record JoinRoom(Game.GameInfo game) implements Any {} // kto dolacza do pokoju który stworzyliśmy
     record LeaveRoom(PlayerInfo player) implements Any {} // to jest na razie nieistotne
     record Move(Game.Command move) implements Any {} // wykonany ruch
     record Resign(PlayerInfo player) implements Any {} // to jest na razie nieistotne

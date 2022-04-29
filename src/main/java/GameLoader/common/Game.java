@@ -4,17 +4,19 @@ import java.io.Serializable;
 
 public interface Game {
     interface Command extends Serializable {
-
-
+        String getPlayer();
     }
 
-    public Game createNewGame();
+    Game createNewGame();
+    Game createNewGame(Game.GameInfo info);
     void makeMove(Command cmd);
     boolean isLegal(Command cmd);
+    boolean isFinished();
     PlayerInfo[] players();
     GameInfo getGameInfo();
 
-    interface GameInfo extends Serializable {
+    // FIXME: gameInfo should be a record ?
+    interface GameInfo extends Serializable { // remember: implement equals & hashcode !!
         String getInfo();
         String getName();
         PlayerInfo getPlayer();

@@ -1,18 +1,13 @@
 package GameLoader.server;
 
-import GameLoader.common.AbstractService;
 import GameLoader.common.Connection;
 import GameLoader.common.Message;
 
-import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ConnectionManager {
-    private Server server;
+    private final Server server;
     public ConnectionManager(Server s) {
         server = s;
     }
@@ -51,6 +46,15 @@ public class ConnectionManager {
                 connectionMap.put(pn, c);
                 c.authorize(pn);
             }
+        }
+    }
+
+    public void sendMessageTo(Message.Any msg, String... to) {
+        for (String str : to) {
+            Connection c = getConnection(str);
+            if (c == null)
+                continue;
+            c.sendMessage(msg);
         }
     }
 }

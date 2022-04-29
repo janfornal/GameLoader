@@ -7,13 +7,12 @@ import GameLoader.common.Message;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.*;
 
 public class Server implements AbstractService {
     private final int port;
-    private final GameManager gameManager = new GameManager(this);
-    private final ConnectionManager connectionManager = new ConnectionManager(this);
+    public final GameManager gameManager = new GameManager(this);
+    public final ConnectionManager connectionManager = new ConnectionManager(this);
     private boolean closed = false;
     private ServerSocket serverSocket;
 
