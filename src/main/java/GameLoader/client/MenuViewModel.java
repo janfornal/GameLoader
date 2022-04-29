@@ -1,8 +1,7 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import GameLoader.games.Game;
 import javafx.scene.control.*;
 
 public class MenuViewModel implements ViewModel {

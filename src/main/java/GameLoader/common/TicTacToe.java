@@ -1,6 +1,21 @@
 package GameLoader.common;
 
+import GameLoader.games.Command;
+import GameLoader.games.Game;
+
 public class TicTacToe implements Game {
+    private PlayerInfo p1, p2;
+    private SYM p1Sym;
+
+    private enum SYM { X, O, EMPTY } // X begins
+
+    public TicTacToe(TicTacToeGameInfo info) {
+
+    }
+
+
+
+
     @Override
     public Game createNewGame() {
         return null;

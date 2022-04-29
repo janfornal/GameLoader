@@ -1,6 +1,6 @@
 package GameLoader.client;
 
-import GameLoader.common.Game;
+import GameLoader.games.Game;
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;

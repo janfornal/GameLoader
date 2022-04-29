@@ -1,6 +1,7 @@
 package GameLoader.client;
 
-import GameLoader.common.Game;
+import GameLoader.games.Command;
+import GameLoader.games.Game;
 import GameLoader.common.PlayerInfo;
 
 public class DotsAndBoxes implements Game {

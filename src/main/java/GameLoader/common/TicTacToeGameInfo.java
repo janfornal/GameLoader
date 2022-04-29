@@ -1,5 +1,7 @@
 package GameLoader.common;
 
+import GameLoader.games.Game;
+
 public record TicTacToeGameInfo(String player, char sym) implements Game.GameInfo {
     @Override
     public String getInfo() {

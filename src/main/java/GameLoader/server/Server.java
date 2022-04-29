@@ -1,6 +1,6 @@
 package GameLoader.server;
 
-import GameLoader.common.Game;
+import GameLoader.games.Game;
 import GameLoader.common.AbstractService;
 import GameLoader.common.Connection;
 import GameLoader.common.Message;

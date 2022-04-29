@@ -1,6 +1,6 @@
 package GameLoader.client;
 
-import GameLoader.common.Game;
+import GameLoader.games.Game;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 

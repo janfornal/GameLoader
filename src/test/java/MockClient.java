@@ -1,12 +1,11 @@
 import GameLoader.common.AbstractService;
 import GameLoader.common.Connection;
-import GameLoader.common.Game;
+import GameLoader.games.Game;
 import GameLoader.common.Message;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MockClient implements AbstractService {
     private final Connection connection;

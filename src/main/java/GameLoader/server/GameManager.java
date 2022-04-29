@@ -2,6 +2,8 @@ package GameLoader.server;
 
 import GameLoader.client.DotsAndBoxes;
 import GameLoader.common.*;
+import GameLoader.games.Command;
+import GameLoader.games.Game;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -93,7 +95,7 @@ public class GameManager {
     }
 
     public /* unsynchronized */ void processMoveMessage(Message.Move msg, Connection c) {
-        Game.Command cmd = msg.move();
+        Command cmd = msg.move();
 
         if (cmd == null) {
             c.sendError("cmd is null");

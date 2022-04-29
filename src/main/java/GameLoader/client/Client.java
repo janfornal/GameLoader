@@ -1,8 +1,8 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
+import GameLoader.games.Game;
 import javafx.collections.FXCollections;
-import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
