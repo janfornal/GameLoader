@@ -25,11 +25,11 @@ public class MenuViewModel implements ViewModel {
             ChoiceBox<String> choiceGameBox,
             ChoiceBox<String> choiceSizeBox,
             Label createRoomLabel,
-            TableView<Game.GameInfo> roomTableView,
+            TableView<RoomInfo> roomTableView,
             Button createRoomButton,
-            TableColumn<Game.GameInfo, String> gameColumn,
-            TableColumn<Game.GameInfo, String> sizeColumn,
-            TableColumn<Game.GameInfo, String> userColumn,
+            TableColumn<RoomInfo, String> gameColumn,
+            TableColumn<RoomInfo, String> sizeColumn,
+            TableColumn<RoomInfo, String> userColumn,
             Label titleLabel
     ) implements GuiElements {
     }
@@ -43,12 +43,12 @@ public class MenuViewModel implements ViewModel {
         modelUser = user;
     }
 
-    void addGetToRoomHandler(TableView<Game.GameInfo> table) {
+    void addGetToRoomHandler(TableView<RoomInfo> table) {
         table.setRowFactory(tv -> {
-            TableRow<Game.GameInfo> row = new TableRow<>();
+            TableRow<RoomInfo> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                    Game.GameInfo rowData = row.getItem();
+                    RoomInfo rowData = row.getItem();
                     modelUser.setChosenGame(rowData);
                     Message.Any jr = new Message.JoinRoom(rowData);
                     modelUser.sendMessage(jr);
@@ -68,25 +68,11 @@ public class MenuViewModel implements ViewModel {
             } else if (guiVisual.choiceGameBox.getValue() == null || guiVisual.choiceGameBox.getValue().equals("Please select game")) {
                 guiVisual.choiceGameBox.setValue("Please select game");
             } else {
-                Game.GameInfo dataInfo = new Game.GameInfo() {
-                    @Override
-                    public String getInfo() {
-                        return guiVisual.choiceSizeBox().getValue();
-                    }
+                String game = guiVisual.choiceGameBox().getValue();
+                String settings = guiVisual.choiceSizeBox().getValue();
 
-                    @Override
-                    public String getName() {
-                        return guiVisual.choiceGameBox().getValue();
-                    }
-
-                    @Override
-                    public PlayerInfo getPlayer() {
-                        return modelUser.username;
-                    }
-                };
-                System.out.println(dataInfo.getClass());
-                Message.Any crm = new Message.CreateRoom(dataInfo);
-                modelUser.setChosenGame(dataInfo);
+                Message.Any crm = new Message.CreateRoom(game, settings);
+                modelUser.setChosenGame(new RoomInfo(game, settings, modelUser.username));
                 modelUser.sendMessage(crm);
             }
         });

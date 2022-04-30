@@ -1,24 +1,20 @@
 package GameLoader.common;
 
-import java.io.Serializable;
+import java.util.Set;
 
 public interface Game {
-    interface Command extends Serializable {
-        String getPlayer();
-    }
+    // derived classes should provide default constructor
 
-    Game createNewGame();
-    Game createNewGame(Game.GameInfo info);
-    void makeMove(Command cmd);
-    boolean isLegal(Command cmd);
-    boolean isFinished();
-    PlayerInfo[] players();
-    GameInfo getGameInfo();
+    void makeMove(Command move);
+    boolean isMoveLegal(Command move);
 
-    // FIXME: gameInfo should be a record ?
-    interface GameInfo extends Serializable { // remember: implement equals & hashcode !!
-        String getInfo();
-        String getName();
-        PlayerInfo getPlayer();
-    }
+    void start(String settings, int seed);
+    String getSettings();
+
+    enum state { UNFINISHED, DRAW, P0_WON, P1_WON };
+    state getState();
+
+    // "static" methods
+    String getName();
+    Set<String> possibleSettings();
 }

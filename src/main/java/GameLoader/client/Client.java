@@ -2,7 +2,6 @@ package GameLoader.client;
 
 import GameLoader.common.*;
 import javafx.collections.FXCollections;
-import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -11,7 +10,7 @@ public class Client implements AbstractService {
     private ViewModel currentModel;
     private final Stage currentStage;
     private final Connection activeConnection;
-    private Game.GameInfo chosenGame;
+    private RoomInfo chosenGame;
     public PlayerInfo username;
 
     Client(Stage stage) throws IOException {
@@ -23,7 +22,7 @@ public class Client implements AbstractService {
         currentModel = Model;
     }
 
-    public void setChosenGame(Game.GameInfo game) {
+    public void setChosenGame(RoomInfo game) {
         chosenGame = game;
     }
 
@@ -38,7 +37,7 @@ public class Client implements AbstractService {
             currentGameCast.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
         if(message instanceof Message.StartGame && currentModel instanceof MenuViewModel currentGameCast) {
             if(chosenGame.equals("Dots and Boxes")) {
-                DotsAndBoxes starterInstance = new DotsAndBoxes().createNewGame();
+                DotsAndBoxes starterInstance = new DotsAndBoxes();
                 currentModel = new DotsAndBoxesViewModel(this, starterInstance);
             }
             if(chosenGame.equals("Tic Tac Toe")) {

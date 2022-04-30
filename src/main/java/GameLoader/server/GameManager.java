@@ -1,6 +1,5 @@
 package GameLoader.server;
 
-import GameLoader.client.DotsAndBoxes;
 import GameLoader.common.*;
 
 import java.util.*;
@@ -10,12 +9,12 @@ public class GameManager {
     private final Server server;
     public GameManager(Server s) {
         server = s;
-        gameZoo.put("DotsAndBoxes", DotsAndBoxes.class);
-        gameZoo.put("TicTacToe", TicTacToe.class);
+        // gameZoo.put("DotsAndBoxes", DotsAndBoxes.class);
+        // gameZoo.put("TicTacToe", TicTacToe.class);
     }
 
     private final Map<String, GameInstance> gameMap = new ConcurrentHashMap<>();
-    private final Set<Game.GameInfo> toJoin = new LinkedHashSet<>();
+    private final Set<RoomInfo> toJoin = new LinkedHashSet<>();
     private final Map<String, Class<? extends Game>> gameZoo = new HashMap<>();
 
     private record GameInstance(Game game, String p1, String p2) {}
@@ -26,12 +25,6 @@ public class GameManager {
 
     // TODO: currently player can create two rooms simultaneously; this should not be allowed
     public synchronized void processCreateRoomMessage(Message.CreateRoom msg, Connection c) {
-        Game.GameInfo info = msg.game();
-
-        if (info == null) {
-            c.sendError("info is null");
-            return;
-        }
         if (isPlaying(c.getName())) {
             c.sendError("you are already playing a game");
             return;
@@ -39,16 +32,12 @@ public class GameManager {
 
         String p = c.getName();
 
-        if (!p.equals(info.getPlayer().name())) {
-            c.sendError("connection name does not match create room player name");
+        if (!gameZoo.containsKey(msg.game())) {
+            c.sendError("game <" + msg.game() + "> does not exist");
             return;
         }
 
-        if (!gameZoo.containsKey(info.getName())) {
-            c.sendError("game <" + info.getName() + "> does not exist");
-            return;
-        }
-
+        RoomInfo info = new RoomInfo(msg.game(), msg.settings(), new PlayerInfo(c.getName()));
         toJoin.add(info);
     }
 
@@ -57,25 +46,25 @@ public class GameManager {
     }
 
     public synchronized void processJoinRoomMessage(Message.JoinRoom msg, Connection c) {
-        Game.GameInfo info = msg.game();
+        RoomInfo info = msg.room();
         if (!toJoin.contains(info)) {
             c.sendError("this room no longer exists");
             return;
         }
         toJoin.remove(info);
 
-        String p1 = info.getPlayer().name();
-        String p2 = c.getName();
+        String p0 = info.p0().name();
+        String p1 = c.getName();
 
-        if (gameMap.containsKey(p1) || gameMap.containsKey(p2)) {
-            String err = p1 + " is playing: " + gameMap.containsKey(p1) + " ; " +
-                         p2 + " is playing: " + gameMap.containsKey(p2);
+        if (gameMap.containsKey(p0) || gameMap.containsKey(p1)) {
+            String err = p0+ " is playing: " + gameMap.containsKey(p0) + " ; " +
+                         p1 + " is playing: " + gameMap.containsKey(p1);
 
-            server.connectionManager.sendMessageTo(new Message.Error(err), p1, p2);
+            server.connectionManager.sendMessageTo(new Message.Error(err), p0, p1);
             return;
         }
 
-        String gameName = info.getName();
+        String gameName = info.game();
         Game g;
         try {
             g = gameZoo.get(gameName).getConstructor(info.getClass()).newInstance(info);
@@ -84,16 +73,16 @@ public class GameManager {
             return;
         }
 
-        GameInstance instance = new GameInstance(g, p1, p2);
+        GameInstance instance = new GameInstance(g, p0, p1);
+        gameMap.put(p0, instance);
         gameMap.put(p1, instance);
-        gameMap.put(p2, instance);
 
-        Message.StartGame stg = new Message.StartGame(info.getPlayer(), new PlayerInfo(p2));
-        server.connectionManager.sendMessageTo(stg, p1, p2);
+        Message.StartGame stg = new Message.StartGame(gameName, info.settings(), new PlayerInfo(p0), new PlayerInfo(p1), 0);
+        server.connectionManager.sendMessageTo(stg, p0, p1);
     }
 
     public /* unsynchronized */ void processMoveMessage(Message.Move msg, Connection c) {
-        Game.Command cmd = msg.move();
+        Command cmd = msg.move();
 
         if (cmd == null) {
             c.sendError("cmd is null");
@@ -113,7 +102,7 @@ public class GameManager {
 
         synchronized (g) {
             Game game = g.game();
-            if (!game.isLegal(cmd)) {
+            if (!game.isMoveLegal(cmd)) {
                 c.sendError("this move is not legal");
                 return;
             }
@@ -121,7 +110,7 @@ public class GameManager {
 
             server.connectionManager.sendMessageTo(msg, g.p1(), g.p2());
 
-            if (game.isFinished())
+            if (game.getState() != Game.state.UNFINISHED)
                 reportGameEnded(g);
         }
     }

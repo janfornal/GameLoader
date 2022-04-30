@@ -1,6 +1,7 @@
 package GameLoader.client;
 
 import GameLoader.common.Game;
+import GameLoader.common.RoomInfo;
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -44,11 +45,11 @@ public class MenuView extends GridPane implements GeneralView {
             new ChoiceBox<String>(FXCollections.observableArrayList("Tic tac toe", "Dots and boxes")),
             new ChoiceBox<String>(FXCollections.observableArrayList("Small", "Medium",  "Big")),
             new Label("Create Room"),
-            new TableView<Game.GameInfo>(),
+            new TableView<RoomInfo>(),
             new Button("Create Room"),
-            new TableColumn<Game.GameInfo, String>("Game"),
-            new TableColumn<Game.GameInfo, String>("Size"),
-            new TableColumn<Game.GameInfo, String>("User"),
+            new TableColumn<RoomInfo, String>("Game"),
+            new TableColumn<RoomInfo, String>("Size"),
+            new TableColumn<RoomInfo, String>("User"),
             new Label("Game Server")
         ));
 
@@ -58,13 +59,13 @@ public class MenuView extends GridPane implements GeneralView {
         add(nvm.getElements().roomTableView(), 0, 3, 1, 6);
 
         nvm.getElements().gameColumn().setCellValueFactory(
-                new PropertyValueFactory<Game.GameInfo, String>("Game"));
+                new PropertyValueFactory<RoomInfo, String>("Game"));
 
         nvm.getElements().sizeColumn().setCellValueFactory(
-                new PropertyValueFactory<Game.GameInfo, String>("Size"));
+                new PropertyValueFactory<RoomInfo, String>("Size"));
 
         nvm.getElements().userColumn().setCellValueFactory(
-                new PropertyValueFactory<Game.GameInfo, String>("User"));
+                new PropertyValueFactory<RoomInfo, String>("User"));
 
         nvm.getElements().roomTableView().getColumns().addAll(
                 nvm.getElements().gameColumn(),

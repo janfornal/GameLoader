@@ -1,7 +1,10 @@
 package GameLoader.client;
 
+import GameLoader.common.Command;
 import GameLoader.common.Game;
 import GameLoader.common.PlayerInfo;
+
+import java.util.Set;
 
 public class DotsAndBoxes implements Game {
 
@@ -24,27 +27,37 @@ public class DotsAndBoxes implements Game {
     }
 
     @Override
-    public DotsAndBoxes createNewGame() {
-        return null;
-    }
-
-    @Override
     public void makeMove(Command cmd) {
 
     }
 
     @Override
-    public boolean isLegal(Command cmd) {
+    public boolean isMoveLegal(Command cmd) {
         return false;
     }
 
     @Override
-    public PlayerInfo[] players() {
-        return new PlayerInfo[0];
+    public void start(String settings, int seed) {
+
     }
 
     @Override
-    public GameInfo getGameInfo() {
+    public String getSettings() {
+        return null;
+    }
+
+    @Override
+    public state getState() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return "DotsAndBoxes";
+    }
+
+    @Override
+    public Set<String> possibleSettings() {
         return null;
     }
 
