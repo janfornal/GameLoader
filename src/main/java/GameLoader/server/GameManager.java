@@ -1,17 +1,14 @@
 package GameLoader.server;
 
 import GameLoader.common.*;
-import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 public class GameManager {
     private final Server server;
     public GameManager(Server s) {
         server = s;
-        assert (registerGameType(SimpleTicTacToe.class));
     }
 
     private final Map<String, GameInstance> gameMap = new ConcurrentHashMap<>();
@@ -30,14 +27,11 @@ public class GameManager {
             return;
         }
 
-        GameType type = gameTypes.get(msg.game());
+        String gameName = msg.game();
+        String settings = msg.settings();
 
-        if (type == null) {
-            c.sendError("game <" + msg.game() + "> does not exist");
-            return;
-        }
-        if (!type.settings().contains(msg.settings())) {
-            c.sendError("game <" + msg.game() + "> does not support setting: " + msg.settings());
+        if (!server.gameTypeManager.areSettingsCorrect(gameName, settings)) {
+            c.sendError("game <" + gameName + "> does not support setting: <" + settings + ">");
             return;
         }
 
@@ -64,18 +58,17 @@ public class GameManager {
             String err = p0 + " is playing: " + gameMap.containsKey(p0) + " ; " +
                          p1 + " is playing: " + gameMap.containsKey(p1);
 
-            server.connectionManager.sendMessageTo(new Message.Error(err), p0, p1);
+            server.connectionManager.sendErrorTo(err, p0, p1);
             return;
         }
 
         String gameName = info.game();
-        Game g;
-        try {
-            g = gameTypes.get(gameName).sup().get();
-        } catch (Exception e) {
-            c.sendError("<" + gameName + "> threw exception: " + e);
-            System.err.println("encountered error while constructing " + gameName);
-            e.printStackTrace();
+        String settings = info.settings();
+
+        Game g = server.gameTypeManager.createGame(gameName, settings);
+        if (g == null) {
+            server.connectionManager.sendErrorTo("encountered error while constructing game <" +
+                    gameName + "> with settings: <" + settings + ">", p0, p1);
             return;
         }
 
@@ -125,38 +118,5 @@ public class GameManager {
     private synchronized void reportGameEnded(GameInstance g) {
         gameMap.remove(g.p0());
         gameMap.remove(g.p1());
-    }
-
-    private record GameType(Set<String> settings, Supplier<Game> sup) {}
-    private final Map<String, GameType> gameTypes = new HashMap<>();
-
-    public synchronized boolean registerGameType(Class<? extends Game> cl) {
-        try {
-            Supplier<Game> sup = () -> {
-                try {
-                    return cl.getConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            };
-
-            Game g = sup.get();
-            String name = g.getName();
-            Set<String> settings = g.possibleSettings();
-
-            Objects.requireNonNull(name);
-            if (settings.isEmpty())
-                throw new RuntimeException("settings set is empty");
-            if (gameTypes.containsKey(name))
-                throw new RuntimeException("this game is already registered");
-
-            gameTypes.put(name, new GameType(settings, sup));
-            return true;
-        }
-        catch (Exception e) {
-            System.err.println("encountered error while registering " + cl);
-            e.printStackTrace();
-            return false;
-        }
     }
 }

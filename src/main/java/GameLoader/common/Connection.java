@@ -15,7 +15,6 @@ public class Connection {
     private String playerName;
     private boolean authorized = false;
     private boolean closed = false;
-    public static final PrintStream DBG_TO_STREAM = System.out; // TEMPORARY DEBUGGING
 
     public Connection(AbstractService service, String ip, int port) throws IOException {
         this(service, new Socket(ip, port));
@@ -57,11 +56,11 @@ public class Connection {
             while (!closed) {
                 try {
                     Message.Any message = (Message.Any) input.readObject();
+
+                    if (service.INC_MESSAGE_DBG_STREAM != null)
+                        service.INC_MESSAGE_DBG_STREAM.println(message + "\t\treceived from " + this);
+
                     Objects.requireNonNull(message);
-
-                    if (DBG_TO_STREAM != null)
-                        DBG_TO_STREAM.println(message + "\treceived from " + this);
-
                     service.processMessage(message, Connection.this);
                 } catch (EOFException | SocketException e) {
                     close();
@@ -83,9 +82,9 @@ public class Connection {
     }
 
     public void sendMessages(Message.Any... messages) {
-        if (DBG_TO_STREAM != null)
+        if (service.OUT_MESSAGE_DBG_STREAM != null)
             for (Message.Any message : messages)
-                DBG_TO_STREAM.println(message + "\tsend to " + this);
+                service.OUT_MESSAGE_DBG_STREAM.println(message + "\t\tsend to " + this);
 
         if (closed)
             return;

@@ -39,7 +39,7 @@ public class ConnectionManager {
         String pn = msg.name();
 
         synchronized (this) {
-            if (connectionMap.containsKey(pn))
+            if (pn == null || pn.equals("") || connectionMap.containsKey(pn))
                 c.sendError("Unsuccessful authorization");
             else {
                 // conn.sendMessage(); send success info?
@@ -59,5 +59,9 @@ public class ConnectionManager {
                 continue;
             c.sendMessage(msg);
         }
+    }
+
+    public void sendErrorTo(String cause, String... to) {
+        sendMessageTo(new Message.Error(cause), to);
     }
 }

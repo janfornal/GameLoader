@@ -11,10 +11,12 @@ import java.util.*;
 
 public class Server implements AbstractService {
     private final int port;
-    public final GameManager gameManager = new GameManager(this);
-    public final ConnectionManager connectionManager = new ConnectionManager(this);
     private boolean closed = false;
     private ServerSocket serverSocket;
+
+    public final GameManager gameManager = new GameManager(this);
+    public final ConnectionManager connectionManager = new ConnectionManager(this);
+    public final GameTypeManager gameTypeManager = new GameTypeManager(this);
 
     public Server() {
         this(Connection.defaultPort);

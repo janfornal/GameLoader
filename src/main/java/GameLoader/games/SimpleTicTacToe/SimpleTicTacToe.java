@@ -71,11 +71,11 @@ public class SimpleTicTacToe implements Game {
 
     @Override
     public String getName() {
-        return "3x3 Tic Tac Toe";
+        return "Tic tac toe";
     }
 
     @Override
     public Set<String> possibleSettings() {
-        return Set.of("3 x 3");
+        return Set.of("Small");
     }
 }
