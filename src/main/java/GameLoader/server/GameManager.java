@@ -1,23 +1,23 @@
 package GameLoader.server;
 
 import GameLoader.common.*;
+import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public class GameManager {
     private final Server server;
     public GameManager(Server s) {
         server = s;
-        // gameZoo.put("DotsAndBoxes", DotsAndBoxes.class);
-        // gameZoo.put("TicTacToe", TicTacToe.class);
+        assert (registerGameType(SimpleTicTacToe.class));
     }
 
     private final Map<String, GameInstance> gameMap = new ConcurrentHashMap<>();
     private final Set<RoomInfo> toJoin = new LinkedHashSet<>();
-    private final Map<String, Class<? extends Game>> gameZoo = new HashMap<>();
 
-    private record GameInstance(Game game, String p1, String p2) {}
+    private record GameInstance(Game game, String p0, String p1) {}
 
     public boolean isPlaying(String p) {
         return gameMap.get(p) != null;
@@ -30,10 +30,14 @@ public class GameManager {
             return;
         }
 
-        String p = c.getName();
+        GameType type = gameTypes.get(msg.game());
 
-        if (!gameZoo.containsKey(msg.game())) {
+        if (type == null) {
             c.sendError("game <" + msg.game() + "> does not exist");
+            return;
+        }
+        if (!type.settings().contains(msg.settings())) {
+            c.sendError("game <" + msg.game() + "> does not support setting: " + msg.settings());
             return;
         }
 
@@ -57,7 +61,7 @@ public class GameManager {
         String p1 = c.getName();
 
         if (gameMap.containsKey(p0) || gameMap.containsKey(p1)) {
-            String err = p0+ " is playing: " + gameMap.containsKey(p0) + " ; " +
+            String err = p0 + " is playing: " + gameMap.containsKey(p0) + " ; " +
                          p1 + " is playing: " + gameMap.containsKey(p1);
 
             server.connectionManager.sendMessageTo(new Message.Error(err), p0, p1);
@@ -67,9 +71,11 @@ public class GameManager {
         String gameName = info.game();
         Game g;
         try {
-            g = gameZoo.get(gameName).getConstructor(info.getClass()).newInstance(info);
+            g = gameTypes.get(gameName).sup().get();
         } catch (Exception e) {
             c.sendError("<" + gameName + "> threw exception: " + e);
+            System.err.println("encountered error while constructing " + gameName);
+            e.printStackTrace();
             return;
         }
 
@@ -88,15 +94,16 @@ public class GameManager {
             c.sendError("cmd is null");
             return;
         }
-        if (!c.getName().equals(cmd.getPlayer())) {
-            c.sendError("connection name does not match move player name");
-            return;
-        }
 
         GameInstance g = gameMap.get(c.getName());
 
         if (g == null) {
             c.sendError("you are not playing any game");
+            return;
+        }
+
+        if (!c.getName().equals(cmd.getPlayer() == 0 ? g.p0() : g.p1())) {
+            c.sendError("connection name does not match move player name");
             return;
         }
 
@@ -108,7 +115,7 @@ public class GameManager {
             }
             game.makeMove(cmd);
 
-            server.connectionManager.sendMessageTo(msg, g.p1(), g.p2());
+            server.connectionManager.sendMessageTo(msg, g.p0(), g.p1());
 
             if (game.getState() != Game.state.UNFINISHED)
                 reportGameEnded(g);
@@ -116,7 +123,40 @@ public class GameManager {
     }
 
     private synchronized void reportGameEnded(GameInstance g) {
+        gameMap.remove(g.p0());
         gameMap.remove(g.p1());
-        gameMap.remove(g.p2());
+    }
+
+    private record GameType(Set<String> settings, Supplier<Game> sup) {}
+    private final Map<String, GameType> gameTypes = new HashMap<>();
+
+    public synchronized boolean registerGameType(Class<? extends Game> cl) {
+        try {
+            Supplier<Game> sup = () -> {
+                try {
+                    return cl.getConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            };
+
+            Game g = sup.get();
+            String name = g.getName();
+            Set<String> settings = g.possibleSettings();
+
+            Objects.requireNonNull(name);
+            if (settings.isEmpty())
+                throw new RuntimeException("settings set is empty");
+            if (gameTypes.containsKey(name))
+                throw new RuntimeException("this game is already registered");
+
+            gameTypes.put(name, new GameType(settings, sup));
+            return true;
+        }
+        catch (Exception e) {
+            System.err.println("encountered error while registering " + cl);
+            e.printStackTrace();
+            return false;
+        }
     }
 }

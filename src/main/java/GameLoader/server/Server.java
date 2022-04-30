@@ -68,8 +68,6 @@ public class Server implements AbstractService {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(c);
 
-        System.err.println(msg);
-
         if (msg instanceof Message.Authorization m) {
             connectionManager.processAuthorizationMessage(m, c);
             return;

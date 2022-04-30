@@ -45,6 +45,9 @@ public class ConnectionManager {
                 // conn.sendMessage(); send success info?
                 connectionMap.put(pn, c);
                 c.authorize(pn);
+
+                // FIXME: is this correct?
+                server.gameManager.processGetRoomListMessage(null, c);
             }
         }
     }
