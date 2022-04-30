@@ -1,9 +1,6 @@
 package GameLoader.common;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Objects;
@@ -18,6 +15,7 @@ public class Connection {
     private String playerName;
     private boolean authorized = false;
     private boolean closed = false;
+    public static final PrintStream DBG_TO_STREAM = System.out; // TEMPORARY DEBUGGING
 
     public Connection(AbstractService service, String ip, int port) throws IOException {
         this(service, new Socket(ip, port));
@@ -60,6 +58,10 @@ public class Connection {
                 try {
                     Message.Any message = (Message.Any) input.readObject();
                     Objects.requireNonNull(message);
+
+                    if (DBG_TO_STREAM != null)
+                        DBG_TO_STREAM.println(message + "\treceived from " + this);
+
                     service.processMessage(message, Connection.this);
                 } catch (EOFException | SocketException e) {
                     close();
@@ -81,6 +83,10 @@ public class Connection {
     }
 
     public void sendMessages(Message.Any... messages) {
+        if (DBG_TO_STREAM != null)
+            for (Message.Any message : messages)
+                DBG_TO_STREAM.println(message + "\tsend to " + this);
+
         if (closed)
             return;
 
@@ -124,5 +130,16 @@ public class Connection {
             e.printStackTrace();
         }
         service.reportConnectionClosed(this);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder().append("Connection[");
+        sb.append("closed=").append(closed);
+
+        if (isAuthorized())
+            sb.append(", playerName=").append(playerName);
+
+        return sb.append("]").toString();
     }
 }
