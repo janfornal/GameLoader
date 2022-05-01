@@ -1,5 +1,8 @@
 package GameLoader.common;
 
+import GameLoader.client.Client;
+import GameLoader.client.PlayViewModel;
+
 import java.util.Set;
 
 public interface Game {
@@ -13,6 +16,7 @@ public interface Game {
 
     enum state { UNFINISHED, DRAW, P0_WON, P1_WON };
     state getState();
+    PlayViewModel createViewModel(Client user, int id);
 
     // "static" methods
     String getName();

@@ -1,10 +1,8 @@
 package GameLoader.client;
 
-import GameLoader.common.Game;
 import GameLoader.common.PlayerInfo;
 import GameLoader.common.RoomInfo;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -58,13 +56,7 @@ public class MenuView extends GridPane implements GeneralView {
         nvm.getElements().titleLabel().setFont(new Font("Javanese Text", 24));
         add(nvm.getElements().titleLabel(), 0, 0, 4, 1);
 
-        final ObservableList<RoomInfo> data =
-                FXCollections.observableArrayList(
-                        new RoomInfo("Dots and boxes", "Small", new PlayerInfo("2819"))
-                );
-
         add(nvm.getElements().roomTableView(), 0, 3, 1, 6);
-        nvm.getElements().roomTableView().setItems(data);
 
         nvm.getElements().gameColumn().setCellValueFactory(
                 new PropertyValueFactory<RoomInfo, String>("Game"));
