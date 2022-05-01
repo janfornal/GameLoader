@@ -15,8 +15,6 @@ public class DotsAndBoxesView extends GridPane implements PlayView {
 
     public DotsAndBoxesView(DotsAndBoxesViewModel gvm) {
 
-        setPrefSize(gvm.prefWindowWidth, gvm.prefWindowHeight);
-
         setPadding(new Insets(10, 20, 10, 20));
 
         List<Integer> columnWidth = Arrays.asList(100, 100, 100, 80, 140, 80);

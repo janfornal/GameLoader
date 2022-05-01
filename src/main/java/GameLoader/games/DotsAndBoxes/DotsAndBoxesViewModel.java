@@ -1,9 +1,12 @@
 package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.Client;
+import GameLoader.client.GeneralView;
 import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
+import GameLoader.common.Command;
 import GameLoader.common.Game;
+import GameLoader.common.Message;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
@@ -23,6 +26,12 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
         return modelGame;
     }
 
+    @Override
+    public void processMoveMessage(Message.Move msg) {
+        Command cmd = msg.move();
+
+    }
+
     record guiElements (
             Label stateOfGame,
             Label ourScore,
@@ -31,10 +40,9 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
     ) implements GuiElements { }
 
     guiElements guiVisual;
-    public int prefWindowWidth = 600;
-    public int prefWindowHeight = 400;
     private final Client modelUser;
     private final Game modelGame;
+
     @Override
     public Client getModelUser() {
         return modelUser;
@@ -43,5 +51,10 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
     @Override
     public void setElements(GuiElements fooElements) {
 
+    }
+
+    @Override
+    public GeneralView createView() {
+        return new DotsAndBoxesView(this);
     }
 }
