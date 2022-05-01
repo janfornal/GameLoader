@@ -50,9 +50,9 @@ public class Client implements AbstractService {
 
         if(message instanceof Message.Authorization)
             return;
-        if(message instanceof Message.RoomList messageCast && currentModel instanceof MenuViewModel currentModelCast)
+        else if(message instanceof Message.RoomList messageCast && currentModel instanceof MenuViewModel currentModelCast)
             currentModelCast.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
-        if(message instanceof Message.StartGame messageCast && currentModel instanceof MenuViewModel) {
+        else if(message instanceof Message.StartGame messageCast && currentModel instanceof MenuViewModel) {
             GameClasses gamePackage = gameMap.get(chosenGame.game());
             Game starterInstance;
             PlayViewModel currentModel;
@@ -67,10 +67,10 @@ public class Client implements AbstractService {
             starterInstance.start(chosenGame.settings(), messageCast.seed());
             ClientGUI.switchStage(currentModel);
         }
-        if(message instanceof Message.Move messageCast && currentModel instanceof PlayViewModel currentModelCast) {
+        else if(message instanceof Message.Move messageCast && currentModel instanceof PlayViewModel currentModelCast) {
             currentModelCast.processMoveMessage(messageCast);
         }
-        c.sendError("Message not recognized");
+        else c.sendError("Message not recognized");
     }
 
     @Override
@@ -91,6 +91,7 @@ public class Client implements AbstractService {
         activeConnection.sendMessage(message);
         if(message instanceof Message.Authorization authMessage) {
             username = new PlayerInfo(authMessage.name());
+            sendMessage(new Message.GetGameList());
         }
     }
 }
