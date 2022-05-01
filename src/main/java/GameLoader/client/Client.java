@@ -75,16 +75,11 @@ public class Client implements AbstractService {
     }
 
     @Override
-    public void reportGameEnded(Game gm) {
-
-    }
-
-    @Override
     public void reportConnectionClosed(Connection connection) {
 
     }
 
-    void sendError(String cause) {
+    public void sendError(String cause) {
         sendMessage(new Message.Error(cause));
     }
 
