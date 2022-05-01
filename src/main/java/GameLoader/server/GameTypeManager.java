@@ -1,5 +1,7 @@
 package GameLoader.server;
 
+import GameLoader.common.Connection;
+import GameLoader.common.Message;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.common.AbstractService;
@@ -73,6 +75,10 @@ public class GameTypeManager {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void processGetGameListMessage(Message.GetGameList ignored, Connection c) {
+        c.sendMessage(new Message.GameList()); // TODO implement
     }
 
 }

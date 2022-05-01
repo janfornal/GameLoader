@@ -97,6 +97,10 @@ public class Server implements AbstractService {
             gameManager.processJoinRoomMessage(m, c);
             return;
         }
+        if (msg instanceof Message.GetGameList m) {
+            gameTypeManager.processGetGameListMessage(m, c);
+            return;
+        }
         c.sendError("Message not recognized");
     }
 
