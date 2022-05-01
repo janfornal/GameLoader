@@ -58,7 +58,7 @@ public class Client implements AbstractService {
             PlayViewModel currentModel;
             try {
                 starterInstance = gamePackage.gameClass().getConstructor().newInstance();
-                currentModel = (PlayViewModel) gamePackage.gameViewClass().getConstructor(Client.class, Game.class).newInstance(this, starterInstance);
+                currentModel = starterInstance.createViewModel(this, 0);
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
                 sendMessage(new Message.Error("Constructor of game cannot be called"));
@@ -81,6 +81,10 @@ public class Client implements AbstractService {
     @Override
     public void reportConnectionClosed(Connection connection) {
 
+    }
+
+    void sendError(String cause) {
+        sendMessage(new Message.Error(cause));
     }
 
     public void sendMessage(Message.Any message) {
