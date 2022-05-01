@@ -26,7 +26,7 @@ public class GameTypeManager {
         if (type == null)
             return null;
 
-        return Collections.unmodifiableSet(type.settings());
+        return type.settings();
     }
 
     public synchronized boolean areSettingsCorrect(String name, String settings) {

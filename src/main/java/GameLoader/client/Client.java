@@ -1,6 +1,9 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
+import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
+import GameLoader.games.SimpleTicTacToe.SimpleTicTacToeViewModel;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.stage.Stage;
 
@@ -40,10 +43,15 @@ public class Client implements AbstractService {
                 DotsAndBoxes starterInstance = new DotsAndBoxes();
                 currentModel = new DotsAndBoxesViewModel(this, starterInstance);
             }
-            if(chosenGame.equals("Tic Tac Toe")) {
-                // repeat above;
+            if(chosenGame.equals("Tic Tac Toe") || true) { // FIXME: temporary change
+                SimpleTicTacToe starterInstance = new SimpleTicTacToe();
+                currentModel = starterInstance.createViewModel(this);
             }
-            ClientGUI.switchStage(currentStage, currentModel);
+            System.err.println("1111");
+            Platform.runLater(()->{
+                System.err.println("111122222");
+                ClientGUI.switchStage(currentStage, currentModel);
+            });
         }
     }
 

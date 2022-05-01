@@ -61,7 +61,20 @@ public class Connection {
                         service.INC_MESSAGE_DBG_STREAM.println(message + "\t\treceived from " + this);
 
                     Objects.requireNonNull(message);
-                    service.processMessage(message, Connection.this);
+
+                    if (message instanceof Message.Ping pm) {
+                        sendMessage(new Message.Pong(pm.p()));
+                        continue;
+                    }
+                    if (message instanceof Message.Pong ignored)
+                        continue;
+
+                    try {
+                        service.processMessage(message, Connection.this);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 } catch (EOFException | SocketException e) {
                     close();
                     return;
@@ -82,9 +95,9 @@ public class Connection {
     }
 
     public void sendMessages(Message.Any... messages) {
-        if (service.OUT_MESSAGE_DBG_STREAM != null)
+        if (service.SND_MESSAGE_DBG_STREAM != null)
             for (Message.Any message : messages)
-                service.OUT_MESSAGE_DBG_STREAM.println(message + "\t\tsend to " + this);
+                service.SND_MESSAGE_DBG_STREAM.println(message + "\t\tsending to " + this);
 
         if (closed)
             return;
@@ -94,6 +107,10 @@ public class Connection {
                 for (Message.Any message : messages) {
                     try {
                         output.writeObject(message);
+
+                        if (service.SNT_MESSAGE_DBG_STREAM != null)
+                            service.SNT_MESSAGE_DBG_STREAM.println(message + "\t\tsent to " + this);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                         close();

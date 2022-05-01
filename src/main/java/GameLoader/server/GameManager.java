@@ -22,6 +22,14 @@ public class GameManager {
 
     // TODO: currently player can create two rooms simultaneously; this should not be allowed
     public synchronized void processCreateRoomMessage(Message.CreateRoom msg, Connection c) {
+        // TODO: THIS IS TEMPORARY
+        if (true) {
+            Message.StartGame stg = new Message.StartGame("Tic tac toe", "Small",
+                    new PlayerInfo("T"), new PlayerInfo("OPPONENT"), 0);
+            c.sendMessage(stg);
+            return;
+        }
+
         if (isPlaying(c.getName())) {
             c.sendError("you are already playing a game");
             return;

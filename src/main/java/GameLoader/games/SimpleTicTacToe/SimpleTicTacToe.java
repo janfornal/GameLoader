@@ -1,5 +1,6 @@
 package GameLoader.games.SimpleTicTacToe;
 
+import GameLoader.client.Client;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
 
@@ -77,5 +78,9 @@ public class SimpleTicTacToe implements Game {
     @Override
     public Set<String> possibleSettings() {
         return Set.of("Small");
+    }
+
+    public SimpleTicTacToeViewModel createViewModel(Client cl) {
+        return new SimpleTicTacToeViewModel(cl, this);
     }
 }

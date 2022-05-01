@@ -42,12 +42,11 @@ public class ConnectionManager {
             if (pn == null || pn.equals("") || connectionMap.containsKey(pn))
                 c.sendError("Unsuccessful authorization");
             else {
-                // conn.sendMessage(); send success info?
+                // conn.sendMessage(); FIXME: send success info?
                 connectionMap.put(pn, c);
                 c.authorize(pn);
 
-                // FIXME: is this correct?
-                server.gameManager.processGetRoomListMessage(null, c);
+                server.gameManager.processGetRoomListMessage(null, c); // FIXME: is this correct?
             }
         }
     }
