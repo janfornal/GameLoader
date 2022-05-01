@@ -70,6 +70,9 @@ public class Server implements AbstractService {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(c);
 
+        if (msg instanceof Message.Error) {
+            return;
+        }
         if (msg instanceof Message.Authorization m) {
             connectionManager.processAuthorizationMessage(m, c);
             return;

@@ -1,6 +1,7 @@
 package GameLoader.games.SimpleTicTacToe;
 
 import GameLoader.client.Client;
+import GameLoader.client.GeneralView;
 import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
 import GameLoader.common.Command;
@@ -49,12 +50,18 @@ public class SimpleTicTacToeViewModel implements PlayViewModel {
 
     }
 
-    public void processMoveMessage(Message.Move msg, Connection c) {
+    @Override
+    public GeneralView createView() {
+        return null;
+    }
+
+    @Override
+    public void processMoveMessage(Message.Move msg) {
         Command cmd = msg.move();
         if (cmd.getPlayer() == myPlayer)
             return;
         if (!modelGame.isMoveLegal(cmd)) {
-            c.sendError("this move is illegal?");
+            modelUser.sendMessage(new Message.Error("this move is illegal?"));
             return;
         }
         modelGame.makeMove(cmd);
