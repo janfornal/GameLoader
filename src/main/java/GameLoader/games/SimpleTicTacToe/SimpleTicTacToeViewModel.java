@@ -43,7 +43,7 @@ public class SimpleTicTacToeViewModel implements PlayViewModel {
         if (cmd.getPlayer() == myPlayer)
             return;
         if (!modelGame.isMoveLegal(cmd)) {
-            modelUser.sendMessage(new Message.Error("this move is illegal?"));
+            modelUser.sendError("this move is illegal?");
             return;
         }
         modelGame.makeMove(cmd);

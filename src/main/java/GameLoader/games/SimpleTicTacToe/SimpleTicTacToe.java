@@ -31,7 +31,7 @@ public class SimpleTicTacToe implements Game {
 
         T[row][col] = pl;
         turn = 1 - turn;
-        calcState();
+        currState = calcState();
 
         moveCount++;
         if (moveCountProperty != null)
@@ -67,7 +67,7 @@ public class SimpleTicTacToe implements Game {
         return currState;
     }
 
-    private void calcState() {
+    private state calcState() {
         int winner = -1;
         for (int i = 0; i < sz; ++i) {
             if (T[i][0] == T[i][1] && T[i][1] == T[i][2] && T[i][2] != -1)
@@ -81,10 +81,7 @@ public class SimpleTicTacToe implements Game {
             winner = T[0][2];
 
         if (winner != -1)
-        {
-            currState = winner == 0 ? state.P0_WON : state.P1_WON;
-            return;
-        }
+            return winner == 0 ? state.P0_WON : state.P1_WON;
 
         int e = 0;
         for (int i = 0; i < sz; ++i)
@@ -92,7 +89,7 @@ public class SimpleTicTacToe implements Game {
                 if (T[i][j] == -1)
                     ++e;
 
-        currState =  e > 0 ? state.UNFINISHED : state.DRAW;
+        return e > 0 ? state.UNFINISHED : state.DRAW;
     }
 
     @Override
@@ -132,7 +129,7 @@ public class SimpleTicTacToe implements Game {
     public String toString() {
         return "SimpleTicTacToe{" +
                 "sz=" + sz +
-                ", T=" + Arrays.toString(T) +
+                ", T=" + Arrays.deepToString(T) +
                 ", settings='" + settings + '\'' +
                 ", currState=" + currState +
                 ", moveCount=" + moveCount +

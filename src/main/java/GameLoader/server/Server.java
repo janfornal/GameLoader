@@ -53,7 +53,7 @@ public class Server implements AbstractService {
         return port;
     }
 
-    synchronized public void close() {
+    public synchronized void close() {
         if (closed)
             return;
         closed = true;
@@ -98,11 +98,6 @@ public class Server implements AbstractService {
             return;
         }
         c.sendError("Message not recognized");
-    }
-
-    @Override
-    public void reportGameEnded(Game game) {
-        throw new RuntimeException("do we need this?");
     }
 
     @Override

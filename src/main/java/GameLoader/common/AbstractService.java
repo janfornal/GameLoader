@@ -18,7 +18,5 @@ public interface AbstractService {
 
     void processMessage(Message.Any message, Connection connection);
 
-    void reportGameEnded(Game game); // TODO: delete this?
-
     void reportConnectionClosed(Connection connection);
 }
