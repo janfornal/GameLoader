@@ -1,14 +1,24 @@
 package GameLoader.games.SimpleTicTacToe;
 
+import GameLoader.client.Client;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.Set;
 
 public class SimpleTicTacToe implements Game {
     private final int sz = 3;
     private final int[][] T = new int[sz][sz]; // -1 EMPTY, 0 x, 1 o
-    private int turn = 0;
+    {
+        for (int i = 0; i < sz; ++i)
+            for (int j = 0; j < sz; ++j)
+                T[i][j] = -1;
+    }
+
+    private SimpleIntegerProperty turn = new SimpleIntegerProperty(0);
     private String settings;
 
     @Override
@@ -17,7 +27,9 @@ public class SimpleTicTacToe implements Game {
         int pl = tttMove.getPlayer();
         int row = tttMove.getRow();
         int col = tttMove.getCol();
+
         T[row][col] = pl;
+        turn.set(1 - turn.get());
     }
 
     @Override
@@ -26,7 +38,7 @@ public class SimpleTicTacToe implements Game {
             int pl = tttMove.getPlayer();
             int row = tttMove.getRow();
             int col = tttMove.getCol();
-            return getState() == state.UNFINISHED && turn == pl && row < sz && col < sz && T[row][col] == -1;
+            return getState() == state.UNFINISHED && turn.get() == pl && row < sz && col < sz && T[row][col] != -1;
         }
         return false;
     }
@@ -77,5 +89,21 @@ public class SimpleTicTacToe implements Game {
     @Override
     public Set<String> possibleSettings() {
         return Set.of("Small");
+    }
+
+    public SimpleTicTacToeViewModel createViewModel(Client cl, int id) {
+        return new SimpleTicTacToeViewModel(cl, id, this);
+    }
+
+    public int getSize() {
+        return sz;
+    }
+
+    public int getFieldAt(int i, int j) {
+        return T[i][j];
+    }
+
+    public ReadOnlyIntegerProperty getTurnProperty() {
+        return turn;
     }
 }
