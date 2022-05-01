@@ -1,9 +1,9 @@
 package GameLoader.server;
 
+import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.common.AbstractService;
 import GameLoader.common.Game;
-import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -26,7 +26,7 @@ public class GameTypeManager {
         if (type == null)
             return null;
 
-        return Collections.unmodifiableSet(type.settings());
+        return type.settings();
     }
 
     public synchronized boolean areSettingsCorrect(String name, String settings) {
@@ -44,8 +44,8 @@ public class GameTypeManager {
 
         try {
             return type.constructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            System.err.println("reflection error while constructing: <" + name + "> with settings <" + settings + ">");
+        } catch (IllegalArgumentException | ReflectiveOperationException e) {
+            System.err.println("encountered error while constructing: <" + name + "> with settings <" + settings + ">");
             e.printStackTrace();
             return null;
         }

@@ -8,6 +8,9 @@ public interface Message extends Serializable {
     interface CtoS extends Any {}
     interface StoC extends Any {}
 
+    record Ping(String p) implements CtoS, StoC {}
+    record Pong(String p) implements CtoS, StoC {}
+
     record Error(String cause) implements CtoS, StoC {}
     record Authorization(String name) implements CtoS {}
 

@@ -12,9 +12,9 @@ public interface AbstractService {
         return th;
     });
 
-    PrintStream GENERAL_DBG_STREAM = System.out; // TEMPORARY DEBUGGING
-    PrintStream INC_MESSAGE_DBG_STREAM = System.out; // TEMPORARY DEBUGGING
-    PrintStream OUT_MESSAGE_DBG_STREAM = System.out; // TEMPORARY DEBUGGING
+    PrintStream INC_MESSAGE_DBG_STREAM = System.out; // report messages that you received
+    PrintStream SND_MESSAGE_DBG_STREAM = System.out; // report messages that you tried to send
+    PrintStream SNT_MESSAGE_DBG_STREAM = null; // report messages that you actually sent
 
     void processMessage(Message.Any message, Connection connection);
 
