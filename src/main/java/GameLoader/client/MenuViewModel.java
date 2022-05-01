@@ -32,6 +32,7 @@ public class MenuViewModel implements ViewModel {
             Label createRoomLabel,
             TableView<RoomInfo> roomTableView,
             Button createRoomButton,
+            Button getRoomList,
             TableColumn<RoomInfo, String> gameColumn,
             TableColumn<RoomInfo, String> sizeColumn,
             TableColumn<RoomInfo, PlayerInfo> userColumn,
@@ -80,6 +81,13 @@ public class MenuViewModel implements ViewModel {
                 modelUser.setChosenGame(new RoomInfo(game, settings, modelUser.username));
                 modelUser.sendMessage(crm);
             }
+        });
+    }
+
+    void addGetRoomHandler(Button button) {
+        button.setOnMouseClicked(event -> {
+            Message.Any crm = new Message.GetRoomList();
+            modelUser.sendMessage(crm);
         });
     }
 }

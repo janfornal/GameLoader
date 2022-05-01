@@ -1,18 +1,14 @@
 package GameLoader.client;
 
-import GameLoader.common.PlayerInfo;
-import GameLoader.common.RoomInfo;
+import GameLoader.common.*;
+import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
+import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import javafx.collections.FXCollections;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
+import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.layout.*;
+import javafx.scene.text.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +21,7 @@ public class MenuView extends GridPane implements GeneralView {
 
         setPadding(new Insets(10, 20, 10, 20));
 
-        List<Integer> columnWidth = Arrays.asList(270, 160, 150);
+        List<Integer> columnWidth = Arrays.asList(270, 100, 210);
         this.getColumnConstraints().addAll(columnWidth.stream()
                 .map(t -> new ColumnConstraints()).toList());
 
@@ -42,11 +38,12 @@ public class MenuView extends GridPane implements GeneralView {
         }
 
         nvm.setElements(new MenuViewModel.guiElements(
-            new ChoiceBox<String>(FXCollections.observableArrayList("Tic tac toe", "Dots and boxes")),
+            new ChoiceBox<String>(FXCollections.observableArrayList(new SimpleTicTacToe().getName(), new DotsAndBoxes().getName())),
             new ChoiceBox<String>(FXCollections.observableArrayList("Small", "Medium",  "Big")),
             new Label("Create Room"),
             new TableView<RoomInfo>(),
             new Button("Create Room"),
+            new Button("Get Room List"),
             new TableColumn<RoomInfo, String>("Game"),
             new TableColumn<RoomInfo, String>("Size"),
             new TableColumn<RoomInfo, PlayerInfo>("User"),
@@ -86,8 +83,11 @@ public class MenuView extends GridPane implements GeneralView {
         setHalignment(nvm.getElements().choiceSizeBox(), HPos.CENTER);
 
         add(nvm.getElements().createRoomButton(), 2, 8, 1, 1);
-        setHalignment(nvm.getElements().createRoomButton(), HPos.CENTER);
+        setHalignment(nvm.getElements().createRoomButton(), HPos.LEFT);
         nvm.addCreateRoomHandler(nvm.getElements().createRoomButton());
 
+        add(nvm.getElements().getRoomList(), 2, 8, 1, 1);
+        setHalignment(nvm.getElements().getRoomList(), HPos.RIGHT);
+        nvm.addGetRoomHandler(nvm.getElements().getRoomList());
     }
 }
