@@ -1,5 +1,8 @@
-package GameLoader.client;
+package GameLoader.games.DotsAndBoxes;
 
+import GameLoader.client.Client;
+import GameLoader.client.GuiElements;
+import GameLoader.client.PlayViewModel;
 import GameLoader.common.Game;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -28,8 +31,8 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
     ) implements GuiElements { }
 
     guiElements guiVisual;
-    int prefWindowWidth = 600;
-    int prefWindowHeight = 400;
+    public int prefWindowWidth = 600;
+    public int prefWindowHeight = 400;
     private final Client modelUser;
     private final Game modelGame;
     @Override

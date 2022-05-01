@@ -1,6 +1,6 @@
 package GameLoader.server;
 
-import GameLoader.client.DotsAndBoxes;
+import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.common.AbstractService;
 import GameLoader.common.Game;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;

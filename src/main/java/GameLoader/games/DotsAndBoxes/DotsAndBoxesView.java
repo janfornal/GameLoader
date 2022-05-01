@@ -1,5 +1,6 @@
-package GameLoader.client;
+package GameLoader.games.DotsAndBoxes;
 
+import GameLoader.client.PlayView;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;

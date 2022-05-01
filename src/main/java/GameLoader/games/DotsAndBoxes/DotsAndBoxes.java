@@ -1,9 +1,11 @@
-package GameLoader.client;
+package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.common.Command;
 import GameLoader.common.Game;
 import GameLoader.common.PlayerInfo;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class DotsAndBoxes implements Game {
@@ -58,7 +60,7 @@ public class DotsAndBoxes implements Game {
 
     @Override
     public Set<String> possibleSettings() {
-        return null;
+        return new HashSet<String>(List.of(new String[]{"Size"}));
     }
 
     public class DotsAndBoxesBoard {

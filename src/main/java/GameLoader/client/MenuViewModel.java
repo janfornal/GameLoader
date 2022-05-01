@@ -29,7 +29,7 @@ public class MenuViewModel implements ViewModel {
             Button createRoomButton,
             TableColumn<RoomInfo, String> gameColumn,
             TableColumn<RoomInfo, String> sizeColumn,
-            TableColumn<RoomInfo, String> userColumn,
+            TableColumn<RoomInfo, PlayerInfo> userColumn,
             Label titleLabel
     ) implements GuiElements {
     }
