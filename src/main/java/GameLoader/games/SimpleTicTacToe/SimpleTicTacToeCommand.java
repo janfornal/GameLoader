@@ -20,4 +20,13 @@ public class SimpleTicTacToeCommand extends Command {
     public int getCol() {
         return col;
     }
+
+    @Override
+    public String toString() {
+        return "SimpleTicTacToeCommand{" +
+                "row=" + row +
+                ", col=" + col +
+                ", player=" + getPlayer() +
+                '}';
+    }
 }

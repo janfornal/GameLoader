@@ -72,11 +72,14 @@ public class GameManager {
             return;
         }
 
+        int seed = 0;
+        g.start(settings, seed);
+
         GameInstance instance = new GameInstance(g, p0, p1);
         gameMap.put(p0, instance);
         gameMap.put(p1, instance);
 
-        Message.StartGame stg = new Message.StartGame(gameName, info.settings(), new PlayerInfo(p0), new PlayerInfo(p1), 0);
+        Message.StartGame stg = new Message.StartGame(gameName, info.settings(), new PlayerInfo(p0), new PlayerInfo(p1), seed);
         server.connectionManager.sendMessageTo(stg, p0, p1);
     }
 

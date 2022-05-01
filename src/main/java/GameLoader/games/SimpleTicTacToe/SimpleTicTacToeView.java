@@ -1,7 +1,7 @@
 package GameLoader.games.SimpleTicTacToe;
 
 import GameLoader.client.PlayView;
-import javafx.beans.Observable;
+import GameLoader.common.Game;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
@@ -58,14 +58,15 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
             });
 
             IntegerProperty owner = new SimpleIntegerProperty(-1);
-            BooleanProperty clickable = new SimpleBooleanProperty(game.getTurnProperty().get() == gvm.playingAs());
+            BooleanProperty clickable = new SimpleBooleanProperty(game.getTurn() == gvm.playingAs());
 
-            game.getTurnProperty().addListener((obs, oldVal, val) -> {
+            game.getMoveCountProperty().addListener((obs, oldVal, newVal) -> {
                 int newOwner = game.getFieldAt(i, j);
                 if (newOwner != owner.get())
                     owner.setValue(newOwner);
 
-                boolean newClickable = newOwner == -1 && !gvm.finished() && val.intValue() == gvm.playingAs();
+                boolean newClickable = newOwner == -1 && game.getState() == Game.state.UNFINISHED
+                        && game.getTurn() == gvm.playingAs();
                 if (newClickable != clickable.get())
                     clickable.setValue(newClickable);
             });
