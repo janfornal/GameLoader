@@ -17,6 +17,11 @@ public class MenuViewModel implements ViewModel {
         guiVisual = (guiElements) fooElements;
     }
 
+    @Override
+    public GeneralView createView() {
+        return new MenuView(this);
+    }
+
     public guiElements getElements() {
         return guiVisual;
     }

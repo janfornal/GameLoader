@@ -9,32 +9,34 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import javax.swing.text.View;
+
 
 public class ClientGUI extends Application {
 
+    private static Stage currentStage;
+    static GeneralView view;
+    static Client user;
+
     @Override
     public void start(Stage stage) throws Exception {
-        Client clientInstance = new Client(stage);
         AuthorizationDialog startAuth = new AuthorizationDialog();
         String username = startAuth.getUsername();
-        clientInstance.sendMessage(new Message.Authorization(username));
-        MenuViewModel currentModel = new MenuViewModel(clientInstance);
-        clientInstance.setCurrentModel(currentModel);
-        MenuView view = new MenuView(currentModel);
-
+        user.sendMessage(new Message.Authorization(username));
+        MenuViewModel currentModel = new MenuViewModel(user);
+        user.setCurrentModel(currentModel);
+        view = new MenuView(currentModel);
+        currentStage = stage;
         stage.setTitle("Let's Play");
-        Scene scene = new Scene(view, currentModel.prefWindowWidth, currentModel.prefWindowHeight);
+        Scene scene = new Scene((Parent) view);
         scene.setFill(Color.WHITE);
         stage.setScene(scene);
         stage.show();
     }
 
-    public static void switchStage (Stage stage, ViewModel viewModel) {
-        if(viewModel instanceof DotsAndBoxesViewModel dotsViewModel) {
-            DotsAndBoxesView view = new DotsAndBoxesView(dotsViewModel);
-            Scene scene = new Scene(view, dotsViewModel.prefWindowWidth, dotsViewModel.prefWindowHeight);
-            stage.setScene(scene);
-        }
-        stage.show();
+    public static void switchStage (ViewModel viewModel) {
+        view = viewModel.createView();
+        Scene scene = new Scene((Parent) view);
+        currentStage.setScene(scene);
     }
 }

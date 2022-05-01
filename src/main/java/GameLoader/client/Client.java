@@ -1,41 +1,35 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
-import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
-import GameLoader.games.DotsAndBoxes.DotsAndBoxesView;
-import GameLoader.games.DotsAndBoxes.DotsAndBoxesViewModel;
-import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
-import GameLoader.games.SimpleTicTacToe.SimpleTicTacToeView;
-import GameLoader.games.SimpleTicTacToe.SimpleTicTacToeViewModel;
-import GameLoader.server.GameManager;
+import GameLoader.games.DotsAndBoxes.*;
+import GameLoader.games.SimpleTicTacToe.*;
 import javafx.collections.FXCollections;
-import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 
 public class Client implements AbstractService {
     private ViewModel currentModel;
-    private final Stage currentStage;
     private final Connection activeConnection;
     private RoomInfo chosenGame;
     public PlayerInfo username;
     private String availableGames;
-    private final Map<String, GameClasses> gameMap = new HashMap<String, GameClasses>(){{
-        put("Dots and Boxes", new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
-        put("Tic Tac Toe", new GameClasses(SimpleTicTacToe.class, SimpleTicTacToeView.class, SimpleTicTacToeViewModel.class));
+    private final Map<String, GameClasses> gameMap = new HashMap<>() {{
+        put(new DotsAndBoxes().getName(), new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
+        put(new SimpleTicTacToe().getName(), new GameClasses(SimpleTicTacToe.class, SimpleTicTacToeView.class, SimpleTicTacToeViewModel.class));
     }};
 
-    private record GameClasses(Class <? extends Game> gameClass,
+    private record GameClasses(Class<? extends Game> gameClass,
                                Class<? extends PlayView> gameViewClass,
                                Class<? extends PlayViewModel> gameModelClass) {}
 
-    Client(Stage stage) throws IOException {
-        currentStage = stage;
+    Client() throws IOException {
+        ClientGUI.user = this;
         activeConnection = new Connection(Client.this);
+        ClientGUI.launch(ClientGUI.class);
     }
 
     public void setCurrentModel(ViewModel Model) {
@@ -51,21 +45,32 @@ public class Client implements AbstractService {
 
     @Override
     public void processMessage(Message.Any message, Connection c) {
-        if(message instanceof Message.Authorization messageCast)
-            return;
-        if(message instanceof Message.RoomList messageCast && currentModel instanceof MenuViewModel currentGameCast)
-            currentGameCast.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
-        if(message instanceof Message.StartGame && currentModel instanceof MenuViewModel currentGameCast) {
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(c);
 
-            if(chosenGame.equals("Dots and Boxes")) {
-                DotsAndBoxes starterInstance = new DotsAndBoxes();
-                currentModel = new DotsAndBoxesViewModel(this, starterInstance);
+        if(message instanceof Message.Authorization)
+            return;
+        if(message instanceof Message.RoomList messageCast && currentModel instanceof MenuViewModel currentModelCast)
+            currentModelCast.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
+        if(message instanceof Message.StartGame messageCast && currentModel instanceof MenuViewModel) {
+            GameClasses gamePackage = gameMap.get(chosenGame.game());
+            Game starterInstance;
+            PlayViewModel currentModel;
+            try {
+                starterInstance = gamePackage.gameClass().getConstructor().newInstance();
+                currentModel = (PlayViewModel) gamePackage.gameViewClass().getConstructor(Client.class, Game.class).newInstance(this, starterInstance);
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+                sendMessage(new Message.Error("Constructor of game cannot be called"));
+                return;
             }
-            if(chosenGame.equals("Tic Tac Toe")) {
-                // repeat above;
-            }
-            ClientGUI.switchStage(currentStage, currentModel);
+            starterInstance.start(chosenGame.settings(), messageCast.seed());
+            ClientGUI.switchStage(currentModel);
         }
+        if(message instanceof Message.Move messageCast && currentModel instanceof PlayViewModel currentModelCast) {
+            currentModelCast.processMoveMessage(messageCast);
+        }
+        c.sendError("Message not recognized");
     }
 
     @Override
