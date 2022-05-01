@@ -36,7 +36,6 @@ public class ClientGUI extends Application {
 
     public static void switchStage (ViewModel viewModel) {
         view = viewModel.createView();
-        Scene scene = new Scene((Parent) view);
-        currentStage.setScene(scene);
+        currentStage.getScene().setRoot((Parent) view);
     }
 }
