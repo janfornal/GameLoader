@@ -1,6 +1,5 @@
 package GameLoader.server;
 
-import GameLoader.common.Game;
 import GameLoader.common.AbstractService;
 import GameLoader.common.Connection;
 import GameLoader.common.Message;
@@ -17,6 +16,7 @@ public class Server implements AbstractService {
     public final GameManager gameManager = new GameManager(this);
     public final ConnectionManager connectionManager = new ConnectionManager(this);
     public final GameTypeManager gameTypeManager = new GameTypeManager(this);
+    public final DatabaseManager dataManager = new H2DatabaseManager(this);
 
     public Server() {
         this(Connection.defaultPort);
