@@ -15,7 +15,6 @@ import javafx.scene.paint.Paint;
 import java.util.stream.Stream;
 
 public class SimpleTicTacToeView extends GridPane implements PlayView {
-    private static final Paint backgroundPaint = Color.BLACK;
     private final SimpleTicTacToeViewModel gvm;
     private final SimpleTicTacToe game;
 
@@ -41,8 +40,8 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
         if (player == 0)
             return Color.RED;
         if (player == 1)
-            return Color.GREEN;
-        return backgroundPaint;
+            return Color.BLUE;
+        return Color.BLACK;
     }
 
     private static Background playerBackground(int player) {
@@ -62,13 +61,11 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
 
             game.getMoveCountProperty().addListener((obs, oldVal, newVal) -> {
                 int newOwner = game.getFieldAt(i, j);
-                if (newOwner != owner.get())
-                    owner.setValue(newOwner);
+                owner.setValue(newOwner);
 
                 boolean newClickable = newOwner == -1 && game.getState() == Game.state.UNFINISHED
                         && game.getTurn() == gvm.playingAs();
-                if (newClickable != clickable.get())
-                    clickable.setValue(newClickable);
+                clickable.setValue(newClickable);
             });
 
             backgroundProperty().bind(

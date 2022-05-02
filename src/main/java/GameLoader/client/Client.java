@@ -26,9 +26,9 @@ public class Client implements AbstractService {
                                Class<? extends PlayView> gameViewClass,
                                Class<? extends PlayViewModel> gameModelClass) {}
 
-    Client() throws IOException {
+    Client(String ip, int port) throws IOException {
         ClientGUI.user = this;
-        activeConnection = new Connection(Client.this);
+        activeConnection = new Connection(Client.this, ip, port);
         ClientGUI.launch(ClientGUI.class);
     }
 

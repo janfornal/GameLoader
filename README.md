@@ -6,6 +6,7 @@ Client and server apps allowing users to play simple games online, made as assig
 
 - [x] working client / server connection (30.04)
 - [x] first working game with GUI (01.05) 
+- [x] first online game played (02.05)
 - [ ] Dots And Boxes game
 
 #### First presentation (05.05)
