@@ -3,7 +3,9 @@ package GameLoader.client;
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.*;
 import GameLoader.games.SimpleTicTacToe.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -74,6 +76,9 @@ public class Client implements AbstractService {
             currentModelCast.processMoveMessage(messageCast);
         }
         else if(message instanceof Message.Error messageCast) {
+            Platform.runLater(
+                    () -> new Alert(Alert.AlertType.ERROR, messageCast.cause()).showAndWait()
+            );
             if(messageCast.cause().equals("Unsuccessful authorization")) {
                 username = null;
                 ClientGUI.authorizationLockNotify();
