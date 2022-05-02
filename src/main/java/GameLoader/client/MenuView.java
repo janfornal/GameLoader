@@ -3,6 +3,7 @@ package GameLoader.client;
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.geometry.*;
 import javafx.scene.control.*;
@@ -46,7 +47,7 @@ public class MenuView extends GridPane implements GeneralView {
             new Button("Get Room List"),
             new TableColumn<RoomInfo, String>("Game"),
             new TableColumn<RoomInfo, String>("Size"),
-            new TableColumn<RoomInfo, PlayerInfo>("User"),
+            new TableColumn<RoomInfo, String>("User"),
             new Label("Game Server")
         ));
 
@@ -56,13 +57,16 @@ public class MenuView extends GridPane implements GeneralView {
         add(nvm.getElements().roomTableView(), 0, 3, 1, 6);
 
         nvm.getElements().gameColumn().setCellValueFactory(
-                new PropertyValueFactory<RoomInfo, String>("Game"));
+                g -> new ReadOnlyObjectWrapper<String>(g.getValue().game())
+        );
 
         nvm.getElements().sizeColumn().setCellValueFactory(
-                new PropertyValueFactory<RoomInfo, String>("Size"));
+                g -> new ReadOnlyObjectWrapper<String>(g.getValue().settings())
+        );
 
         nvm.getElements().userColumn().setCellValueFactory(
-                new PropertyValueFactory<RoomInfo, PlayerInfo>("User"));
+                g -> new ReadOnlyObjectWrapper<String>(g.getValue().p0().name())
+        );
 
         nvm.getElements().roomTableView().getColumns().addAll(
                 nvm.getElements().gameColumn(),

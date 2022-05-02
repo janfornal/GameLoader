@@ -31,11 +31,6 @@ public class MockClient implements AbstractService {
     }
 
     @Override
-    public void reportGameEnded(Game game) {
-        throw new RuntimeException();
-    }
-
-    @Override
     public void reportConnectionClosed(Connection connection) {
 
     }

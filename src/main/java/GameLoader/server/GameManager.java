@@ -12,7 +12,7 @@ public class GameManager {
     }
 
     private final Map<String, GameInstance> gameMap = new ConcurrentHashMap<>();
-    private final Set<RoomInfo> toJoin = new LinkedHashSet<>();
+    private final Map<String, RoomInfo> roomsToJoin = new LinkedHashMap<>();
 
     private record GameInstance(Game game, String p0, String p1) {}
 
@@ -20,41 +20,56 @@ public class GameManager {
         return gameMap.get(p) != null;
     }
 
-    // TODO: currently player can create two rooms simultaneously; this should not be allowed
     public synchronized void processCreateRoomMessage(Message.CreateRoom msg, Connection c) {
-        if (isPlaying(c.getName())) {
+        String pn = c.getName();
+
+        if (isPlaying(pn)) {
             c.sendError("you are already playing a game");
             return;
         }
-
-        String gameName = msg.game();
-        String settings = msg.settings();
-
-        if (!server.gameTypeManager.areSettingsCorrect(gameName, settings)) {
-            c.sendError("game <" + gameName + "> does not support setting: <" + settings + ">");
+        if (roomsToJoin.containsKey(pn)) {
+            c.sendError("you already created a room");
             return;
         }
 
-        RoomInfo info = new RoomInfo(msg.game(), msg.settings(), new PlayerInfo(c.getName()));
-        toJoin.add(info);
+        String game = msg.game();
+        String settings = msg.settings();
+
+        if (!server.gameTypeManager.areSettingsCorrect(game, settings)) {
+            c.sendError("game <" + game + "> does not support setting: <" + settings + ">");
+            return;
+        }
+
+        RoomInfo info = new RoomInfo(game, settings, new PlayerInfo(c.getName()));
+        roomsToJoin.put(pn, info);
     }
 
     public synchronized void processGetRoomListMessage(Message.GetRoomList ignored, Connection c) {
-        c.sendMessage(new Message.RoomList(new ArrayList<>(toJoin)));
+        c.sendMessage(new Message.RoomList(new ArrayList<>(roomsToJoin.values())));
     }
 
     public synchronized void processJoinRoomMessage(Message.JoinRoom msg, Connection c) {
         RoomInfo info = msg.room();
-        if (!toJoin.contains(info)) {
-            c.sendError("this room no longer exists");
-            return;
-        }
-        toJoin.remove(info);
 
         String p0 = info.p0().name();
         String p1 = c.getName();
 
-        if (gameMap.containsKey(p0) || gameMap.containsKey(p1)) {
+        RoomInfo ourInfo = roomsToJoin.get(p0);
+
+        if (!info.equals(ourInfo)) {
+            c.sendError("this room no longer exists");
+            return;
+        }
+
+        roomsToJoin.remove(p0);
+        roomsToJoin.remove(p1);
+
+        if (p0.equals(p1)) {
+            c.sendError("you cannot play with yourself");
+            return;
+        }
+
+        if (gameMap.containsKey(p0) || gameMap.containsKey(p1)) { // FIXME is this check necessary?
             String err = p0 + " is playing: " + gameMap.containsKey(p0) + " ; " +
                          p1 + " is playing: " + gameMap.containsKey(p1);
 
@@ -72,11 +87,15 @@ public class GameManager {
             return;
         }
 
+        int seed = 0;
+        g.start(settings, seed);
+
         GameInstance instance = new GameInstance(g, p0, p1);
         gameMap.put(p0, instance);
         gameMap.put(p1, instance);
 
-        Message.StartGame stg = new Message.StartGame(gameName, info.settings(), new PlayerInfo(p0), new PlayerInfo(p1), 0);
+        Message.StartGame stg = new Message.StartGame(gameName, info.settings(), seed,
+                new PlayerInfo(p0), new PlayerInfo(p1));
         server.connectionManager.sendMessageTo(stg, p0, p1);
     }
 
@@ -116,6 +135,9 @@ public class GameManager {
     }
 
     private synchronized void reportGameEnded(GameInstance g) {
+        if (g.game().getState() == Game.state.UNFINISHED)
+            System.err.println("Something went wrong while ending the game: " + g);
+
         gameMap.remove(g.p0());
         gameMap.remove(g.p1());
     }

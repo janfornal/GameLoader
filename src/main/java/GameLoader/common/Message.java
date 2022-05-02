@@ -20,7 +20,7 @@ public interface Message extends Serializable {
     record CreateRoom(String game, String settings) implements CtoS {} // przesyłamy klasę gry którą chcemy stworzyć
     record JoinRoom(RoomInfo room) implements CtoS {} // dołączamy do pokoju
 
-    record StartGame(String game, String settings, PlayerInfo p0, PlayerInfo p1, int seed) implements StoC {} // gra ma się rozpocząć
+    record StartGame(String game, String settings, int seed, PlayerInfo p0, PlayerInfo p1) implements StoC {} // gra ma się rozpocząć
     record Move(Command move) implements CtoS, StoC {} // wykonany ruch
 
     record InterruptedGame(String cause) implements Any {} // to jest na razie nieistotne

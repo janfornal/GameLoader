@@ -57,15 +57,16 @@ public class Client implements AbstractService {
         else if(message instanceof Message.StartGame messageCast && currentModel instanceof MenuViewModel) {
             GameClasses gamePackage = gameMap.get(chosenGame.game());
             Game starterInstance;
-            PlayViewModel currentModel;
+            PlayViewModel currentModelLocal;
             try {
                 starterInstance = gamePackage.gameClass().getConstructor().newInstance();
-                currentModel = starterInstance.createViewModel(this, 0);
+                currentModelLocal = starterInstance.createViewModel(this, messageCast.p0().name().equals(username.name()) ? 0 : 1);
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
                 sendMessage(new Message.Error("Constructor of game cannot be called"));
                 return;
             }
+            currentModel = currentModelLocal;
             starterInstance.start(chosenGame.settings(), messageCast.seed());
             ClientGUI.switchStage(currentModel);
         }
@@ -79,11 +80,6 @@ public class Client implements AbstractService {
             }
         }
         else c.sendError("Message not recognized");
-    }
-
-    @Override
-    public void reportGameEnded(Game gm) {
-
     }
 
     @Override

@@ -1,8 +1,6 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 
 public class MenuViewModel implements ViewModel {
@@ -35,7 +33,7 @@ public class MenuViewModel implements ViewModel {
             Button getRoomList,
             TableColumn<RoomInfo, String> gameColumn,
             TableColumn<RoomInfo, String> sizeColumn,
-            TableColumn<RoomInfo, PlayerInfo> userColumn,
+            TableColumn<RoomInfo, String> userColumn,
             Label titleLabel
     ) implements GuiElements {
     }

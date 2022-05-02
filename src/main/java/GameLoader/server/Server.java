@@ -53,7 +53,7 @@ public class Server implements AbstractService {
         return port;
     }
 
-    synchronized public void close() {
+    public synchronized void close() {
         if (closed)
             return;
         closed = true;
@@ -97,12 +97,11 @@ public class Server implements AbstractService {
             gameManager.processJoinRoomMessage(m, c);
             return;
         }
+        if (msg instanceof Message.GetGameList m) {
+            gameTypeManager.processGetGameListMessage(m, c);
+            return;
+        }
         c.sendError("Message not recognized");
-    }
-
-    @Override
-    public void reportGameEnded(Game game) {
-        throw new RuntimeException("do we need this?");
     }
 
     @Override

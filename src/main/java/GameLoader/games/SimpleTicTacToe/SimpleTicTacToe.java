@@ -3,10 +3,10 @@ package GameLoader.games.SimpleTicTacToe;
 import GameLoader.client.Client;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.util.Arrays;
 import java.util.Set;
 
 public class SimpleTicTacToe implements Game {
@@ -17,9 +17,10 @@ public class SimpleTicTacToe implements Game {
             for (int j = 0; j < sz; ++j)
                 T[i][j] = -1;
     }
-
-    private SimpleIntegerProperty turn = new SimpleIntegerProperty(0);
     private String settings;
+    private state currState = state.UNFINISHED;
+    private int moveCount = 0, turn;
+    private SimpleIntegerProperty moveCountProperty;
 
     @Override
     public void makeMove(Command move) { // assumes that isMoveLegal(move) returns true
@@ -29,7 +30,12 @@ public class SimpleTicTacToe implements Game {
         int col = tttMove.getCol();
 
         T[row][col] = pl;
-        turn.set(1 - turn.get());
+        turn = 1 - turn;
+        currState = calcState();
+
+        moveCount++;
+        if (moveCountProperty != null)
+            moveCountProperty.set(moveCount);
     }
 
     @Override
@@ -38,14 +44,15 @@ public class SimpleTicTacToe implements Game {
             int pl = tttMove.getPlayer();
             int row = tttMove.getRow();
             int col = tttMove.getCol();
-            return getState() == state.UNFINISHED && turn.get() == pl && row < sz && col < sz && T[row][col] != -1;
+            return settings != null && getState() == state.UNFINISHED
+                    && turn == pl && row < sz && col < sz && T[row][col] == -1;
         }
         return false;
     }
 
     @Override
     public void start(String sett, int seed) {
-        if (!possibleSettings().contains(settings))
+        if (!possibleSettings().contains(sett))
             throw new IllegalArgumentException("these settings are not permitted");
         settings = sett;
     }
@@ -57,6 +64,10 @@ public class SimpleTicTacToe implements Game {
 
     @Override
     public state getState() {
+        return currState;
+    }
+
+    private state calcState() {
         int winner = -1;
         for (int i = 0; i < sz; ++i) {
             if (T[i][0] == T[i][1] && T[i][1] == T[i][2] && T[i][2] != -1)
@@ -91,6 +102,7 @@ public class SimpleTicTacToe implements Game {
         return Set.of("Small");
     }
 
+    @Override
     public SimpleTicTacToeViewModel createViewModel(Client cl, int id) {
         return new SimpleTicTacToeViewModel(cl, id, this);
     }
@@ -103,7 +115,26 @@ public class SimpleTicTacToe implements Game {
         return T[i][j];
     }
 
-    public ReadOnlyIntegerProperty getTurnProperty() {
+    public int getTurn() {
         return turn;
+    }
+
+    public ReadOnlyIntegerProperty getMoveCountProperty() {
+        if (moveCountProperty == null)
+            moveCountProperty = new SimpleIntegerProperty(moveCount);
+        return moveCountProperty;
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleTicTacToe{" +
+                "sz=" + sz +
+                ", T=" + Arrays.deepToString(T) +
+                ", settings='" + settings + '\'' +
+                ", currState=" + currState +
+                ", moveCount=" + moveCount +
+                ", turn=" + turn +
+                ", moveCountProperty=" + moveCountProperty +
+                '}';
     }
 }
