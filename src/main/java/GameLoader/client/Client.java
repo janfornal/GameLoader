@@ -49,9 +49,11 @@ public class Client implements AbstractService {
         Objects.requireNonNull(c);
 
         if(message instanceof Message.Authorization)
-            return;
-        else if(message instanceof Message.RoomList messageCast && currentModel instanceof MenuViewModel currentModelCast)
+            ClientGUI.authorizationLockNotify();
+        else if(message instanceof Message.RoomList messageCast && currentModel instanceof MenuViewModel currentModelCast) {
+            System.out.println(FXCollections.observableArrayList(messageCast.rooms()));
             currentModelCast.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
+        }
         else if(message instanceof Message.StartGame messageCast && currentModel instanceof MenuViewModel) {
             GameClasses gamePackage = gameMap.get(chosenGame.game());
             Game starterInstance;
@@ -70,6 +72,12 @@ public class Client implements AbstractService {
         else if(message instanceof Message.Move messageCast && currentModel instanceof PlayViewModel currentModelCast) {
             currentModelCast.processMoveMessage(messageCast);
         }
+        else if(message instanceof Message.Error messageCast) {
+            if(messageCast.cause().equals("Unsuccessful authorization")) {
+                username = null;
+                ClientGUI.authorizationLockNotify();
+            }
+        }
         else c.sendError("Message not recognized");
     }
 
@@ -83,15 +91,14 @@ public class Client implements AbstractService {
 
     }
 
-    void sendError(String cause) {
+    public void sendError(String cause) {
         sendMessage(new Message.Error(cause));
     }
 
     public void sendMessage(Message.Any message) {
-        activeConnection.sendMessage(message);
         if(message instanceof Message.Authorization authMessage) {
             username = new PlayerInfo(authMessage.name());
-            sendMessage(new Message.GetGameList());
         }
+        activeConnection.sendMessage(message);
     }
 }

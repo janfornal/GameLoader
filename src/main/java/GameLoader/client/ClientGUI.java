@@ -17,16 +17,29 @@ public class ClientGUI extends Application {
     private static Stage currentStage;
     static GeneralView view;
     static Client user;
+    private static final Object authorizationLock = new Object();
+
+    public static void authorizationLockNotify() {
+        synchronized (authorizationLock) {
+            authorizationLock.notify();
+        }
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
-        AuthorizationDialog startAuth = new AuthorizationDialog();
-        String username = startAuth.getUsername();
-        user.sendMessage(new Message.Authorization(username));
+        synchronized (authorizationLock) {
+            do {
+                AuthorizationDialog startAuth = new AuthorizationDialog();
+                String username = startAuth.getUsername();
+                user.sendMessage(new Message.Authorization(username));
+                authorizationLock.wait();
+            } while (user.username == null);
+        }
         MenuViewModel currentModel = new MenuViewModel(user);
         user.setCurrentModel(currentModel);
         view = new MenuView(currentModel);
         currentStage = stage;
+        user.sendMessage(new Message.GetRoomList());
         stage.setTitle("Let's Play");
         Scene scene = new Scene((Parent) view);
         scene.setFill(Color.WHITE);
@@ -36,7 +49,6 @@ public class ClientGUI extends Application {
 
     public static void switchStage (ViewModel viewModel) {
         view = viewModel.createView();
-        Scene scene = new Scene((Parent) view);
-        currentStage.setScene(scene);
+        currentStage.getScene().setRoot((Parent) view);
     }
 }

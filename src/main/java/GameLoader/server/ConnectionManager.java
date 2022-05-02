@@ -42,7 +42,7 @@ public class ConnectionManager {
             if (pn == null || pn.equals("") || connectionMap.containsKey(pn))
                 c.sendError("Unsuccessful authorization");
             else {
-                // conn.sendMessage(...); FIXME: send success info?
+                c.sendMessage(new Message.Authorization(""));
                 connectionMap.put(pn, c);
                 c.authorize(pn);
             }
