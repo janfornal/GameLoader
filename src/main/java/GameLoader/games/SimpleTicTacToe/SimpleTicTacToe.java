@@ -55,6 +55,7 @@ public class SimpleTicTacToe implements Game {
         if (!possibleSettings().contains(sett))
             throw new IllegalArgumentException("these settings are not permitted");
         settings = sett;
+        turn = seed & 1;
     }
 
     @Override
