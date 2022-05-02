@@ -6,7 +6,9 @@ import GameLoader.common.Command;
 import GameLoader.common.Game;
 import GameLoader.common.PlayerInfo;
 import com.sun.jdi.Field;
+import javafx.beans.property.SimpleIntegerProperty;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,10 +17,22 @@ public class DotsAndBoxes implements Game {
 
     private DotsAndBoxesBoard board;
     private String settings;
+    private state currState = state.UNFINISHED;
+    private int moveCount = 0, turn;
+    private SimpleIntegerProperty moveCountProperty;
     private DotsAndBoxesCommand cmdCast;
     private boolean myTurn;
 
-    public record DotsAndBoxesField(int row, int col, boolean marked) {
+    public class DotsAndBoxesField {
+
+        private int row, col;
+        private boolean marked;
+
+        DotsAndBoxesField(int r, int c, boolean marked) {
+            row = r;
+            col = c;
+            this.marked = marked;
+        }
 
         public boolean isPoint(){
             return row%2 == 0 && col%2 == 0;
@@ -32,9 +46,29 @@ public class DotsAndBoxes implements Game {
             return row%2 == 1 && col%2 == 1;
         }
 
+        public void setMarked() {
+            marked = true;
+        }
+
         public boolean isMarked() {
             if(!isEdge()) throw new IllegalArgumentException("Only edges can be marked");
             return marked;
+        }
+
+        @Override
+        public String toString() {
+            if(isPoint()) return ".";
+            else if(isEdge() && !isMarked()) return "/";
+            else if(isEdge()) return "-";
+            else return " "; // TODO
+        }
+
+        public int row() {
+            return row;
+        }
+
+        public int col() {
+            return col;
         }
     }
 
@@ -83,7 +117,7 @@ public class DotsAndBoxes implements Game {
 
     @Override
     public Set<String> possibleSettings() {
-        return Set.of("Size");
+        return Set.of("Small", "Medium", "Big");
     }
 
     public class DotsAndBoxesBoard {
@@ -111,6 +145,23 @@ public class DotsAndBoxes implements Game {
             if(!fields[r][c].isSquare()) throw new IllegalArgumentException("Only squares can be surrounded");
             return fields[r-1][c].isMarked() || fields[r+1][c].isMarked() || fields[r][c-1].isMarked() || fields[r][c+1].isMarked();
         }
+
+        @Override
+        public String toString() {
+            return Arrays.deepToString(fields);
+        }
     };
 
+    @Override
+    public String toString() {
+        return "DotsAndBoxes{" +
+                "sz=" + board.size +
+                ", T=" + board.toString() +
+                ", settings='" + settings + '\'' +
+                ", currState=" + currState +
+                ", moveCount=" + moveCount +
+                ", turn=" + turn +
+                ", moveCountProperty=" + moveCountProperty +
+                '}';
+    }
 }
