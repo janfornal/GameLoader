@@ -1,3 +1,5 @@
 target/
 .idea/
 ./Client.fxml
+run.sh
+deploy.sh
