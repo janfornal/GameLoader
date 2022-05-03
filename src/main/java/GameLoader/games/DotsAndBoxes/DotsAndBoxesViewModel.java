@@ -50,14 +50,10 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
     }
 
     public void clickedOn(DotsAndBoxes.Coord c) {
-        System.err.println("Clicked on " + c);
-
         Command cmd = new DotsAndBoxesCommand(playingAs(), c);
 
-        if (!modelGame.isMoveLegal(cmd)) {
-            System.err.println("THIS IS ILLEGAL");
-            System.err.println(getGame());
-        }
+        if (!modelGame.isMoveLegal(cmd))
+            return;
 
         modelGame.makeMove(cmd);
         modelUser.sendMessage(new Message.Move(cmd));

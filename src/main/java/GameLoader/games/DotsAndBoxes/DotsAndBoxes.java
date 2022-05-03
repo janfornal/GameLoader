@@ -104,10 +104,10 @@ public class DotsAndBoxes implements Game {
 
     public List<Coord> listOfNeighbours(Coord c) {
         return List.of(
-                new Coord(c.row+1, c.col+1),
-                new Coord(c.row+1, c.col-1),
-                new Coord(c.row-1, c.col+1),
-                new Coord(c.row-1, c.col-1)
+                new Coord(c.row+1, c.col),
+                new Coord(c.row-1, c.col),
+                new Coord(c.row, c.col+1),
+                new Coord(c.row, c.col-1)
         );
     }
 
