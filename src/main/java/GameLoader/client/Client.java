@@ -57,7 +57,7 @@ public class Client implements AbstractService {
             currentModelCast.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
         }
         else if(message instanceof Message.StartGame messageCast && currentModel instanceof MenuViewModel) {
-            GameClasses gamePackage = gameMap.get(chosenGame.game());
+            GameClasses gamePackage = gameMap.get(messageCast.game());
             Game starterInstance;
             PlayViewModel currentModelLocal;
             try {
@@ -69,11 +69,15 @@ public class Client implements AbstractService {
                 return;
             }
             currentModel = currentModelLocal;
-            starterInstance.start(chosenGame.settings(), messageCast.seed());
-            ClientGUI.switchStage(currentModel);
+            starterInstance.start(messageCast.settings(), messageCast.seed());
+            Platform.runLater(
+                    () -> ClientGUI.switchStage(currentModel)
+            );
         }
         else if(message instanceof Message.Move messageCast && currentModel instanceof PlayViewModel currentModelCast) {
-            currentModelCast.processMoveMessage(messageCast);
+            Platform.runLater(
+                    () -> currentModelCast.processMoveMessage(messageCast)
+            );
         }
         else if(message instanceof Message.Error messageCast) {
             Platform.runLater(

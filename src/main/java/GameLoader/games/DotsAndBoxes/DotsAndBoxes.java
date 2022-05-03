@@ -118,6 +118,13 @@ public class DotsAndBoxes implements Game {
         return true;
     }
 
+    public boolean isAlone(Coord field) {
+        for (Coord n : listOfNeighbours(field))
+            if (isFieldInBoard(n) && isMarked(n))
+                return false;
+        return true;
+    }
+
     private static final Map<String, Coord> settingsMap = Map.of(
             "Small", new Coord(2, 3),
             "Medium", new Coord(4, 5),
