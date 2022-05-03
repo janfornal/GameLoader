@@ -6,13 +6,18 @@ import GameLoader.common.Game;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class DotsAndBoxes implements Game {
     private Coord sz, mostRecent;
-    private boolean[][] T;
+    private int[][] T;
+    // 0 = unmarked, 1 = marked for edges
+    // 0 = empty, 1 = p0, 2 = p1 for squares
+    // 0 for corners
 
     private String settings;
     private int moveCount = 0, turn;
@@ -21,13 +26,13 @@ public class DotsAndBoxes implements Game {
     private int edgesLeft = -1;
     private final int[] score = new int[2];
 
-    public record Coord(int row, int col) {
+    public record Coord(int row, int col) implements Serializable {
         public boolean isPoint(){
             return row%2 == 0 && col%2 == 0; // this does not work for negative numbers
         }
 
         public boolean isEdge() {
-            return (row + col)%2 == 0;
+            return (row + col)%2 == 1;
         }
 
         public boolean isSquare() {
@@ -42,14 +47,16 @@ public class DotsAndBoxes implements Game {
         int pl = dabCmd.getPlayer();
         Coord c = dabCmd.getCoord();
 
-        T[c.row][c.col] = true;
+        T[c.row][c.col] = 1;
         --edgesLeft;
         mostRecent = c;
 
         int added = 0;
         for (Coord n : listOfNeighbours(c))
-            if (n.isSquare() && isFieldInBoard(n) && isSurrounded(n))
+            if (n.isSquare() && isFieldInBoard(n) && isSurrounded(n)) {
                 ++added;
+                T[n.row][n.col] = pl + 1;
+            }
 
         score[pl] += added;
         if (added == 0)
@@ -79,7 +86,7 @@ public class DotsAndBoxes implements Game {
         this.settings = settings;
         turn = seed & 1;
 
-        T = new boolean[sz.row][sz.col];
+        T = new int[sz.row*2+1][sz.col*2+1];
         edgesLeft = 2 * sz.row * sz.col + sz.row + sz.col;
     }
 
@@ -87,8 +94,12 @@ public class DotsAndBoxes implements Game {
         return field.row >= 0 && field.row <= 2*sz.row && field.col >= 0 && field.col <= 2*sz.col;
     }
 
-    public boolean isMarked(Coord fieldInBoard) {
-        return T[fieldInBoard.row][fieldInBoard.col];
+    public boolean isMarked(Coord edgeInBoard) {
+        return T[edgeInBoard.row][edgeInBoard.col] == 1;
+    }
+
+    public int getOwner(Coord squareInBoard) {
+        return T[squareInBoard.row][squareInBoard.col] - 1;
     }
 
     public List<Coord> listOfNeighbours(Coord c) {
@@ -130,7 +141,7 @@ public class DotsAndBoxes implements Game {
 
     @Override
     public state getState() {
-        if (edgesLeft == 0)
+        if (edgesLeft != 0)
             return state.UNFINISHED;
         if (score[0] == score[1])
             return state.DRAW;
@@ -144,10 +155,6 @@ public class DotsAndBoxes implements Game {
 
     public Coord getSize() {
         return sz;
-    }
-
-    public boolean getMarkedAt(Coord c) {
-        return T[c.row][c.col];
     }
 
     public int getScore(int i) {
@@ -166,5 +173,19 @@ public class DotsAndBoxes implements Game {
         if (moveCountProperty == null)
             moveCountProperty = new SimpleIntegerProperty(moveCount);
         return moveCountProperty;
+    }
+
+    @Override
+    public String toString() {
+        return "DotsAndBoxes{" +
+                "sz=" + sz +
+                ", mostRecent=" + mostRecent +
+                ", T=" + Arrays.deepToString(T) +
+                ", settings='" + settings + '\'' +
+                ", moveCount=" + moveCount +
+                ", turn=" + turn +
+                ", edgesLeft=" + edgesLeft +
+                ", score=" + Arrays.toString(score) +
+                '}';
     }
 }

@@ -1,60 +1,130 @@
 package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.PlayView;
+import GameLoader.common.Game;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.text.TextAlignment;
-
-import java.util.Arrays;
-import java.util.List;
+import javafx.scene.Cursor;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 public class DotsAndBoxesView extends GridPane implements PlayView {
+    private final DotsAndBoxesViewModel gvm;
+    private final DotsAndBoxes game;
+    private final ReadOnlyIntegerProperty obs;
 
-    public DotsAndBoxesView(DotsAndBoxesViewModel gvm) {
+    private static final Background emptyEdge = getBackgroundFromColor(Color.WHITE);
+    private static final Background markedEdge = getBackgroundFromColor(Color.GREY);
+    private static final Background lastEdge = getBackgroundFromColor(Color.LIGHTGREY);
+    private static final Background[] squareColor = new Background[]{
+            getBackgroundFromColor(Color.GREY), // empty square
+            getBackgroundFromColor(Color.BLUE), // p0 square
+            getBackgroundFromColor(Color.RED) // p1 square
+    };
 
-        setPadding(new Insets(10, 20, 10, 20));
+    public DotsAndBoxesView(DotsAndBoxesViewModel model) {
+        gvm = model;
+        game = gvm.getGame();
+        obs = gvm.getGame().getMoveCountProperty();
 
-        List<Integer> columnWidth = Arrays.asList(100, 100, 100, 80, 140, 80);
-        this.getColumnConstraints().addAll(columnWidth.stream()
-                .map(t -> new ColumnConstraints()).toList());
+        int gridRows = game.getSize().row()*2+1;
+        int gridCols = game.getSize().col()*2+1;
 
-        for(int i=0; i<columnWidth.size(); i++) {
-            this.getColumnConstraints().get(i).setPercentWidth(columnWidth.get(i));
+        for (int i = 0; i < gridRows; ++i) {
+            RowConstraints rc = new RowConstraints();
+            rc.setPercentHeight(i % 2 == 0 ? 10 : 50);
+            rc.setVgrow(Priority.ALWAYS);
+            getRowConstraints().add(rc);
         }
 
-        List <Integer> rowHeight = Arrays.asList(30, 40, 30, 50, 50, 50, 50, 100);
-        this.getRowConstraints().addAll(rowHeight.stream()
-                .map(t -> new RowConstraints()).toList());
-
-        for(int i=0; i<rowHeight.size(); i++) {
-            this.getRowConstraints().get(i).setPercentHeight(rowHeight.get(i));
+        for (int i = 0; i < gridCols; ++i) {
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.setPercentWidth(i % 2 == 0 ? 10 : 50);
+            cc.setHgrow(Priority.ALWAYS);
+            getColumnConstraints().add(cc);
         }
 
-        gvm.setElements(new DotsAndBoxesViewModel.guiElements(
-                new Label(""),
-                new Label("Score: 0"),
-                new Label("Score: 0"),
-                new GridPane()
-        ));
+        System.out.println(getRowConstraints());
+        System.out.println(getColumnConstraints());
 
-        add(gvm.getElements().stateOfGame(), 1, 1, 2, 1);
-        gvm.getElements().stateOfGame().setTextAlignment(TextAlignment.CENTER);
-//        gvm.showActualStateHandler(gvm.getElements().stateOfGame());  --to do
+        for (int i = 0; i < gridRows; ++i)
+            for (int j = 0; j < gridCols; ++j) {
+                DotsAndBoxes.Coord c = new DotsAndBoxes.Coord(i, j);
 
-        add(gvm.getElements().ourScore(), 4, 3, 1, 1);
-        gvm.getElements().ourScore().setTextAlignment(TextAlignment.CENTER);
-//        gvm.showOurScoreHandler(gvm.getElements().ourScore());  --to do
+                VBox set = c.isEdge() ? new EdgeField(c) :
+                        c.isSquare() ? new SquareField(c) : new PointField(c);
 
-        add(gvm.getElements().enemyScore(), 4, 5, 1, 1);
-        gvm.getElements().enemyScore().setTextAlignment(TextAlignment.CENTER);
-//        gvm.showEnemyScoreHandler(gvm.getElements().enemyScore());  --to do
+                add(set, j, i); // FUCKING WHY ?
+                System.err.println("at " + c + " is " + set.getClass() + " of color " + set.backgroundProperty().get().getFills().get(0).getFill().toString());
+            }
 
-        add(gvm.getElements().board(), 1, 3, 2, 4);
-//        gvm.MakeMoveHandler(gvm.getElements().board());  --to do
-
-
+        System.err.println(game);
     }
+
+    private static Background getBackgroundFromColor(Color c) {
+        return new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY));
+    }
+
+    private class PointField extends VBox {
+        public PointField(DotsAndBoxes.Coord c) {
+            if (!c.isPoint())
+                throw new RuntimeException(c.toString());
+
+            backgroundProperty().bind(
+                    Bindings.createObjectBinding(
+                            () -> game.isSurrounded(c) ? markedEdge : emptyEdge,
+                            obs
+                    )
+            );
+        }
+    }
+
+    private class SquareField extends VBox {
+        public SquareField(DotsAndBoxes.Coord c) {
+            if (!c.isSquare())
+                throw new RuntimeException(c.toString());
+
+            backgroundProperty().bind(
+                    Bindings.createObjectBinding(
+                            () -> squareColor[game.getOwner(c) + 1],
+                            obs
+                    )
+            );
+        }
+    }
+
+    private class EdgeField extends VBox {
+        public EdgeField(DotsAndBoxes.Coord c) {
+            if (!c.isEdge())
+                throw new RuntimeException(c.toString());
+
+            setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.PRIMARY)
+                    gvm.clickedOn(c);
+            });
+
+            backgroundProperty().bind(
+                    Bindings.createObjectBinding(
+                            () -> {
+                                if (!game.isMarked(c))
+                                    return emptyEdge;
+                                if (c.equals(game.mostRecentMarking()) && game.getState() == Game.state.UNFINISHED)
+                                    return lastEdge;
+                                return markedEdge;
+                            },
+                            obs
+                    )
+            );
+
+            cursorProperty().bind(
+                    Bindings.createObjectBinding(
+                            () -> !game.isMarked(c) && game.getTurn() == gvm.playingAs() ? Cursor.HAND : Cursor.DEFAULT,
+                            obs
+                    )
+            );
+        }
+    }
+
 }
