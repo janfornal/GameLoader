@@ -1,15 +1,11 @@
 package GameLoader.client;
 
 import GameLoader.common.Message;
-import GameLoader.games.DotsAndBoxes.DotsAndBoxesView;
-import GameLoader.games.DotsAndBoxes.DotsAndBoxesViewModel;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
-import javax.swing.text.View;
 
 
 public class ClientGUI extends Application {
@@ -49,6 +45,14 @@ public class ClientGUI extends Application {
 
     public static void switchStage (ViewModel viewModel) {
         view = viewModel.createView();
+        currentStage.getScene().setRoot((Parent) view);
+    }
+
+    // TODO delete this
+    public static void reset() {
+        MenuViewModel currentModel = new MenuViewModel(user);
+        user.setCurrentModel(currentModel);
+        view = new MenuView(currentModel);
         currentStage.getScene().setRoot((Parent) view);
     }
 }

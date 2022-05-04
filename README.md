@@ -4,13 +4,13 @@ Client and server apps allowing users to play simple games online, made as an as
 
 ## Goals
 
-- [x] working client / server connection (30.04)
+- [x] working client / server connection (29.04)
 - [x] first working game with GUI (01.05)
 - [x] first online game played (02.05)
-- [ ] Dots and boxes game
+- [x] dots and boxes game (03.05)
 
 #### First presentation (05.05)
-- [ ] Tic Tac Toe game with multiple settings
+- [ ] tic-tac-toe game with multiple settings
 - [ ] elo system persistent between server runs
 - [ ] game history
 - [ ] rejoining games after disconnection

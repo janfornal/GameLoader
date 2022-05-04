@@ -2,7 +2,6 @@ package GameLoader.server;
 
 import GameLoader.common.Connection;
 import GameLoader.common.Message;
-import GameLoader.common.PlayerInfo;
 
 import java.net.Socket;
 import java.util.*;
