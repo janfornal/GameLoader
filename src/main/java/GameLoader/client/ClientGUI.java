@@ -1,11 +1,16 @@
 package GameLoader.client;
 
+import GameLoader.common.Game;
 import GameLoader.common.Message;
 import javafx.application.Application;
-import javafx.scene.Parent;
+import javafx.event.Event;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.util.Optional;
 
 
 public class ClientGUI extends Application {
@@ -13,11 +18,30 @@ public class ClientGUI extends Application {
     private static Stage currentStage;
     static GeneralView view;
     static Client user;
+    static TabPane tabpane;
     private static final Object authorizationLock = new Object();
 
     public static void authorizationLockNotify() {
         synchronized (authorizationLock) {
             authorizationLock.notify();
+        }
+    }
+
+    public static <T extends Event> void HandlerFunction(T event) {
+        Dialog<ButtonType> toQuit = new Dialog<ButtonType>();
+        toQuit.setTitle("Exit Server");
+        toQuit.setContentText("Do you really want to exit server?");
+        ButtonType type = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+        ButtonType type2 = new ButtonType("No", ButtonBar.ButtonData.NO);
+        toQuit.getDialogPane().getButtonTypes().addAll(type, type2);
+        Optional<ButtonType> closeResponse = toQuit.showAndWait();
+        if(!type.equals(closeResponse.get())) {
+            event.consume();
+        }
+        else {
+            // TODO
+            // sytuacja gdy wychodzimy z całego serwera, można by było wywołać jakieś reportConnectionClosed
+            currentStage.close();
         }
     }
 
@@ -34,25 +58,47 @@ public class ClientGUI extends Application {
         MenuViewModel currentModel = new MenuViewModel(user);
         user.setCurrentModel(currentModel);
         view = new MenuView(currentModel);
+        tabpane = new TabPane();
+        Tab tab = new Tab("Menu");
+        tab.setContent((Node) view);
+        tabpane.getTabs().add(tab);
         currentStage = stage;
         user.sendMessage(new Message.GetRoomList());
-        stage.setTitle("Let's Play");
-        Scene scene = new Scene((Parent) view);
+        stage.setTitle("Game Server");
+        Scene scene = new Scene(tabpane);
         scene.setFill(Color.WHITE);
         stage.setScene(scene);
+        tab.setOnCloseRequest(ClientGUI::HandlerFunction);
+        stage.setOnCloseRequest(ClientGUI::HandlerFunction);
         stage.show();
     }
 
-    public static void switchStage (ViewModel viewModel) {
+    public static void startNewTab (ViewModel viewModel) {
         view = viewModel.createView();
-        currentStage.getScene().setRoot((Parent) view);
+        Tab tab = new Tab(((PlayViewModel) viewModel).getGame().getName());
+        tab.setContent((Node) view);
+        tab.setOnCloseRequest(e -> {
+            if(((PlayViewModel) viewModel).getGame().getState() != Game.state.UNFINISHED) {
+                user.sendMessage(new Message.LeaveRoom(""));  // TODO ???
+                return;
+            }
+            Dialog<ButtonType> toQuit = new Dialog<ButtonType>();
+            toQuit.setTitle("Exit Game");
+            toQuit.setContentText("Do you really want to end a game?");
+            ButtonType type = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType type2 = new ButtonType("No", ButtonBar.ButtonData.NO);
+            toQuit.getDialogPane().getButtonTypes().addAll(type, type2);
+            Optional<ButtonType> closeResponse = toQuit.showAndWait();
+            if(!type.equals(closeResponse.get())) {
+                e.consume();
+            }
+            else {
+                user.sendMessage(new Message.Resign("")); // TODO ???
+            }
+        }
+        );
+        tabpane.getTabs().add(tab);
+        tabpane.getSelectionModel().select(tab);
     }
 
-    // TODO delete this
-    public static void reset() {
-        MenuViewModel currentModel = new MenuViewModel(user);
-        user.setCurrentModel(currentModel);
-        view = new MenuView(currentModel);
-        currentStage.getScene().setRoot((Parent) view);
-    }
 }

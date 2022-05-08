@@ -71,7 +71,7 @@ public class Client implements AbstractService {
             currentModel = currentModelLocal;
             starterInstance.start(messageCast.settings(), messageCast.seed());
             Platform.runLater(
-                    () -> ClientGUI.switchStage(currentModel)
+                    () -> ClientGUI.startNewTab(currentModel)
             );
         }
         else if(message instanceof Message.Move messageCast && currentModel instanceof PlayViewModel currentModelCast) {

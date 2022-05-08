@@ -17,20 +17,6 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
         modelGame = game;
         myPlayer = id;
 
-        // TODO delete this
-        modelGame.getMoveCountProperty().addListener((a, b, c) -> {
-            if (game.getState() == Game.state.UNFINISHED)
-                return;
-
-            modelUser.execNormal.execute(()-> {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(3333);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Platform.runLater(ClientGUI::reset);
-            });
-        });
     }
 
     @Override
