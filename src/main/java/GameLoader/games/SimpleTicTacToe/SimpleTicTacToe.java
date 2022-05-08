@@ -39,6 +39,8 @@ public class SimpleTicTacToe implements Game {
         moveCount++;
         if (moveCountProperty != null)
             moveCountProperty.set(moveCount);
+        if (gameStateProperty != null)
+            gameStateProperty.set(getState());
     }
 
     @Override

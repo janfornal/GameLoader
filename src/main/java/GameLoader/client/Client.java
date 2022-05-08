@@ -14,7 +14,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Client implements AbstractService {
-    private ViewModel currentModel;
+    private MenuViewModel currentModel;
+    private PlayViewModel currentPlayModel;
     private final Connection activeConnection;
     private RoomInfo chosenGame;
     public PlayerInfo username;
@@ -34,9 +35,9 @@ public class Client implements AbstractService {
         ClientGUI.launch(ClientGUI.class);
     }
 
-    public void setCurrentModel(ViewModel Model) {
-        currentModel = Model;
-    }
+    public void setCurrentModel(MenuViewModel viewModel) {currentModel = viewModel;}
+
+    public void setCurrentPlayModel(PlayViewModel viewModel) {currentPlayModel = viewModel;}
 
     public void setChosenGame(RoomInfo game) {
         chosenGame = game;
@@ -52,11 +53,11 @@ public class Client implements AbstractService {
 
         if(message instanceof Message.Authorization)
             ClientGUI.authorizationLockNotify();
-        else if(message instanceof Message.RoomList messageCast && currentModel instanceof MenuViewModel currentModelCast) {
+        else if(message instanceof Message.RoomList messageCast) {
             System.out.println(FXCollections.observableArrayList(messageCast.rooms()));
-            currentModelCast.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
+            currentModel.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
         }
-        else if(message instanceof Message.StartGame messageCast && currentModel instanceof MenuViewModel) {
+        else if(message instanceof Message.StartGame messageCast) {
             GameClasses gamePackage = gameMap.get(messageCast.game());
             Game starterInstance;
             PlayViewModel currentModelLocal;
@@ -68,15 +69,15 @@ public class Client implements AbstractService {
                 sendMessage(new Message.Error("Constructor of game cannot be called"));
                 return;
             }
-            currentModel = currentModelLocal;
+            currentPlayModel = currentModelLocal;
             starterInstance.start(messageCast.settings(), messageCast.seed());
             Platform.runLater(
-                    () -> ClientGUI.startNewTab(currentModel)
+                    () -> ClientGUI.startNewTab(currentPlayModel)
             );
         }
-        else if(message instanceof Message.Move messageCast && currentModel instanceof PlayViewModel currentModelCast) {
+        else if(message instanceof Message.Move messageCast) {
             Platform.runLater(
-                    () -> currentModelCast.processMoveMessage(messageCast)
+                    () -> currentPlayModel.processMoveMessage(messageCast)
             );
         }
         else if(message instanceof Message.Error messageCast) {
@@ -87,6 +88,12 @@ public class Client implements AbstractService {
                 username = null;
                 ClientGUI.authorizationLockNotify();
             }
+        }
+        else if(message instanceof Message.Resign messageCast) {
+            Platform.runLater(
+                    () -> new Alert(Alert.AlertType.ERROR, "Your opponent resigned").showAndWait()
+            );
+            currentPlayModel = null;
         }
         else c.sendError("Message not recognized");
     }
@@ -101,8 +108,8 @@ public class Client implements AbstractService {
     }
 
     public void sendMessage(Message.Any message) {
-        if(message instanceof Message.Authorization authMessage) {
-            username = new PlayerInfo(authMessage.name());
+        if(message instanceof Message.Authorization messageCast) {
+            username = new PlayerInfo(messageCast.name());
         }
         activeConnection.sendMessage(message);
     }

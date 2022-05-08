@@ -35,12 +35,10 @@ public class ClientGUI extends Application {
         ButtonType type2 = new ButtonType("No", ButtonBar.ButtonData.NO);
         toQuit.getDialogPane().getButtonTypes().addAll(type, type2);
         Optional<ButtonType> closeResponse = toQuit.showAndWait();
-        if(!type.equals(closeResponse.get())) {
+        if(!type.equals(closeResponse.get()))
             event.consume();
-        }
         else {
-            // TODO
-            // sytuacja gdy wychodzimy z całego serwera, można by było wywołać jakieś reportConnectionClosed
+            user.sendMessage(new Message.EndConnection());
             currentStage.close();
         }
     }
@@ -91,11 +89,8 @@ public class ClientGUI extends Application {
             if(!type.equals(closeResponse.get())) {
                 e.consume();
             }
-            else {
-                user.sendMessage(new Message.Resign()); // TODO ???
-            }
-        }
-        );
+            else user.sendMessage(new Message.Resign());
+        });
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);
     }

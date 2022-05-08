@@ -26,6 +26,7 @@ public interface Message extends Serializable {
     record InterruptedGame(String cause) implements Any {} // to jest na razie nieistotne
     record LeaveRoom() implements Any {} // to jest na razie nieistotne
     record Resign() implements Any {} // to jest na razie nieistotne
+    record EndConnection() implements Any {}
 
     record GameList() implements Any {} // to jest na razie nieistotne
     record GetGameList() implements Any {} // to jest na razie nieistotne

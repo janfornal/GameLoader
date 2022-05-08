@@ -137,10 +137,38 @@ public class GameManager {
     }
 
     private synchronized void reportGameEnded(GameInstance g) {
-        if (g.game.getState() == Game.state.UNFINISHED)
-            System.err.println("Something went wrong while ending the game: " + g);
-
         gameMap.remove(g.p0);
         gameMap.remove(g.p1);
+    }
+
+    public synchronized void processEndConnectionMessage(Connection c) {
+        if(roomsToJoin.containsKey(c.getName()))
+            roomsToJoin.remove(c.getName());
+        if(gameMap.containsKey(c.getName())) {
+            GameInstance g = gameMap.get(c.getName());
+            if(g.p0.equals(c.getName()))
+                server.connectionManager.sendMessageTo(new Message.Resign(), g.p1);
+            else
+                server.connectionManager.sendMessageTo(new Message.Resign(), g.p0);
+            reportGameEnded(g);
+        }
+    }
+
+    public synchronized void processLeaveRoomMessage(Connection c) {
+        GameInstance g = gameMap.get(c.getName());
+        if (g.game.getState() == Game.state.UNFINISHED)
+            System.err.println("Something went wrong while ending the game: " + g);
+        reportGameEnded(g);
+    }
+
+    public synchronized void processResignMessage(Message.Resign m, Connection c) {
+        GameInstance g = gameMap.get(c.getName());
+        if (g.game.getState() != Game.state.UNFINISHED)
+            System.err.println("You cannot resign from ended game: " + g);
+        if(g.p0.equals(c.getName()))
+            server.connectionManager.sendMessageTo(m, g.p1);
+        else
+            server.connectionManager.sendMessageTo(m, g.p0);
+        reportGameEnded(g);
     }
 }
