@@ -67,8 +67,8 @@ public class SimpleTicTacToeViewModel implements PlayViewModel {
         if (!modelGame.isMoveLegal(cmd))
             return;
 
-        modelGame.makeMove(cmd);
         modelUser.sendMessage(new Message.Move(cmd));
+        modelGame.makeMove(cmd);
     }
 
     public int playingAs() {
