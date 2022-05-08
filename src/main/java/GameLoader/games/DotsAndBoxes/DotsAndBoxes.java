@@ -3,8 +3,7 @@ package GameLoader.games.DotsAndBoxes;
 import GameLoader.client.Client;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -22,6 +21,7 @@ public class DotsAndBoxes implements Game {
     private String settings;
     private int moveCount = 0, turn;
     private SimpleIntegerProperty moveCountProperty;
+    private SimpleObjectProperty<state> gameStateProperty;
 
     private int edgesLeft = -1;
     private final int[] score = new int[2];
@@ -65,6 +65,8 @@ public class DotsAndBoxes implements Game {
         moveCount++;
         if (moveCountProperty != null)
             moveCountProperty.set(moveCount);
+        if (gameStateProperty != null)
+            gameStateProperty.set(getState());
     }
 
     @Override
@@ -180,6 +182,12 @@ public class DotsAndBoxes implements Game {
         if (moveCountProperty == null)
             moveCountProperty = new SimpleIntegerProperty(moveCount);
         return moveCountProperty;
+    }
+
+    public SimpleObjectProperty<state> getGameStateProperty() {
+        if (gameStateProperty == null)
+            gameStateProperty = new SimpleObjectProperty<state>(getState());
+        return gameStateProperty;
     }
 
     @Override

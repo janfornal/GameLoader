@@ -79,7 +79,6 @@ public class ClientGUI extends Application {
         tab.setContent((Node) view);
         tab.setOnCloseRequest(e -> {
             if(((PlayViewModel) viewModel).getGame().getState() != Game.state.UNFINISHED) {
-                user.sendMessage(new Message.LeaveRoom(""));  // TODO ???
                 return;
             }
             Dialog<ButtonType> toQuit = new Dialog<ButtonType>();
@@ -93,7 +92,7 @@ public class ClientGUI extends Application {
                 e.consume();
             }
             else {
-                user.sendMessage(new Message.Resign("")); // TODO ???
+                user.sendMessage(new Message.Resign()); // TODO ???
             }
         }
         );

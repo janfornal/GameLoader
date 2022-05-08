@@ -17,6 +17,12 @@ public class SimpleTicTacToeViewModel implements PlayViewModel {
         modelGame = game;
         myPlayer = id;
 
+        modelGame.getGameStateProperty().addListener(e -> {
+            if(modelGame.getGameStateProperty().get() == Game.state.UNFINISHED) {// it can be shortened xd
+                return;
+            }
+            modelUser.sendMessage(new Message.LeaveRoom());
+        });
     }
 
     @Override

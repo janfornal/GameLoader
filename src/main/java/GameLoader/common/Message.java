@@ -24,8 +24,8 @@ public interface Message extends Serializable {
     record Move(Command move) implements CtoS, StoC {} // wykonany ruch
 
     record InterruptedGame(String cause) implements Any {} // to jest na razie nieistotne
-    record LeaveRoom(String player) implements Any {} // to jest na razie nieistotne
-    record Resign(String player) implements Any {} // to jest na razie nieistotne
+    record LeaveRoom() implements Any {} // to jest na razie nieistotne
+    record Resign() implements Any {} // to jest na razie nieistotne
 
     record GameList() implements Any {} // to jest na razie nieistotne
     record GetGameList() implements Any {} // to jest na razie nieistotne

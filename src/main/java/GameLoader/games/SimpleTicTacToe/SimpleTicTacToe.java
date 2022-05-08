@@ -4,7 +4,9 @@ import GameLoader.client.Client;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -21,6 +23,7 @@ public class SimpleTicTacToe implements Game {
     private state currState = state.UNFINISHED;
     private int moveCount = 0, turn;
     private SimpleIntegerProperty moveCountProperty;
+    private SimpleObjectProperty<state> gameStateProperty;
 
     @Override
     public void makeMove(Command move) { // assumes that isMoveLegal(move) returns true
@@ -124,6 +127,12 @@ public class SimpleTicTacToe implements Game {
         if (moveCountProperty == null)
             moveCountProperty = new SimpleIntegerProperty(moveCount);
         return moveCountProperty;
+    }
+
+    public SimpleObjectProperty<state> getGameStateProperty() {
+        if (gameStateProperty == null)
+            gameStateProperty = new SimpleObjectProperty<state>(getState());
+        return gameStateProperty;
     }
 
     @Override
