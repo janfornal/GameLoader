@@ -14,6 +14,8 @@ public class GameManager {
     private final Map<String, GameInstance> gameMap = new ConcurrentHashMap<>();
     private final Map<String, RoomInfo> roomsToJoin = new LinkedHashMap<>();
 
+    private final Random rn = new Random();
+
     private record GameInstance(Game game, String p0, String p1) {}
 
     public boolean isPlaying(String p) {
@@ -87,7 +89,7 @@ public class GameManager {
             return;
         }
 
-        int seed = 0;
+        int seed = rn.nextInt(2);
         g.start(settings, seed);
 
         GameInstance instance = new GameInstance(g, p0, p1);
@@ -114,20 +116,20 @@ public class GameManager {
             return;
         }
 
-        if (!c.getName().equals(cmd.getPlayer() == 0 ? g.p0() : g.p1())) {
+        if (!c.getName().equals(cmd.getPlayer() == 0 ? g.p0 : g.p1)) {
             c.sendError("connection name does not match move player name");
             return;
         }
 
         synchronized (g) {
-            Game game = g.game();
+            Game game = g.game;
             if (!game.isMoveLegal(cmd)) {
                 c.sendError("this move is not legal");
                 return;
             }
             game.makeMove(cmd);
 
-            server.connectionManager.sendMessageTo(msg, g.p0(), g.p1());
+            server.connectionManager.sendMessageTo(msg, g.p0, g.p1);
 
             if (game.getState() != Game.state.UNFINISHED)
                 reportGameEnded(g);
@@ -135,10 +137,10 @@ public class GameManager {
     }
 
     private synchronized void reportGameEnded(GameInstance g) {
-        if (g.game().getState() == Game.state.UNFINISHED)
+        if (g.game.getState() == Game.state.UNFINISHED)
             System.err.println("Something went wrong while ending the game: " + g);
 
-        gameMap.remove(g.p0());
-        gameMap.remove(g.p1());
+        gameMap.remove(g.p0);
+        gameMap.remove(g.p1);
     }
 }

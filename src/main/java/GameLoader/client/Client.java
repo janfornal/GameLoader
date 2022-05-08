@@ -3,7 +3,9 @@ package GameLoader.client;
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.*;
 import GameLoader.games.SimpleTicTacToe.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -26,9 +28,9 @@ public class Client implements AbstractService {
                                Class<? extends PlayView> gameViewClass,
                                Class<? extends PlayViewModel> gameModelClass) {}
 
-    Client() throws IOException {
+    Client(String ip, int port) throws IOException {
         ClientGUI.user = this;
-        activeConnection = new Connection(Client.this);
+        activeConnection = new Connection(Client.this, ip, port);
         ClientGUI.launch(ClientGUI.class);
     }
 
@@ -55,7 +57,7 @@ public class Client implements AbstractService {
             currentModelCast.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
         }
         else if(message instanceof Message.StartGame messageCast && currentModel instanceof MenuViewModel) {
-            GameClasses gamePackage = gameMap.get(chosenGame.game());
+            GameClasses gamePackage = gameMap.get(messageCast.game());
             Game starterInstance;
             PlayViewModel currentModelLocal;
             try {
@@ -67,13 +69,20 @@ public class Client implements AbstractService {
                 return;
             }
             currentModel = currentModelLocal;
-            starterInstance.start(chosenGame.settings(), messageCast.seed());
-            ClientGUI.switchStage(currentModel);
+            starterInstance.start(messageCast.settings(), messageCast.seed());
+            Platform.runLater(
+                    () -> ClientGUI.switchStage(currentModel)
+            );
         }
         else if(message instanceof Message.Move messageCast && currentModel instanceof PlayViewModel currentModelCast) {
-            currentModelCast.processMoveMessage(messageCast);
+            Platform.runLater(
+                    () -> currentModelCast.processMoveMessage(messageCast)
+            );
         }
         else if(message instanceof Message.Error messageCast) {
+            Platform.runLater(
+                    () -> new Alert(Alert.AlertType.ERROR, messageCast.cause()).showAndWait()
+            );
             if(messageCast.cause().equals("Unsuccessful authorization")) {
                 username = null;
                 ClientGUI.authorizationLockNotify();

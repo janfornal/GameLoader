@@ -28,7 +28,7 @@ public class GameTypeManager {
         if (type == null)
             return null;
 
-        return type.settings();
+        return type.settings;
     }
 
     public synchronized boolean areSettingsCorrect(String name, String settings) {
@@ -36,16 +36,16 @@ public class GameTypeManager {
         if (type == null)
             return false;
 
-        return type.settings().contains(settings);
+        return type.settings.contains(settings);
     }
 
     public synchronized Game createGame(String name, String settings) {
         GameType type = gameTypes.get(name);
-        if (type == null || !type.settings().contains(settings))
+        if (type == null || !type.settings.contains(settings))
             return null;
 
         try {
-            return type.constructor().newInstance();
+            return type.constructor.newInstance();
         } catch (IllegalArgumentException | ReflectiveOperationException e) {
             System.err.println("encountered error while constructing: <" + name + "> with settings <" + settings + ">");
             e.printStackTrace();

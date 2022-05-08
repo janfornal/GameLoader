@@ -1,98 +1,144 @@
 package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.Client;
-import GameLoader.client.PlayViewModel;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
-import GameLoader.common.PlayerInfo;
-import com.sun.jdi.Field;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class DotsAndBoxes implements Game {
+    private Coord sz, mostRecent;
+    private int[][] T;
+    // 0 = unmarked, 1 = marked for edges
+    // 0 = empty, 1 = p0, 2 = p1 for squares
+    // 0 for corners
 
-    private DotsAndBoxesBoard board;
     private String settings;
-    private state currState = state.UNFINISHED;
     private int moveCount = 0, turn;
     private SimpleIntegerProperty moveCountProperty;
-    private DotsAndBoxesCommand cmdCast;
-    private boolean myTurn;
 
-    public class DotsAndBoxesField {
+    private int edgesLeft = -1;
+    private final int[] score = new int[2];
 
-        private int row, col;
-        private boolean marked;
-
-        DotsAndBoxesField(int r, int c, boolean marked) {
-            row = r;
-            col = c;
-            this.marked = marked;
-        }
-
+    public record Coord(int row, int col) implements Serializable {
         public boolean isPoint(){
-            return row%2 == 0 && col%2 == 0;
+            return row%2 == 0 && col%2 == 0; // this does not work for negative numbers
         }
 
         public boolean isEdge() {
-            return (row + col)%2 == 0;
+            return (row + col)%2 == 1;
         }
 
         public boolean isSquare() {
             return row%2 == 1 && col%2 == 1;
         }
-
-        public void setMarked() {
-            marked = true;
-        }
-
-        public boolean isMarked() {
-            if(!isEdge()) throw new IllegalArgumentException("Only edges can be marked");
-            return marked;
-        }
-
-        @Override
-        public String toString() {
-            if(isPoint()) return ".";
-            else if(isEdge() && !isMarked()) return "/";
-            else if(isEdge()) return "-";
-            else return " "; // TODO
-        }
-
-        public int row() {
-            return row;
-        }
-
-        public int col() {
-            return col;
-        }
     }
 
     @Override
-    public void makeMove(Command cmd) {
-        if(cmd instanceof DotsAndBoxesCommand cmdCast) {
-            if(!isMoveLegal(cmdCast)) return;
-            // TODO
-        }
-        throw new ClassCastException("Wrong subclass of command");
+    public void makeMove(Command cmd) { // assumes that isMoveLegal(move) returns true
+        DotsAndBoxesCommand dabCmd = (DotsAndBoxesCommand) cmd;
+
+        int pl = dabCmd.getPlayer();
+        Coord c = dabCmd.getCoord();
+
+        T[c.row][c.col] = 1;
+        --edgesLeft;
+        mostRecent = c;
+
+        int added = 0;
+        for (Coord n : listOfNeighbours(c))
+            if (n.isSquare() && isFieldInBoard(n) && isSurrounded(n)) {
+                ++added;
+                T[n.row][n.col] = pl + 1;
+            }
+
+        score[pl] += added;
+        if (added == 0)
+            turn = 1 - turn;
+
+        moveCount++;
+        if (moveCountProperty != null)
+            moveCountProperty.set(moveCount);
     }
 
     @Override
     public boolean isMoveLegal(Command cmd) {
-        if(cmd instanceof DotsAndBoxesCommand cmdCast) {
-            return cmdCast.getField().isEdge() && !cmdCast.getField().isMarked();
+        if (cmd instanceof DotsAndBoxesCommand dabCmd) {
+            int pl = dabCmd.getPlayer();
+            Coord c = dabCmd.getCoord();
+            return settings != null && getState() == state.UNFINISHED
+                    && turn == pl && c.isEdge() && isFieldInBoard(c) && !isMarked(c);
         }
-        throw new ClassCastException("Wrong subclass of command");
+        return false;
     }
 
     @Override
     public void start(String settings, int seed) {
+        sz = settingsMap.get(settings);
+        if (sz == null)
+            throw new IllegalArgumentException("these settings are not permitted");
         this.settings = settings;
-        board = new DotsAndBoxesBoard(settings); // co gdy settings są złe (poza wyrzuceniem wyjątku)??
+        turn = seed & 1;
+
+        T = new int[sz.row*2+1][sz.col*2+1];
+        edgesLeft = 2 * sz.row * sz.col + sz.row + sz.col;
+    }
+
+    public boolean isFieldInBoard(Coord field) {
+        return field.row >= 0 && field.row <= 2*sz.row && field.col >= 0 && field.col <= 2*sz.col;
+    }
+
+    public boolean isMarked(Coord edgeInBoard) {
+        return T[edgeInBoard.row][edgeInBoard.col] == 1;
+    }
+
+    public int getOwner(Coord squareInBoard) {
+        return T[squareInBoard.row][squareInBoard.col] - 1;
+    }
+
+    public List<Coord> listOfNeighbours(Coord c) {
+        return List.of(
+                new Coord(c.row+1, c.col),
+                new Coord(c.row-1, c.col),
+                new Coord(c.row, c.col+1),
+                new Coord(c.row, c.col-1)
+        );
+    }
+
+    public boolean isSurrounded(Coord field) {
+        for (Coord n : listOfNeighbours(field))
+            if (isFieldInBoard(n) && !isMarked(n))
+                return false;
+        return true;
+    }
+
+    public boolean isAlone(Coord field) {
+        for (Coord n : listOfNeighbours(field))
+            if (isFieldInBoard(n) && isMarked(n))
+                return false;
+        return true;
+    }
+
+    private static final Map<String, Coord> settingsMap = Map.of(
+            "Small", new Coord(2, 3),
+            "Medium", new Coord(4, 5),
+            "Big", new Coord(6, 8)
+    );
+
+    @Override
+    public String getName() {
+        return "Dots and boxes";
+    }
+
+    @Override
+    public Set<String> possibleSettings() {
+        return settingsMap.keySet();
     }
 
     @Override
@@ -102,66 +148,51 @@ public class DotsAndBoxes implements Game {
 
     @Override
     public state getState() {
-        return null;
+        if (edgesLeft != 0)
+            return state.UNFINISHED;
+        if (score[0] == score[1])
+            return state.DRAW;
+        return score[0] > score[1] ? state.P0_WON : state.P1_WON;
     }
 
     @Override
-    public PlayViewModel createViewModel(Client user, int id) {
-        return new DotsAndBoxesViewModel(user, this);
+    public DotsAndBoxesViewModel createViewModel(Client user, int id) {
+        return new DotsAndBoxesViewModel(user, id, this);
     }
 
-    @Override
-    public String getName() {
-        return "Dots and boxes";
+    public Coord getSize() {
+        return sz;
     }
 
-    @Override
-    public Set<String> possibleSettings() {
-        return Set.of("Small", "Medium", "Big");
+    public int getScore(int i) {
+        return score[i];
     }
 
-    public class DotsAndBoxesBoard {
-        int size;
-        DotsAndBoxesField[][] fields;
-        DotsAndBoxesBoard(String sizeType) {
-            if(sizeType.equals("Small")) size = 3;
-            else if(sizeType.equals("Medium")) size = 5;
-            else if(sizeType.equals("Big")) size = 7;
-            else {
-                throw new IllegalArgumentException("Wrong settings were given");
-            }
-            fields = new DotsAndBoxesField[2*size+1][2*size+1];
-            for(int i=0; i<2*size+1; i++) {
-                for(int j=0; j<2*size+1; j++) fields[i][j] = new DotsAndBoxesField(i, j, false);
-            }
-        }
-        public boolean isFieldInBoard(DotsAndBoxesField field) {
-            return field.row >= 0 && field.row <= 2*size && field.col >= 0 && field.col <= 2*size;
-        }
+    public int getTurn() {
+        return turn;
+    }
 
-        public boolean isSurrounded(DotsAndBoxesField field) {
-            int r = field.row;
-            int c = field.col;
-            if(!fields[r][c].isSquare()) throw new IllegalArgumentException("Only squares can be surrounded");
-            return fields[r-1][c].isMarked() || fields[r+1][c].isMarked() || fields[r][c-1].isMarked() || fields[r][c+1].isMarked();
-        }
+    public Coord mostRecentMarking() {
+        return mostRecent;
+    }
 
-        @Override
-        public String toString() {
-            return Arrays.deepToString(fields);
-        }
-    };
+    public ReadOnlyIntegerProperty getMoveCountProperty() {
+        if (moveCountProperty == null)
+            moveCountProperty = new SimpleIntegerProperty(moveCount);
+        return moveCountProperty;
+    }
 
     @Override
     public String toString() {
         return "DotsAndBoxes{" +
-                "sz=" + board.size +
-                ", T=" + board.toString() +
+                "sz=" + sz +
+                ", mostRecent=" + mostRecent +
+                ", T=" + Arrays.deepToString(T) +
                 ", settings='" + settings + '\'' +
-                ", currState=" + currState +
                 ", moveCount=" + moveCount +
                 ", turn=" + turn +
-                ", moveCountProperty=" + moveCountProperty +
+                ", edgesLeft=" + edgesLeft +
+                ", score=" + Arrays.toString(score) +
                 '}';
     }
 }

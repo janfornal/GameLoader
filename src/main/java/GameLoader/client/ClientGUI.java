@@ -47,4 +47,12 @@ public class ClientGUI extends Application {
         view = viewModel.createView();
         currentStage.getScene().setRoot((Parent) view);
     }
+
+    // TODO delete this
+    public static void reset() {
+        MenuViewModel currentModel = new MenuViewModel(user);
+        user.setCurrentModel(currentModel);
+        view = new MenuView(currentModel);
+        currentStage.getScene().setRoot((Parent) view);
+    }
 }

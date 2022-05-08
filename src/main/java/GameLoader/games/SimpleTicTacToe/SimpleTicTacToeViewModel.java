@@ -1,16 +1,36 @@
 package GameLoader.games.SimpleTicTacToe;
 
 import GameLoader.client.Client;
+import GameLoader.client.ClientGUI;
 import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
 import GameLoader.common.Command;
+import GameLoader.common.Game;
 import GameLoader.common.Message;
+import javafx.application.Platform;
+
+import java.util.concurrent.TimeUnit;
 
 public class SimpleTicTacToeViewModel implements PlayViewModel {
     public SimpleTicTacToeViewModel(Client user, int id, SimpleTicTacToe game) {
         modelUser = user;
         modelGame = game;
         myPlayer = id;
+
+        // TODO delete this
+        modelGame.getMoveCountProperty().addListener((a, b, c) -> {
+            if (game.getState() == Game.state.UNFINISHED)
+                return;
+
+            modelUser.execNormal.execute(()-> {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(3333);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Platform.runLater(ClientGUI::reset);
+            });
+        });
     }
 
     @Override

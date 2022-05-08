@@ -45,6 +45,10 @@ public class ConnectionManager {
                 c.sendMessage(new Message.Authorization(""));
                 connectionMap.put(pn, c);
                 c.authorize(pn);
+
+                // this is useful for debugging gui
+                /*c.sendMessage(new Message.StartGame("Dots and boxes", "Small", 1,
+                        new PlayerInfo("a"), new PlayerInfo("b")));*/
             }
         }
     }

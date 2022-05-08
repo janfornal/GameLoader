@@ -1,60 +1,238 @@
 package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.PlayView;
+import GameLoader.common.Game;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.text.TextAlignment;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
-import java.util.Arrays;
-import java.util.List;
+public class DotsAndBoxesView extends VBox implements PlayView { // TODO refactor everything
+    private final DotsAndBoxesViewModel gvm;
+    private final DotsAndBoxes game;
+    private final ReadOnlyIntegerProperty obs;
 
-public class DotsAndBoxesView extends GridPane implements PlayView {
+    private static final Background emptyEdge = getBackgroundFromColor(Color.LIGHTGREY);
+    private static final Background lastEdge = getBackgroundFromColor(Color.DARKGREY);
+    private static final Background markedEdge = getBackgroundFromColor(Color.GREY); // GREY is darker than DARKGREY xd
+    private static final Background[] squareColor = new Background[]{
+            getBackgroundFromColor(Color.WHITE), // empty square
+            getBackgroundFromColor(Color.BLUE), // p0 square
+            getBackgroundFromColor(Color.RED) // p1 square
+    };
 
-    public DotsAndBoxesView(DotsAndBoxesViewModel gvm) {
+    private static final double WIDE = 50, NARROW = 10;
 
-        setPadding(new Insets(10, 20, 10, 20));
+    public DotsAndBoxesView(DotsAndBoxesViewModel model) {
+        gvm = model;
+        game = gvm.getGame();
+        obs = gvm.getGame().getMoveCountProperty();
+        obs.addListener((a, b, c) -> {}); // FUCKING WHY ? #2
 
-        List<Integer> columnWidth = Arrays.asList(100, 100, 100, 80, 140, 80);
-        this.getColumnConstraints().addAll(columnWidth.stream()
-                .map(t -> new ColumnConstraints()).toList());
+        double HtoWRatio = (game.getSize().row() * (WIDE + NARROW) + NARROW) /
+                (game.getSize().col() * (WIDE + NARROW) + NARROW);
 
-        for(int i=0; i<columnWidth.size(); i++) {
-            this.getColumnConstraints().get(i).setPercentWidth(columnWidth.get(i));
-        }
+        HBox header = new Header();
+        HBox gamePane = new HBoxFixedRatio(new GamePane(), HtoWRatio);
+        HBox footer = new Footer();
 
-        List <Integer> rowHeight = Arrays.asList(30, 40, 30, 50, 50, 50, 50, 100);
-        this.getRowConstraints().addAll(rowHeight.stream()
-                .map(t -> new RowConstraints()).toList());
+        setAlignment(Pos.CENTER);
 
-        for(int i=0; i<rowHeight.size(); i++) {
-            this.getRowConstraints().get(i).setPercentHeight(rowHeight.get(i));
-        }
-
-        gvm.setElements(new DotsAndBoxesViewModel.guiElements(
-                new Label(""),
-                new Label("Score: 0"),
-                new Label("Score: 0"),
-                new GridPane()
-        ));
-
-        add(gvm.getElements().stateOfGame(), 1, 1, 2, 1);
-        gvm.getElements().stateOfGame().setTextAlignment(TextAlignment.CENTER);
-//        gvm.showActualStateHandler(gvm.getElements().stateOfGame());  --to do
-
-        add(gvm.getElements().ourScore(), 4, 3, 1, 1);
-        gvm.getElements().ourScore().setTextAlignment(TextAlignment.CENTER);
-//        gvm.showOurScoreHandler(gvm.getElements().ourScore());  --to do
-
-        add(gvm.getElements().enemyScore(), 4, 5, 1, 1);
-        gvm.getElements().enemyScore().setTextAlignment(TextAlignment.CENTER);
-//        gvm.showEnemyScoreHandler(gvm.getElements().enemyScore());  --to do
-
-        add(gvm.getElements().board(), 1, 3, 2, 4);
-//        gvm.MakeMoveHandler(gvm.getElements().board());  --to do
-
-
+        getChildren().addAll(header, gamePane, footer);
+        setVgrow(gamePane, Priority.ALWAYS);
     }
+
+    private class Header extends HBox {
+        public Header() {
+            Label l = new Label();
+
+            l.textProperty().bind(Bindings.createObjectBinding(
+                    () -> {
+                        switch (game.getState()) {
+                            case UNFINISHED -> {
+                                return game.getTurn() == gvm.playingAs() ? "Your turn" : "Opponent's turn";
+                            }
+                            case DRAW -> {
+                                return "Draw";
+                            }
+                            case P0_WON, P1_WON -> {
+                                int won = game.getState() == Game.state.P0_WON ? 0 : 1;
+                                return won == gvm.playingAs() ? "You won" : "You lost";
+                            }
+                        }
+                        throw new RuntimeException();
+                    },
+                    obs
+            ));
+
+            l.textFillProperty().bind(Bindings.createObjectBinding(
+                    () -> {
+                        switch (game.getState()) {
+                            case UNFINISHED -> {
+                                return squareColor[game.getTurn()+1].getFills().get(0).getFill();
+                            }
+                            case DRAW -> {
+                                return Color.BLACK;
+                            }
+                            case P0_WON, P1_WON -> {
+                                int won = game.getState() == Game.state.P0_WON ? 0 : 1;
+                                return squareColor[won+1].getFills().get(0).getFill();
+                            }
+                        }
+                        throw new RuntimeException();
+                    },
+                    obs
+            ));
+
+            l.setFont(new Font(null, 24));
+
+            setAlignment(Pos.CENTER);
+            getChildren().add(l);
+        }
+    }
+
+    private class Footer extends HBox {
+        public Footer() {
+            VBox[] spacer = new VBox[]{new VBox(), new VBox(), new VBox()};
+            Label[] sc = new Label[]{new Label(), new Label()};
+
+            for (int i = 0; i < 2; ++i) {
+                final int fi = i;
+
+                sc[i].textProperty().bind(Bindings.createObjectBinding(
+                        () -> "P"+fi+" score: " + game.getScore(fi),
+                        obs
+                ));
+
+                sc[i].setTextFill(squareColor[i+1].getFills().get(0).getFill()); // TODO clean
+
+                sc[i].setFont(new Font(null, 24));
+            }
+
+            setAlignment(Pos.CENTER);
+            getChildren().addAll(spacer[0], sc[0], spacer[1], sc[1], spacer[2]);
+
+            for (VBox v : spacer)
+                setHgrow(v, Priority.ALWAYS);
+
+        }
+    }
+
+    private static class HBoxFixedRatio extends HBox {
+        public HBoxFixedRatio(Pane pain, double HtoWRatio) {
+            SimpleDoubleProperty width = new SimpleDoubleProperty(10);
+
+            pain.maxHeightProperty().bind(width.multiply(HtoWRatio));
+            pain.maxWidthProperty().bind(width);
+
+            width.bind(Bindings.min(heightProperty().divide(HtoWRatio), widthProperty()));
+
+            setAlignment(Pos.CENTER);
+            getChildren().add(pain);
+            setHgrow(pain, Priority.ALWAYS);
+        }
+    }
+
+    private class GamePane extends GridPane {
+        public GamePane() {
+            int gridRows = game.getSize().row()*2+1;
+            int gridCols = game.getSize().col()*2+1;
+
+            for (int i = 0; i < gridRows; ++i) {
+                RowConstraints rc = new RowConstraints();
+                rc.setPercentHeight(i % 2 == 0 ? NARROW : WIDE);
+                rc.setVgrow(Priority.ALWAYS);
+                getRowConstraints().add(rc);
+            }
+
+            for (int i = 0; i < gridCols; ++i) {
+                ColumnConstraints cc = new ColumnConstraints();
+                cc.setPercentWidth(i % 2 == 0 ? NARROW : WIDE);
+                cc.setHgrow(Priority.ALWAYS);
+                getColumnConstraints().add(cc);
+            }
+
+            for (int i = 0; i < gridRows; ++i)
+                for (int j = 0; j < gridCols; ++j) {
+                    DotsAndBoxes.Coord c = new DotsAndBoxes.Coord(i, j);
+
+                    VBox set = c.isEdge() ? new EdgeField(c) :
+                            c.isSquare() ? new SquareField(c) : new PointField(c);
+
+                    add(set, j, i); // FUCKING WHY ?
+                }
+        }
+    }
+
+    private static Background getBackgroundFromColor(Color c) {
+        return new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY));
+    }
+
+    private class PointField extends VBox {
+        public PointField(DotsAndBoxes.Coord c) {
+            if (!c.isPoint())
+                throw new RuntimeException(c.toString());
+
+            backgroundProperty().bind(
+                    Bindings.createObjectBinding(
+                            () -> !game.isAlone(c) ? markedEdge : emptyEdge,
+                            obs
+                    )
+            );
+        }
+    }
+
+    private class SquareField extends VBox {
+        public SquareField(DotsAndBoxes.Coord c) {
+            if (!c.isSquare())
+                throw new RuntimeException(c.toString());
+
+            backgroundProperty().bind(
+                    Bindings.createObjectBinding(
+                            () -> squareColor[game.getOwner(c) + 1],
+                            obs
+                    )
+            );
+        }
+    }
+
+    private class EdgeField extends VBox {
+        public EdgeField(DotsAndBoxes.Coord c) {
+            if (!c.isEdge())
+                throw new RuntimeException(c.toString());
+
+            setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.PRIMARY)
+                    gvm.clickedOn(c);
+            });
+
+            backgroundProperty().bind(
+                    Bindings.createObjectBinding(
+                            () -> {
+                                if (!game.isMarked(c))
+                                    return emptyEdge;
+                                if (c.equals(game.mostRecentMarking()) && game.getState() == Game.state.UNFINISHED)
+                                    return lastEdge;
+                                return markedEdge;
+                            },
+                            obs
+                    )
+            );
+
+            cursorProperty().bind(
+                    Bindings.createObjectBinding(
+                            () -> !game.isMarked(c) && game.getTurn() == gvm.playingAs() ? Cursor.HAND : Cursor.DEFAULT,
+                            obs
+                    )
+            );
+        }
+    }
+
 }

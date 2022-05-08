@@ -1,47 +1,46 @@
 package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.Client;
-import GameLoader.client.GeneralView;
+import GameLoader.client.ClientGUI;
 import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
 import GameLoader.common.Message;
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+import javafx.application.Platform;
+
+import java.util.concurrent.TimeUnit;
 
 public class DotsAndBoxesViewModel implements PlayViewModel {
-
-    public DotsAndBoxesViewModel(Client user, DotsAndBoxes game) {
+    public DotsAndBoxesViewModel(Client user, int id, DotsAndBoxes game) {
         modelUser = user;
         modelGame = game;
-    }
+        myPlayer = id;
 
-    public guiElements getElements() {
-        return guiVisual;
+        // TODO delete this
+        modelGame.getMoveCountProperty().addListener((a, b, c) -> {
+            if (game.getState() == Game.state.UNFINISHED)
+                return;
+
+            modelUser.execNormal.execute(()-> {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(3333);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Platform.runLater(ClientGUI::reset);
+            });
+        });
     }
 
     @Override
-    public Game getGame() {
+    public DotsAndBoxes getGame() {
         return modelGame;
     }
 
-    @Override
-    public void processMoveMessage(Message.Move msg) {
-        Command cmd = msg.move();
-
-    }
-
-    record guiElements (
-            Label stateOfGame,
-            Label ourScore,
-            Label enemyScore,
-            GridPane board
-    ) implements GuiElements { }
-
-    guiElements guiVisual;
     private final Client modelUser;
-    private final Game modelGame;
+    private final DotsAndBoxes modelGame;
+    private final int myPlayer;
 
     @Override
     public Client getModelUser() {
@@ -54,7 +53,33 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
     }
 
     @Override
-    public GeneralView createView() {
+    public DotsAndBoxesView createView() {
         return new DotsAndBoxesView(this);
+    }
+
+    @Override
+    public void processMoveMessage(Message.Move msg) {
+        Command cmd = msg.move();
+        if (cmd.getPlayer() == myPlayer)
+            return;
+        if (!modelGame.isMoveLegal(cmd)) {
+            modelUser.sendError("this move is illegal?");
+            return;
+        }
+        modelGame.makeMove(cmd);
+    }
+
+    public void clickedOn(DotsAndBoxes.Coord c) {
+        Command cmd = new DotsAndBoxesCommand(playingAs(), c);
+
+        if (!modelGame.isMoveLegal(cmd))
+            return;
+
+        modelGame.makeMove(cmd);
+        modelUser.sendMessage(new Message.Move(cmd));
+    }
+
+    public int playingAs() {
+        return myPlayer;
     }
 }
