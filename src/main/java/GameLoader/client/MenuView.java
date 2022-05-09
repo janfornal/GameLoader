@@ -3,6 +3,7 @@ package GameLoader.client;
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
+import GameLoader.games.TicTacToe.TicTacToe;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.geometry.*;
@@ -39,7 +40,7 @@ public class MenuView extends GridPane implements GeneralView {
         }
 
         nvm.setElements(new MenuViewModel.guiElements(
-            new ChoiceBox<String>(FXCollections.observableArrayList(new SimpleTicTacToe().getName(), new DotsAndBoxes().getName())),
+            new ChoiceBox<String>(FXCollections.observableArrayList(new SimpleTicTacToe().getName(), new DotsAndBoxes().getName(), new TicTacToe().getName())),
             new ChoiceBox<String>(FXCollections.observableArrayList("Small", "Medium",  "Big")),
             new Label("Create Room"),
             new TableView<RoomInfo>(),

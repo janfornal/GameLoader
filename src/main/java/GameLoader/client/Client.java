@@ -3,6 +3,9 @@ package GameLoader.client;
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.*;
 import GameLoader.games.SimpleTicTacToe.*;
+import GameLoader.games.TicTacToe.TicTacToe;
+import GameLoader.games.TicTacToe.TicTacToeView;
+import GameLoader.games.TicTacToe.TicTacToeViewModel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
@@ -23,6 +26,7 @@ public class Client implements AbstractService {
     private final Map<String, GameClasses> gameMap = new HashMap<>() {{
         put(new DotsAndBoxes().getName(), new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
         put(new SimpleTicTacToe().getName(), new GameClasses(SimpleTicTacToe.class, SimpleTicTacToeView.class, SimpleTicTacToeViewModel.class));
+        put(new TicTacToe().getName(),new GameClasses(TicTacToe.class,TicTacToeView.class, TicTacToeViewModel.class));
     }};
 
     private record GameClasses(Class<? extends Game> gameClass,
