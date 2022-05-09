@@ -6,6 +6,7 @@ import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.common.AbstractService;
 import GameLoader.common.Game;
+import GameLoader.games.TicTacToe.TicTacToe;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -14,6 +15,7 @@ public class GameTypeManager {
     public GameTypeManager(AbstractService ignored) {
         registerGameClass(SimpleTicTacToe.class);
         registerGameClass(DotsAndBoxes.class);
+        registerGameClass(TicTacToe.class);
     }
 
     private record GameType(Set<String> settings, Constructor<? extends Game> constructor) {}
