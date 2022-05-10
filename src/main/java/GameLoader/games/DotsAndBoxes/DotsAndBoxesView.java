@@ -209,7 +209,7 @@ public class DotsAndBoxesView extends VBox implements PlayView { // TODO refacto
                 throw new RuntimeException(c.toString());
 
             setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY)
+                if (gvm.getModelUser().currentPlayModel == gvm && event.getButton() == MouseButton.PRIMARY)
                     gvm.clickedOn(c);
             });
 
@@ -228,7 +228,7 @@ public class DotsAndBoxesView extends VBox implements PlayView { // TODO refacto
 
             cursorProperty().bind(
                     Bindings.createObjectBinding(
-                            () -> !game.isMarked(c) && game.getTurn() == gvm.playingAs() ? Cursor.HAND : Cursor.DEFAULT,
+                            () -> !game.isMarked(c) && gvm.getModelUser().currentPlayModel == gvm && game.getTurn() == gvm.playingAs() ? Cursor.HAND : Cursor.DEFAULT,
                             obs
                     )
             );

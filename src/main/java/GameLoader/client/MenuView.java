@@ -8,7 +8,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.geometry.*;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 
@@ -41,7 +40,7 @@ public class MenuView extends GridPane implements GeneralView {
 
         nvm.setElements(new MenuViewModel.guiElements(
             new ChoiceBox<String>(FXCollections.observableArrayList(new SimpleTicTacToe().getName(), new DotsAndBoxes().getName(), new TicTacToe().getName())),
-            new ChoiceBox<String>(FXCollections.observableArrayList("Small", "Medium",  "Big")),
+            new ChoiceBox<String>(),
             new Label("Create Room"),
             new TableView<RoomInfo>(),
             new Button("Create Room"),
@@ -86,6 +85,7 @@ public class MenuView extends GridPane implements GeneralView {
         setFillWidth(nvm.getElements().choiceSizeBox(), true);
         setHgrow(nvm.getElements().choiceSizeBox(), Priority.ALWAYS);
         setHalignment(nvm.getElements().choiceSizeBox(), HPos.CENTER);
+        nvm.addChoiceSettingsHandler(nvm.getElements().choiceSizeBox());
 
         add(nvm.getElements().createRoomButton(), 2, 8, 1, 1);
         setHalignment(nvm.getElements().createRoomButton(), HPos.LEFT);

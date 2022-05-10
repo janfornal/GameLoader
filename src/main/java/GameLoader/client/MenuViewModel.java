@@ -1,6 +1,7 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
+import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 
 public class MenuViewModel implements ViewModel {
@@ -79,6 +80,15 @@ public class MenuViewModel implements ViewModel {
                 modelUser.setChosenGame(new RoomInfo(game, settings, modelUser.username));
                 modelUser.sendMessage(crm);
             }
+        });
+    }
+
+    void addChoiceSettingsHandler(ChoiceBox<String> choiceBox) {
+        choiceBox.setOnMouseClicked(event -> {
+            if (guiVisual.choiceGameBox.getValue() == null || guiVisual.choiceGameBox.getValue().equals("Please select game"))
+                guiVisual.choiceGameBox.setValue("Please select game");
+            else
+                choiceBox.setItems(FXCollections.observableList(modelUser.getGameSettings(guiVisual.choiceGameBox.getValue()).stream().toList()));
         });
     }
 

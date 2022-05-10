@@ -15,15 +15,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class Client implements AbstractService {
     private MenuViewModel currentModel;
-    private PlayViewModel currentPlayModel;
+    public PlayViewModel currentPlayModel;
     private final Connection activeConnection;
     private RoomInfo chosenGame;
     public PlayerInfo username;
-    private String availableGames;
-    private final Map<String, GameClasses> gameMap = new HashMap<>() {{
+    public final Map<String, GameClasses> gameMap = new HashMap<>() {{
         put(new DotsAndBoxes().getName(), new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
         put(new SimpleTicTacToe().getName(), new GameClasses(SimpleTicTacToe.class, SimpleTicTacToeView.class, SimpleTicTacToeViewModel.class));
         put(new TicTacToe().getName(),new GameClasses(TicTacToe.class,TicTacToeView.class, TicTacToeViewModel.class));
@@ -41,10 +41,18 @@ public class Client implements AbstractService {
 
     public void setCurrentModel(MenuViewModel viewModel) {currentModel = viewModel;}
 
-    public void setCurrentPlayModel(PlayViewModel viewModel) {currentPlayModel = viewModel;}
-
     public void setChosenGame(RoomInfo game) {
         chosenGame = game;
+    }
+
+    public Set<String> getGameSettings(String game) {  /// reflection used
+        try {
+            Game helperGameObject = gameMap.get(game).gameClass.getConstructor().newInstance();
+            return helperGameObject.possibleSettings();
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+            System.err.println("You want to get settings list of game, which doesn't exist!");
+        }
+        return null;
     }
 
     void gameEnded() {

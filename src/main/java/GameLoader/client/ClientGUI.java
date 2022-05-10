@@ -28,7 +28,7 @@ public class ClientGUI extends Application {
     }
 
     public static <T extends Event> void HandlerFunction(T event) {
-        Dialog<ButtonType> toQuit = new Dialog<ButtonType>();
+        Dialog<ButtonType> toQuit = new Dialog<>();
         toQuit.setTitle("Exit Server");
         toQuit.setContentText("Do you really want to exit server?");
         ButtonType type = new ButtonType("Yes", ButtonBar.ButtonData.YES);
@@ -79,7 +79,7 @@ public class ClientGUI extends Application {
             if(((PlayViewModel) viewModel).getGame().getState() != Game.state.UNFINISHED) {
                 return;
             }
-            Dialog<ButtonType> toQuit = new Dialog<ButtonType>();
+            Dialog<ButtonType> toQuit = new Dialog<>();
             toQuit.setTitle("Exit Game");
             toQuit.setContentText("Do you really want to end a game?");
             ButtonType type = new ButtonType("Yes", ButtonBar.ButtonData.YES);
