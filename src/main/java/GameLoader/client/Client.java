@@ -83,8 +83,9 @@ public class Client implements AbstractService {
             }
             currentPlayModel = currentModelLocal;
             starterInstance.start(messageCast.settings(), messageCast.seed());
+            String [] playerNames = new String[]{messageCast.p0().name(), messageCast.p1().name()};
             Platform.runLater(
-                    () -> ClientGUI.startNewTab(currentPlayModel)
+                    () -> ClientGUI.startNewTab(currentPlayModel, playerNames[0].equals(username.name()) ? playerNames[1] : playerNames[0])
             );
         }
         else if(message instanceof Message.Move messageCast) {

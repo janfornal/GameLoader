@@ -71,12 +71,12 @@ public class ClientGUI extends Application {
         stage.show();
     }
 
-    public static void startNewTab (ViewModel viewModel) {
+    public static void startNewTab (PlayViewModel viewModel, String opponentName) {
         view = viewModel.createView();
-        Tab tab = new Tab(((PlayViewModel) viewModel).getGame().getName());
+        Tab tab = new Tab(viewModel.getGame().getName() + " (with " + opponentName + ")");
         tab.setContent((Node) view);
         tab.setOnCloseRequest(e -> {
-            if(((PlayViewModel) viewModel).getGame().getState() != Game.state.UNFINISHED) {
+            if(viewModel.getGame().getState() != Game.state.UNFINISHED || viewModel.getModelUser().currentPlayModel != viewModel) {
                 return;
             }
             Dialog<ButtonType> toQuit = new Dialog<>();
