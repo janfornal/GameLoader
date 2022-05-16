@@ -113,6 +113,10 @@ public class Server implements AbstractService {
             c.close();
             return;
         }
+        if (msg instanceof Message.ChatMessage m) {
+            gameManager.processChatMessage(m, c);
+            return;
+        }
         c.sendError("Message not recognized");
     }
 

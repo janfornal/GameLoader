@@ -30,4 +30,5 @@ public interface Message extends Serializable {
 
     record GameList() implements Any {} // to jest na razie nieistotne
     record GetGameList() implements Any {} // to jest na razie nieistotne
+    record ChatMessage(String text) implements Any {}
 }

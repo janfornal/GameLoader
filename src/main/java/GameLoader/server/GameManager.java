@@ -171,4 +171,12 @@ public class GameManager {
             server.connectionManager.sendMessageTo(m, g.p0);
         reportGameEnded(g);
     }
+
+    public synchronized void processChatMessage(Message.ChatMessage m, Connection c) {
+        GameInstance g = gameMap.get(c.getName());
+        if(g.p0.equals(c.getName()))
+            server.connectionManager.sendMessageTo(m, g.p1);
+        else
+            server.connectionManager.sendMessageTo(m, g.p0);
+    }
 }
