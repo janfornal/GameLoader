@@ -16,7 +16,7 @@ public class Server implements AbstractService {
     public final GameManager gameManager = new GameManager(this);
     public final ConnectionManager connectionManager = new ConnectionManager(this);
     public final GameTypeManager gameTypeManager = new GameTypeManager(this);
-    public final DatabaseManager dataManager = new H2DatabaseManager(this);
+    public final DataManager dataManager = new H2DatabaseManager(this);
 
     public Server() {
         this(Connection.defaultPort);
