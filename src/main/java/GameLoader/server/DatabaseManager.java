@@ -3,14 +3,22 @@ package GameLoader.server;
 import GameLoader.common.AbstractService;
 
 import java.sql.*;
+import java.util.function.Supplier;
 
 /**
  * This class is not thread-safe
  */
 
-public abstract class DatabaseManager implements DataManager {
-    protected DatabaseManager(AbstractService ignored) {
+public class DatabaseManager implements DataManager {
+    private final AbstractService service;
+    private final Supplier<Connection> connectionSupplier;
+    public DatabaseManager(AbstractService s, Supplier<Connection> connectionFactory) {
+        service = s;
+        connectionSupplier = connectionFactory;
         openConnection();
+    }
+    public DatabaseManager(AbstractService s) {
+        this(s, new ConnectionFactory(s));
     }
 
     // these variables should either be all nulls are all non-nulls
@@ -34,13 +42,12 @@ public abstract class DatabaseManager implements DataManager {
         }
     }
 
-    abstract protected Connection initializeConnection() throws SQLException;
-
     private void openConnection() {
         close();
 
         try {
-            connection      = initializeConnection();
+            connection      = connectionSupplier.get();
+            initSchema();
             getPlayerName   = connection.prepareStatement("SELECT name FROM USERS WHERE id = ?");
             getPlayerId     = connection.prepareStatement("SELECT id FROM USERS WHERE name = ?");
             getGameName     = connection.prepareStatement("SELECT name FROM GAMES WHERE id = ?");
@@ -50,8 +57,19 @@ public abstract class DatabaseManager implements DataManager {
         }
     }
 
-    private int executeStringToIntQuery(PreparedStatement st, String val) throws SQLException {
-        st.setString(1, val);
+    private void initSchema() throws SQLException {
+        final int schemaVersion = 1;
+
+        //
+
+        connection.prepareStatement("DROP TABLE IF EXISTS USERS CASCADE").executeUpdate();
+        connection.prepareStatement("CREATE TABLE USERS(ID INT PRIMARY KEY, NAME VARCHAR(40) UNIQUE)").executeUpdate();
+
+        connection.prepareStatement("DROP TABLE IF EXISTS GAMES CASCADE").executeUpdate();
+        connection.prepareStatement("CREATE TABLE GAMES(ID INT PRIMARY KEY, NAME VARCHAR(40) UNIQUE)").executeUpdate();
+    }
+
+    private int executeIntQuery(PreparedStatement st) throws SQLException {
         try (ResultSet rs = st.executeQuery()) {
             if (!rs.next())
                 return -1;
@@ -59,8 +77,7 @@ public abstract class DatabaseManager implements DataManager {
         }
     }
 
-    private String executeIntToStringQuery(PreparedStatement st, int val) throws SQLException {
-        st.setInt(1, val);
+    private String executeStringQuery(PreparedStatement st) throws SQLException {
         try (ResultSet rs = st.executeQuery()) {
             if (!rs.next())
                 return null;
@@ -71,30 +88,20 @@ public abstract class DatabaseManager implements DataManager {
     @Override
     public int getPlayerId(String name) {
         try {
-            return executeStringToIntQuery(getPlayerId, name);
+            getPlayerId.setString(1, name);
+            return executeIntQuery(getPlayerId);
         } catch (SQLException e) {
-            e.printStackTrace();
-            try {
-                openConnection();
-                return executeStringToIntQuery(getPlayerId, name);
-            } catch (SQLException exc) {
-                throw new RuntimeException(exc);
-            }
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public String getPlayerName(int i) {
         try {
-            return executeIntToStringQuery(getPlayerName, i);
+            getPlayerName.setInt(1, i);
+            return executeStringQuery(getPlayerName);
         } catch (SQLException e) {
-            e.printStackTrace();
-            try {
-                openConnection();
-                return executeIntToStringQuery(getPlayerName, i);
-            } catch (SQLException exc) {
-                throw new RuntimeException(exc);
-            }
+            throw new RuntimeException(e);
         }
     }
 
@@ -111,30 +118,20 @@ public abstract class DatabaseManager implements DataManager {
     @Override
     public int getGameId(String name) {
         try {
-            return executeStringToIntQuery(getGameId, name);
+            getGameId.setString(1, name);
+            return executeIntQuery(getGameId);
         } catch (SQLException e) {
-            e.printStackTrace();
-            try {
-                openConnection();
-                return executeStringToIntQuery(getGameId, name);
-            } catch (SQLException exc) {
-                throw new RuntimeException(exc);
-            }
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public String getGameName(int i) {
         try {
-            return executeIntToStringQuery(getGameName, i);
+            getGameName.setInt(1, i);
+            return executeStringQuery(getGameName);
         } catch (SQLException e) {
-            e.printStackTrace();
-            try {
-                openConnection();
-                return executeIntToStringQuery(getGameName, i);
-            } catch (SQLException exc) {
-                throw new RuntimeException(exc);
-            }
+            throw new RuntimeException(e);
         }
     }
 

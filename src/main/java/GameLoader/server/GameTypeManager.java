@@ -11,7 +11,9 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 public class GameTypeManager {
-    public GameTypeManager(AbstractService ignored) {
+    private final AbstractService service;
+    public GameTypeManager(AbstractService s) {
+        service = s;
         registerGameClass(SimpleTicTacToe.class);
         registerGameClass(DotsAndBoxes.class);
     }
@@ -47,7 +49,7 @@ public class GameTypeManager {
         try {
             return type.constructor().newInstance();
         } catch (IllegalArgumentException | ReflectiveOperationException e) {
-            System.err.println("encountered error while constructing: <" + name + "> with settings <" + settings + ">");
+            service.ERROR_STREAM.println("encountered error while constructing: <" + name + "> with settings <" + settings + ">");
             e.printStackTrace();
             return null;
         }
@@ -71,7 +73,7 @@ public class GameTypeManager {
             return true;
         }
         catch (RuntimeException | ReflectiveOperationException e) {
-            System.err.println("encountered error while registering " + cl);
+            service.ERROR_STREAM.println("encountered error while registering " + cl);
             e.printStackTrace();
             return false;
         }

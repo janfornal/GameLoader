@@ -136,7 +136,7 @@ public class GameManager {
 
     private synchronized void reportGameEnded(GameInstance g) {
         if (g.game().getState() == Game.state.UNFINISHED)
-            System.err.println("Something went wrong while ending the game: " + g);
+            server.ERROR_STREAM.println("Something went wrong while ending the game: " + g);
 
         gameMap.remove(g.p0());
         gameMap.remove(g.p1());
