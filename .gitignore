@@ -3,3 +3,4 @@ target/
 ./Client.fxml
 run.sh
 deploy.sh
+*.db

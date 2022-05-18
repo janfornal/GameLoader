@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class Client implements AbstractService {
+public class Client implements Service {
     private MenuViewModel currentModel;
     public PlayViewModel currentPlayModel;
     private final Connection activeConnection;

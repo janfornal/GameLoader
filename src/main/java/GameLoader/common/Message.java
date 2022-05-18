@@ -3,7 +3,7 @@ package GameLoader.common;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public interface Message extends Serializable {
+public interface Message {
     interface Any extends Serializable {}
     interface CtoS extends Any {}
     interface StoC extends Any {}

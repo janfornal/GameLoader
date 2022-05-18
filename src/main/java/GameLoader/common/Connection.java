@@ -8,31 +8,32 @@ import java.util.Objects;
 public class Connection {
     public static final String defaultIP = "localhost";
     public static final int defaultPort = 6666;
-    private final AbstractService service;
+
+    private final Service service;
     private final Socket socket;
     private final ObjectOutputStream output;
     private final ObjectInputStream input;
-    private String playerName;
-    private boolean authorized = false;
+
+    private int playerId = Service.INT_NULL;
     private boolean closed = false;
 
-    public Connection(AbstractService service, String ip, int port) throws IOException {
+    public Connection(Service service, String ip, int port) throws IOException {
         this(service, new Socket(ip, port));
     }
 
-    public Connection(AbstractService service, String ip) throws IOException {
+    public Connection(Service service, String ip) throws IOException {
         this(service, ip, defaultPort);
     }
 
-    public Connection(AbstractService service, int port) throws IOException {
+    public Connection(Service service, int port) throws IOException {
         this(service, defaultIP, port);
     }
 
-    public Connection(AbstractService service) throws IOException {
+    public Connection(Service service) throws IOException {
         this(service, defaultIP, defaultPort);
     }
 
-    public Connection(AbstractService service, Socket socket) {
+    public Connection(Service service, Socket socket) {
         Objects.requireNonNull(service);
         Objects.requireNonNull(socket);
 
@@ -57,8 +58,7 @@ public class Connection {
                 try {
                     Message.Any message = (Message.Any) input.readObject();
 
-                    if (service.INC_MESSAGE_DBG_STREAM != null)
-                        service.INC_MESSAGE_DBG_STREAM.println(message + "\t\treceived from " + this);
+                    service.INC_MESSAGE.println(message + "\t\treceived from " + this);
 
                     Objects.requireNonNull(message);
 
@@ -72,14 +72,14 @@ public class Connection {
                     try {
                         service.processMessage(message, Connection.this);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        e.printStackTrace(service.ERROR_STREAM);
                     }
 
                 } catch (EOFException | SocketException e) {
                     close();
                     return;
                 } catch (IOException | ClassNotFoundException | ClassCastException | NullPointerException e) {
-                    e.printStackTrace();
+                    e.printStackTrace(service.ERROR_STREAM);
                     throw new RuntimeException(e);
                 }
             }
@@ -95,9 +95,8 @@ public class Connection {
     }
 
     public void sendMessages(Message.Any... messages) {
-        if (service.SND_MESSAGE_DBG_STREAM != null)
-            for (Message.Any message : messages)
-                service.SND_MESSAGE_DBG_STREAM.println(message + "\t\tsending to " + this);
+        for (Message.Any message : messages)
+            service.SND_MESSAGE.println(message + "\t\tsending to " + this);
 
         if (closed)
             return;
@@ -108,11 +107,10 @@ public class Connection {
                     try {
                         output.writeObject(message);
 
-                        if (service.SNT_MESSAGE_DBG_STREAM != null)
-                            service.SNT_MESSAGE_DBG_STREAM.println(message + "\t\tsent to " + this);
+                        service.SNT_MESSAGE.println(message + "\t\tsent to " + this);
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(service.ERROR_STREAM);
                         close();
                         break;
                     }
@@ -121,17 +119,19 @@ public class Connection {
         });
     }
 
-    public void authorize(String pn) {
-        authorized = true;
-        playerName = pn;
+    public void authorize(int id) {
+        if (playerId != Service.INT_NULL)
+            throw new RuntimeException();
+
+        playerId = id;
     }
 
-    public String getName() {
-        return playerName;
+    public int getId() {
+        return playerId;
     }
 
     public boolean isAuthorized() {
-        return authorized;
+        return playerId != Service.INT_NULL;
     }
 
     public synchronized void close() {
@@ -143,7 +143,7 @@ public class Connection {
             output.close();
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(service.ERROR_STREAM);
         }
         service.reportConnectionClosed(this);
     }
@@ -154,7 +154,7 @@ public class Connection {
         sb.append("closed=").append(closed);
 
         if (isAuthorized())
-            sb.append(", playerName=").append(playerName);
+            sb.append(", playerId=").append(playerId);
 
         return sb.append("]").toString();
     }
