@@ -2,9 +2,14 @@ package GameLoader.server;
 
 import GameLoader.common.Connection;
 import GameLoader.common.Message;
+import GameLoader.common.Service;
 
 import java.net.Socket;
 import java.util.*;
+
+/**
+ * This class is thread-safe
+ */
 
 public class ConnectionManager {
     private final Server server;
@@ -12,7 +17,7 @@ public class ConnectionManager {
         server = s;
     }
 
-    private final Map<String, Connection> connectionMap = new HashMap<>();
+    private final Map<Integer, Connection> connectionMap = new HashMap<>();
     private final Set<Connection> connectionSet = new HashSet<>();
 
     public synchronized void createConnection(Socket s) {
@@ -20,7 +25,7 @@ public class ConnectionManager {
     }
 
     public synchronized void unregisterConnection(Connection c) {
-        connectionMap.remove(c.getName());
+        connectionMap.remove(c.getId());
         connectionSet.remove(c);
     }
 
@@ -29,36 +34,50 @@ public class ConnectionManager {
             server.execNormal.execute(c::close);
     }
 
-    public Connection getConnection(String p) {
+    public Connection getConnection(int p) {
         return connectionMap.get(p);
     }
 
-    public /* unsynchronized */ void processAuthorizationMessage(Message.Authorization msg, Connection c) {
+    public synchronized void processAuthorizationMessage(Message.Authorization msg, Connection c) {
         if (c.isAuthorized())
             c.sendError("You are already authorized");
-        String pn = msg.name();
 
-        synchronized (this) {
-            if (pn == null || pn.equals("") || connectionMap.containsKey(pn))
-                c.sendError("Unsuccessful authorization");
-            else {
-                c.sendMessage(new Message.Authorization(""));
-                connectionMap.put(pn, c);
-                c.authorize(pn);
-            }
+        String name = msg.name();
+
+        if (name == null || name.equals("")) {
+            c.sendError("Name should not be empty");
+            return;
         }
+
+        int id = server.dataManager.getPlayerId(name);
+
+        if (id == Service.INT_NULL) {
+            c.sendError("Your account does not exist");
+            return;
+        }
+
+        if (connectionMap.containsKey(id)) {
+            c.sendError("You are already connected");
+            return;
+        }
+
+        // TODO check password
+
+        c.sendMessage(new Message.Authorization(""));
+        connectionMap.put(id, c);
+        c.authorize(id);
     }
 
-    public void sendMessageTo(Message.Any msg, String... to) {
-        for (String str : to) {
-            Connection c = getConnection(str);
+    public void sendMessageTo(Message.Any msg, int... to) {
+        for (int id : to) {
+            Connection c = getConnection(id);
             if (c == null)
                 continue;
             c.sendMessage(msg);
         }
     }
 
-    public void sendErrorTo(String cause, String... to) {
+    public void sendErrorTo(String cause, int... to) {
         sendMessageTo(new Message.Error(cause), to);
     }
 }

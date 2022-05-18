@@ -1,14 +1,11 @@
-import GameLoader.common.AbstractService;
+import GameLoader.common.Service;
 import GameLoader.common.Message;
 import GameLoader.server.Server;
 import org.junit.*;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -26,8 +23,8 @@ public class GameLoaderTests {
         }
     }
 
-    static final ThreadPoolExecutor execNormal = (ThreadPoolExecutor) AbstractService.execNormal;
-    static final ThreadPoolExecutor execDaemon = (ThreadPoolExecutor) AbstractService.execDaemon;
+    static final ThreadPoolExecutor execNormal = (ThreadPoolExecutor) Service.execNormal;
+    static final ThreadPoolExecutor execDaemon = (ThreadPoolExecutor) Service.execDaemon;
 
     public static class ServerTests {
         ReentrantLock lock = new ReentrantLock();

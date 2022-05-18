@@ -1,5 +1,9 @@
 package GameLoader.server;
 
+/**
+ * This class is not thread-safe
+ */
+
 public class CachedDataManager implements DataManager {
     @Override
     public int getPlayerId(String name) {
@@ -12,12 +16,12 @@ public class CachedDataManager implements DataManager {
     }
 
     @Override
-    public long getPlayerPassword(int i) {
+    public int getPlayerPassword(int i) {
         return 0;
     }
 
     @Override
-    public int registerPlayer(String name, long password) {
+    public int registerPlayer(String name, int password) {
         return 0;
     }
 
@@ -47,7 +51,7 @@ public class CachedDataManager implements DataManager {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
     }
 }

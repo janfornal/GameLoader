@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Client implements AbstractService {
+public class Client implements Service {
     private ViewModel currentModel;
     private final Connection activeConnection;
     private RoomInfo chosenGame;

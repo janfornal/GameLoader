@@ -5,29 +5,33 @@ import GameLoader.common.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This class is thread-safe
+ */
+
 public class GameManager {
     private final Server server;
     public GameManager(Server s) {
         server = s;
     }
 
-    private final Map<String, GameInstance> gameMap = new ConcurrentHashMap<>();
-    private final Map<String, RoomInfo> roomsToJoin = new LinkedHashMap<>();
+    private final Map<Integer, GameInstance> gameMap = new ConcurrentHashMap<>();
+    private final Map<Integer, RoomInfo> roomsToJoin = new LinkedHashMap<>();
 
-    private record GameInstance(Game game, String p0, String p1) {}
+    private record GameInstance(int gameId, Game game, int p0, int p1) {}
 
-    public boolean isPlaying(String p) {
-        return gameMap.get(p) != null;
+    public boolean isPlaying(int id) {
+        return gameMap.get(id) != null;
     }
 
     public synchronized void processCreateRoomMessage(Message.CreateRoom msg, Connection c) {
-        String pn = c.getName();
+        int id = c.getId();
 
-        if (isPlaying(pn)) {
+        if (isPlaying(id)) {
             c.sendError("you are already playing a game");
             return;
         }
-        if (roomsToJoin.containsKey(pn)) {
+        if (roomsToJoin.containsKey(id)) {
             c.sendError("you already created a room");
             return;
         }
@@ -40,8 +44,8 @@ public class GameManager {
             return;
         }
 
-        RoomInfo info = new RoomInfo(game, settings, new PlayerInfo(c.getName()));
-        roomsToJoin.put(pn, info);
+        RoomInfo info = new RoomInfo(game, settings, server.dataManager.getPlayerInfo(id, game));
+        roomsToJoin.put(id, info);
     }
 
     public synchronized void processGetRoomListMessage(Message.GetRoomList ignored, Connection c) {
@@ -51,8 +55,8 @@ public class GameManager {
     public synchronized void processJoinRoomMessage(Message.JoinRoom msg, Connection c) {
         RoomInfo info = msg.room();
 
-        String p0 = info.p0().name();
-        String p1 = c.getName();
+        int p0 = info.p0().id();
+        int p1 = c.getId();
 
         RoomInfo ourInfo = roomsToJoin.get(p0);
 
@@ -64,7 +68,7 @@ public class GameManager {
         roomsToJoin.remove(p0);
         roomsToJoin.remove(p1);
 
-        if (p0.equals(p1)) {
+        if (p0 == p1) {
             c.sendError("you cannot play with yourself");
             return;
         }
@@ -90,12 +94,14 @@ public class GameManager {
         int seed = 0;
         g.start(settings, seed);
 
-        GameInstance instance = new GameInstance(g, p0, p1);
+        GameInstance instance = new GameInstance(0, g, p0, p1); // TODO gameid (for game history)
         gameMap.put(p0, instance);
         gameMap.put(p1, instance);
 
-        Message.StartGame stg = new Message.StartGame(gameName, info.settings(), seed,
-                new PlayerInfo(p0), new PlayerInfo(p1));
+        Message.StartGame stg = new Message.StartGame(
+                gameName, info.settings(), seed,
+                server.dataManager.getPlayerInfo(p0, gameName),
+                server.dataManager.getPlayerInfo(p1, gameName));
         server.connectionManager.sendMessageTo(stg, p0, p1);
     }
 
@@ -107,14 +113,14 @@ public class GameManager {
             return;
         }
 
-        GameInstance g = gameMap.get(c.getName());
+        GameInstance g = gameMap.get(c.getId());
 
         if (g == null) {
             c.sendError("you are not playing any game");
             return;
         }
 
-        if (!c.getName().equals(cmd.getPlayer() == 0 ? g.p0() : g.p1())) {
+        if (!(c.getId() == (cmd.getPlayer() == 0 ? g.p0 : g.p1))) {
             c.sendError("connection name does not match move player name");
             return;
         }
@@ -127,7 +133,7 @@ public class GameManager {
             }
             game.makeMove(cmd);
 
-            server.connectionManager.sendMessageTo(msg, g.p0(), g.p1());
+            server.connectionManager.sendMessageTo(msg, g.p0, g.p1);
 
             if (game.getState() != Game.state.UNFINISHED)
                 reportGameEnded(g);
@@ -136,9 +142,9 @@ public class GameManager {
 
     private synchronized void reportGameEnded(GameInstance g) {
         if (g.game().getState() == Game.state.UNFINISHED)
-            server.ERROR_STREAM.println("Something went wrong while ending the game: " + g);
+            Service.ERROR_STREAM.println("Something went wrong while ending the game: " + g);
 
-        gameMap.remove(g.p0());
-        gameMap.remove(g.p1());
+        gameMap.remove(g.p0);
+        gameMap.remove(g.p1);
     }
 }

@@ -1,6 +1,8 @@
 package GameLoader.server;
 
-import GameLoader.common.AbstractService;
+import GameLoader.common.Service;
+
+import java.io.PrintStream;
 import java.sql.*;
 import java.util.function.Supplier;
 
@@ -11,6 +13,8 @@ import java.util.function.Supplier;
 public class ConnectionFactory implements Supplier<Connection> {
     private static final String H2_DB_DRIVER = "org.h2.Driver";
     private static final String H2_DB_CONNECTION = "jdbc:h2:./GameLoader";
+    private static final String H2_DB_USER = "";
+    private static final String H2_DB_PASSWORD = "";
 
     private static final String PSQL_DB_DRIVER = "org.postgresql.Driver";
     private static final String PSQL_DB_CONNECTION = "jdbc:postgresql:gameloader";
@@ -21,37 +25,46 @@ public class ConnectionFactory implements Supplier<Connection> {
         try {
             Class.forName(H2_DB_DRIVER);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            e.printStackTrace(Service.DB_DRIVER_ERROR_STREAM);
         }
 
         try {
             Class.forName(PSQL_DB_DRIVER);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            e.printStackTrace(Service.DB_DRIVER_ERROR_STREAM);
         }
     }
 
-    private final AbstractService service;
-    public ConnectionFactory(AbstractService s) {
+    private final Service service;
+    public ConnectionFactory(Service s) {
         service = s;
+    }
+
+    private Connection get(String url, String user, String password) {
+        try {
+            return DriverManager.getConnection(url, user, password);
+        } catch (SQLException e) {
+            e.printStackTrace(Service.DB_CONNECTION_ERROR_STREAM);
+            return null;
+        }
     }
 
     @Override
     public Connection get() {
-        try {
-            Connection psql = DriverManager.getConnection(PSQL_DB_CONNECTION, PSQL_DB_USER, PSQL_DB_PASSWORD);
-            service.INFO_STREAM.println("connected to postgres server");
+        Connection psql = get(PSQL_DB_CONNECTION, PSQL_DB_USER, PSQL_DB_PASSWORD);
+
+        if (psql != null) {
+            Service.DB_CONNECTION_INFO_STREAM.println("connected to postgres server");
             return psql;
-        } catch (SQLException e) {
-            try {
-                Connection h2 = DriverManager.getConnection(H2_DB_CONNECTION);
-                service.INFO_STREAM.println("connected to h2 embedded database");
-                return h2;
-            } catch (SQLException ex) {
-                e.printStackTrace();
-                ex.printStackTrace();
-                throw new RuntimeException();
-            }
         }
+
+        Connection h2 = get(H2_DB_CONNECTION, H2_DB_USER, H2_DB_PASSWORD);
+
+        if (h2 != null) {
+            Service.DB_CONNECTION_INFO_STREAM.println("connected to h2 embedded database");
+            return h2;
+        }
+
+        throw new RuntimeException("unable to connect to database");
     }
 }

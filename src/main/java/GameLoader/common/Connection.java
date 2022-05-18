@@ -9,32 +9,31 @@ public class Connection {
     public static final String defaultIP = "localhost";
     public static final int defaultPort = 6666;
 
-    private final AbstractService service;
+    private final Service service;
     private final Socket socket;
     private final ObjectOutputStream output;
     private final ObjectInputStream input;
 
-    private static int UNAUTHORIZED = -1;
-    private int playerId = UNAUTHORIZED;
+    private int playerId = Service.INT_NULL;
     private boolean closed = false;
 
-    public Connection(AbstractService service, String ip, int port) throws IOException {
+    public Connection(Service service, String ip, int port) throws IOException {
         this(service, new Socket(ip, port));
     }
 
-    public Connection(AbstractService service, String ip) throws IOException {
+    public Connection(Service service, String ip) throws IOException {
         this(service, ip, defaultPort);
     }
 
-    public Connection(AbstractService service, int port) throws IOException {
+    public Connection(Service service, int port) throws IOException {
         this(service, defaultIP, port);
     }
 
-    public Connection(AbstractService service) throws IOException {
+    public Connection(Service service) throws IOException {
         this(service, defaultIP, defaultPort);
     }
 
-    public Connection(AbstractService service, Socket socket) {
+    public Connection(Service service, Socket socket) {
         Objects.requireNonNull(service);
         Objects.requireNonNull(socket);
 
@@ -73,14 +72,14 @@ public class Connection {
                     try {
                         service.processMessage(message, Connection.this);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        e.printStackTrace(service.ERROR_STREAM);
                     }
 
                 } catch (EOFException | SocketException e) {
                     close();
                     return;
                 } catch (IOException | ClassNotFoundException | ClassCastException | NullPointerException e) {
-                    e.printStackTrace();
+                    e.printStackTrace(service.ERROR_STREAM);
                     throw new RuntimeException(e);
                 }
             }
@@ -111,7 +110,7 @@ public class Connection {
                         service.SNT_MESSAGE.println(message + "\t\tsent to " + this);
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(service.ERROR_STREAM);
                         close();
                         break;
                     }
@@ -121,7 +120,7 @@ public class Connection {
     }
 
     public void authorize(int id) {
-        if (playerId != UNAUTHORIZED)
+        if (playerId != Service.INT_NULL)
             throw new RuntimeException();
 
         playerId = id;
@@ -132,7 +131,7 @@ public class Connection {
     }
 
     public boolean isAuthorized() {
-        return playerId != UNAUTHORIZED;
+        return playerId != Service.INT_NULL;
     }
 
     public synchronized void close() {
@@ -144,7 +143,7 @@ public class Connection {
             output.close();
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(service.ERROR_STREAM);
         }
         service.reportConnectionClosed(this);
     }

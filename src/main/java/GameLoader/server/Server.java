@@ -1,6 +1,6 @@
 package GameLoader.server;
 
-import GameLoader.common.AbstractService;
+import GameLoader.common.Service;
 import GameLoader.common.Connection;
 import GameLoader.common.Message;
 
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.*;
 
-public class Server implements AbstractService {
+public class Server implements Service {
     private final int port;
     private boolean closed = false;
     private ServerSocket serverSocket;
@@ -28,7 +28,7 @@ public class Server implements AbstractService {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(ERROR_STREAM);
             closed = true;
             return;
         }
@@ -39,7 +39,7 @@ public class Server implements AbstractService {
                     connectionManager.createConnection(serverSocket.accept());
             } catch (IOException e) {
                 if (!closed) {
-                    e.printStackTrace();
+                    e.printStackTrace(ERROR_STREAM);
                     close();
                 }
             }
@@ -61,7 +61,7 @@ public class Server implements AbstractService {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(ERROR_STREAM);
         }
         connectionManager.closeAllConnections();
     }

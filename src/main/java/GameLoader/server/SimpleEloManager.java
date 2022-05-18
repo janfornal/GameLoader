@@ -1,11 +1,15 @@
 package GameLoader.server;
 
-import GameLoader.common.AbstractService;
+import GameLoader.common.Service;
 import GameLoader.common.Game;
 import GameLoader.utility.IntPair;
 
+/**
+ * This class is thread-safe
+ */
+
 public class SimpleEloManager implements EloManager {
-    public SimpleEloManager(AbstractService ignored) {}
+    public SimpleEloManager(Service ignored) {}
 
     @Override
     public IntPair calculate(int eloP0, int eloP1, int gamesPlayedP0, int gamesPlayedP1, Game.state result) {
