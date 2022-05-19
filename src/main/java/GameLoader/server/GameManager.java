@@ -178,7 +178,7 @@ public class GameManager {
     }
 
     public synchronized void processChatMessage(Message.ChatMessage m, Connection c) {
-        GameInstance g = gameMap.get(c.getName());
+        GameInstance g = gameMap.get(c.getId());
         server.connectionManager.sendMessageTo(m, g.p0);
         server.connectionManager.sendMessageTo(m, g.p1);
     }

@@ -2,11 +2,15 @@ package GameLoader.client;
 
 import GameLoader.common.Game;
 import GameLoader.common.Message;
+import GameLoader.games.chat.ChatWindow;
 import javafx.application.Application;
 import javafx.event.Event;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -74,7 +78,11 @@ public class ClientGUI extends Application {
     public static void startNewTab (PlayViewModel viewModel, String opponentName) {
         view = viewModel.createView();
         Tab tab = new Tab(viewModel.getGame().getName() + " (with " + opponentName + ")");
-        tab.setContent((Node) view);
+        ChatWindow chatWindow = new ChatWindow(viewModel.getModelUser().username.name(), viewModel.getModelUser());
+        BorderPane bp = new BorderPane();
+        bp.setCenter((Node) view);
+        bp.setBottom(chatWindow);
+        tab.setContent(bp);
         tab.setOnCloseRequest(e -> {
             if(viewModel.getGame().getState() != Game.state.UNFINISHED || viewModel.getModelUser().currentPlayModel != viewModel) {
                 return;

@@ -47,11 +47,10 @@ public class DotsAndBoxesView extends VBox implements PlayView { // TODO refacto
         HBox header = new Header();
         HBox gamePane = new HBoxFixedRatio(new GamePane(), HtoWRatio);
         HBox footer = new Footer();
-        ChatWindow chatWindow = new ChatWindow(gvm.getModelUser().username.name(), gvm.getModelUser());
 
         setAlignment(Pos.CENTER);
 
-        getChildren().addAll(header, gamePane, footer, chatWindow);
+        getChildren().addAll(header, gamePane, footer);
         setVgrow(gamePane, Priority.ALWAYS);
     }
 
