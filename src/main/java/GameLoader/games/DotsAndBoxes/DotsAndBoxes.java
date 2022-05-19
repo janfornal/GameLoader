@@ -3,6 +3,7 @@ package GameLoader.games.DotsAndBoxes;
 import GameLoader.client.Client;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
+import GameLoader.common.ResignationCommand;
 import javafx.beans.property.*;
 
 import java.io.Serializable;
@@ -19,9 +20,9 @@ public class DotsAndBoxes implements Game {
     // 0 for corners
 
     private String settings;
+    private state currState = state.UNFINISHED;
     private int moveCount = 0, turn;
     private SimpleIntegerProperty moveCountProperty;
-    private SimpleObjectProperty<state> gameStateProperty;
 
     private int edgesLeft = -1;
     private final int[] score = new int[2];
@@ -42,35 +43,39 @@ public class DotsAndBoxes implements Game {
 
     @Override
     public void makeMove(Command cmd) { // assumes that isMoveLegal(move) returns true
-        DotsAndBoxesCommand dabCmd = (DotsAndBoxesCommand) cmd;
+        if (cmd instanceof ResignationCommand res)
+            currState = res.getPlayer() == 0 ? state.P1_WON : state.P0_WON;
+        if (cmd instanceof DotsAndBoxesCommand dabCmd)
+        {
+            int pl = dabCmd.getPlayer();
+            Coord c = dabCmd.getCoord();
 
-        int pl = dabCmd.getPlayer();
-        Coord c = dabCmd.getCoord();
+            T[c.row][c.col] = 1;
+            --edgesLeft;
+            mostRecent = c;
 
-        T[c.row][c.col] = 1;
-        --edgesLeft;
-        mostRecent = c;
+            int added = 0;
+            for (Coord n : listOfNeighbours(c))
+                if (n.isSquare() && isFieldInBoard(n) && isSurrounded(n)) {
+                    ++added;
+                    T[n.row][n.col] = pl + 1;
+                }
 
-        int added = 0;
-        for (Coord n : listOfNeighbours(c))
-            if (n.isSquare() && isFieldInBoard(n) && isSurrounded(n)) {
-                ++added;
-                T[n.row][n.col] = pl + 1;
-            }
-
-        score[pl] += added;
-        if (added == 0)
-            turn = 1 - turn;
+            score[pl] += added;
+            if (added == 0)
+                turn = 1 - turn;
+            currState = calcState();
+        }
 
         moveCount++;
         if (moveCountProperty != null)
             moveCountProperty.set(moveCount);
-        if (gameStateProperty != null)
-            gameStateProperty.set(getState());
     }
 
     @Override
     public boolean isMoveLegal(Command cmd) {
+        if (cmd instanceof ResignationCommand)
+            return getState() == state.UNFINISHED;
         if (cmd instanceof DotsAndBoxesCommand dabCmd) {
             int pl = dabCmd.getPlayer();
             Coord c = dabCmd.getCoord();
@@ -150,6 +155,10 @@ public class DotsAndBoxes implements Game {
 
     @Override
     public state getState() {
+        return currState;
+    }
+
+    private state calcState() {
         if (edgesLeft != 0)
             return state.UNFINISHED;
         if (score[0] == score[1])
@@ -182,12 +191,6 @@ public class DotsAndBoxes implements Game {
         if (moveCountProperty == null)
             moveCountProperty = new SimpleIntegerProperty(moveCount);
         return moveCountProperty;
-    }
-
-    public SimpleObjectProperty<state> getGameStateProperty() {
-        if (gameStateProperty == null)
-            gameStateProperty = new SimpleObjectProperty<state>(getState());
-        return gameStateProperty;
     }
 
     @Override

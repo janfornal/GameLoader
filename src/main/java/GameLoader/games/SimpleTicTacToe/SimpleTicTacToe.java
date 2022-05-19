@@ -3,6 +3,7 @@ package GameLoader.games.SimpleTicTacToe;
 import GameLoader.client.Client;
 import GameLoader.common.Command;
 import GameLoader.common.Game;
+import GameLoader.common.ResignationCommand;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -23,28 +24,30 @@ public class SimpleTicTacToe implements Game {
     private state currState = state.UNFINISHED;
     private int moveCount = 0, turn;
     private SimpleIntegerProperty moveCountProperty;
-    private SimpleObjectProperty<state> gameStateProperty;
 
     @Override
     public void makeMove(Command move) { // assumes that isMoveLegal(move) returns true
-        SimpleTicTacToeCommand tttMove = (SimpleTicTacToeCommand) move;
-        int pl = tttMove.getPlayer();
-        int row = tttMove.getRow();
-        int col = tttMove.getCol();
+        if (move instanceof ResignationCommand res)
+            currState = res.getPlayer() == 0 ? state.P1_WON : state.P0_WON;
+        if (move instanceof SimpleTicTacToeCommand tttMove) {
+            int pl = tttMove.getPlayer();
+            int row = tttMove.getRow();
+            int col = tttMove.getCol();
 
-        T[row][col] = pl;
-        turn = 1 - turn;
-        currState = calcState();
+            T[row][col] = pl;
+            turn = 1 - turn;
+            currState = calcState();
+        }
 
         moveCount++;
         if (moveCountProperty != null)
             moveCountProperty.set(moveCount);
-        if (gameStateProperty != null)
-            gameStateProperty.set(getState());
     }
 
     @Override
     public boolean isMoveLegal(Command move) {
+        if (move instanceof ResignationCommand)
+            return getState() == state.UNFINISHED;
         if (move instanceof SimpleTicTacToeCommand tttMove) {
             int pl = tttMove.getPlayer();
             int row = tttMove.getRow();
@@ -100,7 +103,7 @@ public class SimpleTicTacToe implements Game {
 
     @Override
     public String getName() {
-        return "Simple Tic tac toe";
+        return "Simple Tic Tac Toe";
     }
 
     @Override
@@ -129,12 +132,6 @@ public class SimpleTicTacToe implements Game {
         if (moveCountProperty == null)
             moveCountProperty = new SimpleIntegerProperty(moveCount);
         return moveCountProperty;
-    }
-
-    public SimpleObjectProperty<state> getGameStateProperty() {
-        if (gameStateProperty == null)
-            gameStateProperty = new SimpleObjectProperty<state>(getState());
-        return gameStateProperty;
     }
 
     @Override

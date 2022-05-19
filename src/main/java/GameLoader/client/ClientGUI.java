@@ -2,6 +2,7 @@ package GameLoader.client;
 
 import GameLoader.common.Game;
 import GameLoader.common.Message;
+import GameLoader.common.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;
 import javafx.application.Application;
 import javafx.event.Event;
@@ -53,7 +54,7 @@ public class ClientGUI extends Application {
             do {
                 AuthorizationDialog startAuth = new AuthorizationDialog();
                 String username = startAuth.getUsername();
-                user.sendMessage(new Message.Authorization(username));
+                user.sendMessage(new Message.AuthorizationAttempt(username, "")); // TODO password field
                 authorizationLock.wait();
             } while (user.username == null);
         }
@@ -78,7 +79,7 @@ public class ClientGUI extends Application {
     public static void startNewTab (PlayViewModel viewModel, String opponentName) {
         view = viewModel.createView();
         Tab tab = new Tab(viewModel.getGame().getName() + " (with " + opponentName + ")");
-        ChatWindow chatWindow = new ChatWindow(viewModel.getModelUser().username.name(), viewModel.getModelUser());
+        ChatWindow chatWindow = new ChatWindow(viewModel.getModelUser().username, viewModel.getModelUser());
         BorderPane bp = new BorderPane();
         bp.setCenter((Node) view);
         bp.setBottom(chatWindow);
@@ -97,7 +98,7 @@ public class ClientGUI extends Application {
             if(!type.equals(closeResponse.get())) {
                 e.consume();
             }
-            else user.sendMessage(new Message.Resign());
+            else user.sendMessage(new Message.Move(new ResignationCommand(viewModel.playingAs())));
         });
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);

@@ -26,7 +26,7 @@ public class Client implements Service {
     private final Connection activeConnection;
     private SimpleObjectProperty<Message.ChatMessage> messageProperty = null;
     private RoomInfo chosenGame;
-    public PlayerInfo username;
+    public String username;
     public final Map<String, GameClasses> gameMap = new HashMap<>() {{
         put(new DotsAndBoxes().getName(), new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
         put(new SimpleTicTacToe().getName(), new GameClasses(SimpleTicTacToe.class, SimpleTicTacToeView.class, SimpleTicTacToeViewModel.class));
@@ -67,7 +67,7 @@ public class Client implements Service {
         Objects.requireNonNull(message);
         Objects.requireNonNull(c);
 
-        if(message instanceof Message.Authorization)
+        if(message instanceof Message.SuccessfulAuthorization)
             ClientGUI.authorizationLockNotify();
         else if(message instanceof Message.RoomList messageCast) {
             System.out.println(FXCollections.observableArrayList(messageCast.rooms()));
@@ -79,7 +79,7 @@ public class Client implements Service {
             PlayViewModel currentModelLocal;
             try {
                 starterInstance = gamePackage.gameClass().getConstructor().newInstance();
-                currentModelLocal = starterInstance.createViewModel(this, messageCast.p0().name().equals(username.name()) ? 0 : 1);
+                currentModelLocal = starterInstance.createViewModel(this, messageCast.p0().name().equals(username) ? 0 : 1);
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
                 sendMessage(new Message.Error("Constructor of game cannot be called"));
@@ -89,13 +89,18 @@ public class Client implements Service {
             starterInstance.start(messageCast.settings(), messageCast.seed());
             String [] playerNames = new String[]{messageCast.p0().name(), messageCast.p1().name()};
             Platform.runLater(
-                    () -> ClientGUI.startNewTab(currentPlayModel, playerNames[0].equals(username.name()) ? playerNames[1] : playerNames[0])
+                    () -> ClientGUI.startNewTab(currentPlayModel, playerNames[0].equals(username) ? playerNames[1] : playerNames[0])
             );
         }
         else if(message instanceof Message.ChatMessage messageCast) {
             messageProperty.set(messageCast);
         }
         else if(message instanceof Message.Move messageCast) {
+            if (messageCast.move() instanceof ResignationCommand res && currentPlayModel.playingAs() != res.getPlayer())
+                Platform.runLater(
+                        () -> new Alert(Alert.AlertType.ERROR, "Your opponent resigned").showAndWait()
+                );
+
             Platform.runLater(
                     () -> currentPlayModel.processMoveMessage(messageCast)
             );
@@ -104,16 +109,13 @@ public class Client implements Service {
             Platform.runLater(
                     () -> new Alert(Alert.AlertType.ERROR, messageCast.cause()).showAndWait()
             );
-            if(messageCast.cause().equals("Unsuccessful authorization")) {
-                username = null;
-                ClientGUI.authorizationLockNotify();
-            }
         }
-        else if(message instanceof Message.Resign messageCast) {
+        else if(message instanceof Message.UnsuccessfulAuthorization messageCast) {
             Platform.runLater(
-                    () -> new Alert(Alert.AlertType.ERROR, "Your opponent resigned").showAndWait()
+                    () -> new Alert(Alert.AlertType.ERROR, messageCast.cause()).showAndWait()
             );
-            currentPlayModel = null;
+            username = null;
+            ClientGUI.authorizationLockNotify();
         }
         else c.sendError("Message not recognized");
     }
@@ -128,8 +130,8 @@ public class Client implements Service {
     }
 
     public void sendMessage(Message.Any message) {
-        if(message instanceof Message.Authorization messageCast) {
-            username = new PlayerInfo(messageCast.name());
+        if(message instanceof Message.AuthorizationAttempt messageCast) {
+            username = messageCast.name();
         }
         activeConnection.sendMessage(message);
     }

@@ -5,7 +5,7 @@ import javafx.scene.control.TextInputDialog;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AuthorizationDialog {
+public class AuthorizationDialog { // TODO password field, cancel button is bugged
     private AtomicReference<String> username = new AtomicReference<>("");
     private TextInputDialog dialog;
 

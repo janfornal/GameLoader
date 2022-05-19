@@ -1,6 +1,7 @@
 package GameLoader.server;
 
 import GameLoader.common.*;
+import GameLoader.utility.IntPair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,7 +79,7 @@ public class GameManager {
             String err = p0 + " is playing: " + gameMap.containsKey(p0) + " ; " +
                          p1 + " is playing: " + gameMap.containsKey(p1);
 
-            server.connectionManager.sendErrorTo(err, p0, p1);
+            server.userManager.sendErrorTo(err, p0, p1);
             return;
         }
 
@@ -87,7 +88,7 @@ public class GameManager {
 
         Game g = server.gameTypeManager.createGame(gameName, settings);
         if (g == null) {
-            server.connectionManager.sendErrorTo("encountered error while constructing game <" +
+            server.userManager.sendErrorTo("encountered error while constructing game <" +
                     gameName + "> with settings: <" + settings + ">", p0, p1);
             return;
         }
@@ -95,7 +96,8 @@ public class GameManager {
         int seed = rn.nextInt(2);
         g.start(settings, seed);
 
-        GameInstance instance = new GameInstance(0, g, p0, p1); // TODO gameid (for game history)
+        int id = server.dataManager.nextId();
+        GameInstance instance = new GameInstance(id, g, p0, p1);
         gameMap.put(p0, instance);
         gameMap.put(p1, instance);
 
@@ -103,7 +105,7 @@ public class GameManager {
                 gameName, info.settings(), seed,
                 server.dataManager.getPlayerInfo(p0, gameName),
                 server.dataManager.getPlayerInfo(p1, gameName));
-        server.connectionManager.sendMessageTo(stg, p0, p1);
+        server.userManager.sendMessageTo(stg, p0, p1);
     }
 
     public /* unsynchronized */ void processMoveMessage(Message.Move msg, Connection c) {
@@ -134,7 +136,7 @@ public class GameManager {
             }
             game.makeMove(cmd);
 
-            server.connectionManager.sendMessageTo(msg, g.p0, g.p1);
+            server.userManager.sendMessageTo(msg, g.p0, g.p1);
 
             if (game.getState() != Game.state.UNFINISHED)
                 reportGameEnded(g);
@@ -144,42 +146,36 @@ public class GameManager {
     private synchronized void reportGameEnded(GameInstance g) {
         gameMap.remove(g.p0);
         gameMap.remove(g.p1);
+
+        String game = g.game.getName();
+
+        IntPair res = server.eloManager.calculate(
+                server.dataManager.getElo(g.p0, game),
+                server.dataManager.getElo(g.p1, game),
+                -1,
+                -1,
+                g.game.getState()
+        );
+
+        server.dataManager.setElo(g.p0, game, res.first());
+        server.dataManager.setElo(g.p1, game, res.second());
     }
 
-    public synchronized void processEndConnectionMessage(Message.EndConnection ignored, Connection c) {
-        roomsToJoin.remove(c.getName());
-        if (gameMap.containsKey(c.getName())) {
-            GameInstance g = gameMap.get(c.getName());
-            if (g.p0.equals(c.getName()))
-                server.connectionManager.sendMessageTo(new Message.Resign(), g.p1);
-            else
-                server.connectionManager.sendMessageTo(new Message.Resign(), g.p0);
-            reportGameEnded(g);
-        }
-    }
+    public synchronized void reportConnectionClosed(Connection c) {
+        String name = c.getName();
+        roomsToJoin.remove(name);
+        GameInstance g = gameMap.get(name);
 
+        if (g == null)
+            return;
 
-    public synchronized void processLeaveRoomMessage(Message.LeaveRoom ignored, Connection c) {
-        GameInstance g = gameMap.get(c.getName());
-        if (g.game.getState() == Game.state.UNFINISHED)
-            System.err.println("Something went wrong while ending the game: " + g);
-        reportGameEnded(g);
-    }
-
-    public synchronized void processResignMessage(Message.Resign m, Connection c) {
-        GameInstance g = gameMap.get(c.getName());
-        if (g.game.getState() != Game.state.UNFINISHED)
-            System.err.println("You cannot resign from ended game: " + g);
-        if(g.p0.equals(c.getName()))
-            server.connectionManager.sendMessageTo(m, g.p1);
-        else
-            server.connectionManager.sendMessageTo(m, g.p0);
-        reportGameEnded(g);
+        Command res = new ResignationCommand(g.p0.equals(name) ? 0 : 1);
+        processMoveMessage(new Message.Move(res), c);
     }
 
     public synchronized void processChatMessage(Message.ChatMessage m, Connection c) {
         GameInstance g = gameMap.get(c.getName());
-        server.connectionManager.sendMessageTo(m, g.p0);
-        server.connectionManager.sendMessageTo(m, g.p1);
+        server.userManager.sendMessageTo(m, g.p0);
+        server.userManager.sendMessageTo(m, g.p1);
     }
 }
