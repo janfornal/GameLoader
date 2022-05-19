@@ -7,6 +7,9 @@ import GameLoader.games.TicTacToe.TicTacToe;
 import GameLoader.games.TicTacToe.TicTacToeView;
 import GameLoader.games.TicTacToe.TicTacToeViewModel;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 
@@ -21,6 +24,7 @@ public class Client implements Service {
     private MenuViewModel currentModel;
     public PlayViewModel currentPlayModel;
     private final Connection activeConnection;
+    private SimpleObjectProperty<Message.ChatMessage> messageProperty = null;
     private RoomInfo chosenGame;
     public PlayerInfo username;
     public final Map<String, GameClasses> gameMap = new HashMap<>() {{
@@ -88,6 +92,9 @@ public class Client implements Service {
                     () -> ClientGUI.startNewTab(currentPlayModel, playerNames[0].equals(username.name()) ? playerNames[1] : playerNames[0])
             );
         }
+        else if(message instanceof Message.ChatMessage messageCast) {
+            messageProperty.set(messageCast);
+        }
         else if(message instanceof Message.Move messageCast) {
             Platform.runLater(
                     () -> currentPlayModel.processMoveMessage(messageCast)
@@ -125,5 +132,11 @@ public class Client implements Service {
             username = new PlayerInfo(messageCast.name());
         }
         activeConnection.sendMessage(message);
+    }
+
+    public SimpleObjectProperty<Message.ChatMessage> getMessageProperty() {   // why am I here?
+        if (messageProperty == null)
+            messageProperty = new SimpleObjectProperty<Message.ChatMessage>(new Message.ChatMessage(""));
+        return messageProperty;
     }
 }

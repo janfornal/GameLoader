@@ -56,6 +56,8 @@ public class MenuView extends GridPane implements GeneralView {
 
         add(nvm.getElements().roomTableView(), 0, 3, 1, 6);
 
+        nvm.getElements().roomTableView().setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         nvm.getElements().gameColumn().setCellValueFactory(
                 g -> new ReadOnlyObjectWrapper<String>(g.getValue().game())
         );

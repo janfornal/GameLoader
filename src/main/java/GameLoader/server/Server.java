@@ -115,6 +115,10 @@ public class Server implements Service {
             c.close();
             return;
         }
+        if (msg instanceof Message.ChatMessage m) {
+            gameManager.processChatMessage(m, c);
+            return;
+        }
         c.sendError("Message not recognized");
     }
 
