@@ -41,10 +41,6 @@ public class ChatWindow extends VBox {
                 trans.setToY(1.0);
                 trans.play();
                 insertChat();
-//                FadeTransition showFileRootTransition = new FadeTransition(Duration.millis(500), chatWindow);
-//                showFileRootTransition.setFromValue(0.0);
-//                showFileRootTransition.setToValue(1.0);
-//                showFileRootTransition.play();
             }
             if(newText.equals("Open")) {
                 ScaleTransition trans = new ScaleTransition(Duration.millis(150), chatWindow);
@@ -68,14 +64,14 @@ public class ChatWindow extends VBox {
             messageArea.setFont(Font.font(12));
             messageArea.setPrefHeight(150);
             messageArea.setEditable(false);
+            System.out.println(messageArea.getText());
             input.setOnAction(event -> {
-                String message = "Player " + this.username + ": " + input.getText();
+                String message = "Player " + this.username + ": " + input.getText() + "\n";
                 input.clear();
-                messageArea.appendText(message + "\n");
                 user.sendMessage(new Message.ChatMessage(message));
             });
             messageArea.textProperty().bind(Bindings.createObjectBinding(
-                    () -> messageArea.getText() + obs.get().text() + "\n",
+                    () -> messageArea.getText() + obs.get().text(),
                     obs
             ));
             this.getChildren().addAll(messageArea, input);

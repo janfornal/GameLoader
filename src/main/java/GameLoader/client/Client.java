@@ -24,7 +24,7 @@ public class Client implements AbstractService {
     private MenuViewModel currentModel;
     public PlayViewModel currentPlayModel;
     private final Connection activeConnection;
-    private SimpleObjectProperty<Message.ChatMessage> messageProperty;
+    private SimpleObjectProperty<Message.ChatMessage> messageProperty = null;
     private RoomInfo chosenGame;
     public PlayerInfo username;
     public final Map<String, GameClasses> gameMap = new HashMap<>() {{
