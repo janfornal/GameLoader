@@ -6,7 +6,7 @@ package GameLoader.server;
 
 public class CachedDataManager implements DataManager {
     @Override
-    public int getPlayerId(String name) {
+    public Integer getPlayerId(String name) {
         return 0;
     }
 
@@ -16,17 +16,17 @@ public class CachedDataManager implements DataManager {
     }
 
     @Override
-    public int getPlayerPassword(int i) {
+    public Integer getPlayerPassword(int i) {
         return 0;
     }
 
     @Override
-    public int registerPlayer(String name, int password) {
+    public Integer registerPlayer(String name, int password) {
         return 0;
     }
 
     @Override
-    public int getGameId(String name) {
+    public Integer getGameId(String name) {
         return 0;
     }
 
@@ -36,7 +36,7 @@ public class CachedDataManager implements DataManager {
     }
 
     @Override
-    public int registerGame(String name) {
+    public Integer registerGame(String name) {
         return 0;
     }
 

@@ -3,14 +3,14 @@ package GameLoader.server;
 import GameLoader.common.PlayerInfo;
 
 public interface DataManager extends AutoCloseable {
-    int getPlayerId(String name);
+    Integer getPlayerId(String name);
     String getPlayerName(int i);
-    int getPlayerPassword(int i); // FIXME how to store passwords properly?
-    int registerPlayer(String name, int password);
+    Integer getPlayerPassword(int i); // FIXME how to store passwords properly?
+    Integer registerPlayer(String name, int password);
 
-    int getGameId(String name);
+    Integer getGameId(String name);
     String getGameName(int i);
-    int registerGame(String name);
+    Integer registerGame(String name);
 
     int getElo(int player, int game);
     void setElo(int player, int game, int elo);
@@ -23,15 +23,10 @@ public interface DataManager extends AutoCloseable {
         setElo(player, getGameId(game), elo);
     }
 
-    default PlayerInfo getPlayerInfo(int playerId, int gameId) {
+    default PlayerInfo getPlayerInfo(String playerName, String gameName) {
         return new PlayerInfo(
-                getPlayerName(playerId),
-                playerId,
-                getElo(playerId, gameId)
+                playerName,
+                getElo(getPlayerId(playerName), getGameId(gameName))
         );
-    }
-
-    default PlayerInfo getPlayerInfo(int playerId, String game) {
-        return getPlayerInfo(playerId, getGameId(game));
     }
 }

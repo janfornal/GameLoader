@@ -17,7 +17,7 @@ public class ConnectionManager {
         server = s;
     }
 
-    private final Map<Integer, Connection> connectionMap = new HashMap<>();
+    private final Map<String, Connection> connectionMap = new HashMap<>();
     private final Set<Connection> connectionSet = new HashSet<>();
 
     public synchronized void createConnection(Socket s) {
@@ -25,7 +25,7 @@ public class ConnectionManager {
     }
 
     public synchronized void unregisterConnection(Connection c) {
-        connectionMap.remove(c.getId());
+        connectionMap.remove(c.getName());
         connectionSet.remove(c);
     }
 
@@ -34,8 +34,8 @@ public class ConnectionManager {
             server.execNormal.execute(c::close);
     }
 
-    public Connection getConnection(int p) {
-        return connectionMap.get(p);
+    public Connection getConnection(String name) {
+        return connectionMap.get(name);
     }
 
     public synchronized void processAuthorizationMessage(Message.Authorization msg, Connection c) {
@@ -49,14 +49,12 @@ public class ConnectionManager {
             return;
         }
 
-        int id = server.dataManager.getPlayerId(name);
-
-        if (id == Service.INT_NULL) {
+        if (server.dataManager.getPlayerId(name) == null) { // FIXME make this nicer
             c.sendError("Your account does not exist");
             return;
         }
 
-        if (connectionMap.containsKey(id)) {
+        if (connectionMap.containsKey(name)) {
             c.sendError("You are already connected");
             return;
         }
@@ -64,20 +62,20 @@ public class ConnectionManager {
         // TODO check password
 
         c.sendMessage(new Message.Authorization(""));
-        connectionMap.put(id, c);
-        c.authorize(id);
+        connectionMap.put(name, c);
+        c.authorize(name);
     }
 
-    public void sendMessageTo(Message.Any msg, int... to) {
-        for (int id : to) {
-            Connection c = getConnection(id);
+    public void sendMessageTo(Message.Any msg, String... to) {
+        for (String name : to) {
+            Connection c = getConnection(name);
             if (c == null)
                 continue;
             c.sendMessage(msg);
         }
     }
 
-    public void sendErrorTo(String cause, int... to) {
+    public void sendErrorTo(String cause, String... to) {
         sendMessageTo(new Message.Error(cause), to);
     }
 }

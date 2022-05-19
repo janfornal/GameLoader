@@ -14,7 +14,7 @@ public class Connection {
     private final ObjectOutputStream output;
     private final ObjectInputStream input;
 
-    private int playerId = Service.INT_NULL;
+    private String playerName = null;
     private boolean closed = false;
 
     public Connection(Service service, String ip, int port) throws IOException {
@@ -119,19 +119,19 @@ public class Connection {
         });
     }
 
-    public void authorize(int id) {
-        if (playerId != Service.INT_NULL)
+    public void authorize(String name) {
+        if (isAuthorized())
             throw new RuntimeException();
 
-        playerId = id;
+        playerName = name;
     }
 
-    public int getId() {
-        return playerId;
+    public String getName() {
+        return playerName;
     }
 
     public boolean isAuthorized() {
-        return playerId != Service.INT_NULL;
+        return playerName != null;
     }
 
     public synchronized void close() {
@@ -154,7 +154,7 @@ public class Connection {
         sb.append("closed=").append(closed);
 
         if (isAuthorized())
-            sb.append(", playerId=").append(playerId);
+            sb.append(", playerName=").append(playerName);
 
         return sb.append("]").toString();
     }

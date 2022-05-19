@@ -136,10 +136,10 @@ public class DatabaseManager implements DataManager {
         return res;
     }
 
-    private int queryInt(PreparedStatement st) throws SQLException {
+    private Integer queryInt(PreparedStatement st) throws SQLException {
         try (ResultSet rs = st.executeQuery()) {
             Service.DB_QUERY_CALL_STREAM.println(st);
-            int res = rs.next() ? rs.getInt(1) : Service.INT_NULL;
+            Integer res = rs.next() ? rs.getInt(1) : null;
             Service.DB_QUERY_RESULT_STREAM.println(st + "\tresult: " + res);
             return res;
         }
@@ -155,7 +155,7 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public int getPlayerId(String name) {
+    public Integer getPlayerId(String name) {
         try {
             getPlayerId.setString(1, name);
             return queryInt(getPlayerId);
@@ -175,7 +175,7 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public int getPlayerPassword(int i) {
+    public Integer getPlayerPassword(int i) {
         try {
             getPlayerPassword.setInt(1, i);
             return queryInt(getPlayerPassword);
@@ -185,24 +185,23 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public int registerPlayer(String name, int password) {
+    public Integer registerPlayer(String name, int password) {
         int id = name.hashCode(); // FIXME assign indices properly
         try {
             insertPlayers.setInt(1, id);
             insertPlayers.setString(2, name);
             insertPlayers.setInt(3, password);
-            return update(insertPlayers) > 0 ? id : service.INT_NULL;
+            return update(insertPlayers) > 0 ? id : null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public int getGameId(String name) {
+    public Integer getGameId(String name) {
         try {
             getGameId.setString(1, name);
-            int r = queryInt(getGameId);
-            return r != service.INT_NULL ? r : registerGame(name);
+            return queryInt(getGameId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -219,31 +218,31 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public int registerGame(String name) {
+    public Integer registerGame(String name) {
         int id = name.hashCode();
         try {
             insertGames.setInt(1, id);
             insertGames.setString(2, name);
-            return update(insertGames) > 0 ? id : service.INT_NULL;
+            return update(insertGames) > 0 ? id : null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public int getElo(int player, int game) { // TODO
+    public int getElo(int player, int game) { // TODO improve
         try {
             getElo.setInt(1, player);
             getElo.setInt(2, game);
-            int q = queryInt(getElo);
-            return q != service.INT_NULL ? q : service.DEFAULT_ELO;
+            Integer q = queryInt(getElo);
+            return q != null ? q : service.DEFAULT_ELO;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void setElo(int player, int game, int elo) { // TODO
+    public void setElo(int player, int game, int elo) { // TODO improve
         try {
             modifyElo.setInt(1, elo);
             modifyElo.setInt(2, player);

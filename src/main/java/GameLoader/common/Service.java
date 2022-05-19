@@ -27,7 +27,7 @@ public interface Service {
     PrintStream DB_QUERY_CALL_STREAM = NULL_STREAM;
     PrintStream DB_QUERY_RESULT_STREAM = INFO_STREAM;
 
-    int INT_NULL = -1, DEFAULT_ELO = 1000;
+    int DEFAULT_ELO = 1000;
 
     void processMessage(Message.Any message, Connection connection);
 
