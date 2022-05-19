@@ -10,7 +10,6 @@ import java.util.*;
 /**
  * This class is thread-safe
  */
-
 public class ConnectionManager {
     private final Server server;
     public ConnectionManager(Server s) {

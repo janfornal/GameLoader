@@ -7,7 +7,6 @@ import GameLoader.utility.IntPair;
 /**
  * This class is thread-safe
  */
-
 public class SimpleEloManager implements EloManager {
     public SimpleEloManager(Service ignored) {}
 

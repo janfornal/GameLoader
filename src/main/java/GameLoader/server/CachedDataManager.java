@@ -3,11 +3,10 @@ package GameLoader.server;
 /**
  * This class is not thread-safe
  */
-
 public class CachedDataManager implements DataManager {
     @Override
     public Integer getPlayerId(String name) {
-        return 0;
+        return null;
     }
 
     @Override
@@ -16,18 +15,18 @@ public class CachedDataManager implements DataManager {
     }
 
     @Override
-    public Integer getPlayerPassword(int i) {
-        return 0;
+    public Long getPlayerPassword(int i) {
+        return null;
     }
 
     @Override
-    public Integer registerPlayer(String name, int password) {
-        return 0;
+    public Integer registerPlayer(String name, long password) {
+        return null;
     }
 
     @Override
     public Integer getGameId(String name) {
-        return 0;
+        return null;
     }
 
     @Override
@@ -37,7 +36,7 @@ public class CachedDataManager implements DataManager {
 
     @Override
     public Integer registerGame(String name) {
-        return 0;
+        return null;
     }
 
     @Override

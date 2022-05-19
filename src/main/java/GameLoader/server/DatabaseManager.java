@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 /**
  * This class is not thread-safe
  */
-
 public class DatabaseManager implements DataManager {
     private final Service service;
     private final Supplier<Connection> connectionSupplier;
@@ -17,16 +16,20 @@ public class DatabaseManager implements DataManager {
         service = s;
         connectionSupplier = connectionFactory;
         openConnection();
+
+        for (int i = 0; i < 100; ++i)
+            registerPlayer("user"+i, 0);;
     }
     public DatabaseManager(Service s) {
-        this(s, new ConnectionFactory(s));
+        this(s, new DatabaseConnectionFactory(s));
     }
 
-    // these variables should either be all nulls are all non-nulls
+    // these variables should either be all nulls or all non-nulls
     private Connection conn;
     private PreparedStatement getPlayerName, getPlayerPassword, getPlayerId, insertPlayers;
     private PreparedStatement getGameName, getGameId, insertGames;
     private PreparedStatement getElo, modifyElo, insertElo;
+    private PreparedStatement nextId;
 
     public void close() {
         if (conn == null)
@@ -42,6 +45,7 @@ public class DatabaseManager implements DataManager {
             getElo.close();
             modifyElo.close();
             insertElo.close();
+            nextId.close();
             conn.close();
         } catch (SQLException e) {
             e.printStackTrace(service.ERROR_STREAM);
@@ -50,6 +54,7 @@ public class DatabaseManager implements DataManager {
             getPlayerName = getPlayerPassword = getPlayerId = insertPlayers = null;
             getGameName = getGameId = null;
             getElo = modifyElo = insertElo = null;
+            nextId = null;
         }
     }
 
@@ -72,13 +77,15 @@ public class DatabaseManager implements DataManager {
             getElo              = conn.prepareStatement("SELECT VAL FROM ELO WHERE PLAYER = ? AND GAME = ?");
             modifyElo           = conn.prepareStatement("UPDATE ELO SET VAL = ? WHERE PLAYER = ? AND GAME = ?");
             insertElo           = conn.prepareStatement("INSERT INTO ELO VALUES (?, ?, ?)");
+
+            nextId              = conn.prepareStatement("SELECT NEXTVAL('SEQ_ID')");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void initSchema() throws SQLException {
-        final int VERSION = 4;
+        final int VERSION = 6;
 
         try (PreparedStatement st = conn.prepareStatement("SELECT * FROM VERSION")) {
             if (queryInt(st) == VERSION)
@@ -94,7 +101,7 @@ public class DatabaseManager implements DataManager {
                 "CREATE TABLE USERS(" +
                         "ID INT PRIMARY KEY, " +
                         "NAME VARCHAR(40) UNIQUE NOT NULL, " +
-                        "PASSWORD INT NOT NULL)"
+                        "PASSWORD BIGINT NOT NULL)"
         ));
 
         updateOnce(conn.prepareStatement("DROP TABLE IF EXISTS GAMES CASCADE"));
@@ -113,10 +120,8 @@ public class DatabaseManager implements DataManager {
                 "UNIQUE (PLAYER, GAME))"
         ));
 
-        // FIXME add option to register users and delete this
-
-        for (int i = 0; i < 100; ++i)
-            updateOnce(conn.prepareStatement("INSERT INTO USERS VALUES("+i+", 'user"+i+"', 0)"));
+        updateOnce(conn.prepareStatement("DROP SEQUENCE IF EXISTS SEQ_ID"));
+        updateOnce(conn.prepareStatement("CREATE SEQUENCE SEQ_ID"));
 
         updateOnce(conn.prepareStatement("DROP TABLE IF EXISTS VERSION CASCADE"));
         updateOnce(conn.prepareStatement("CREATE TABLE VERSION(VER INT)"));
@@ -145,6 +150,15 @@ public class DatabaseManager implements DataManager {
         }
     }
 
+    private Long queryLong(PreparedStatement st) throws SQLException {
+        try (ResultSet rs = st.executeQuery()) {
+            Service.DB_QUERY_CALL_STREAM.println(st);
+            Long res = rs.next() ? rs.getLong(1) : null;
+            Service.DB_QUERY_RESULT_STREAM.println(st + "\tresult: " + res);
+            return res;
+        }
+    }
+
     private String queryString(PreparedStatement st) throws SQLException {
         try (ResultSet rs = st.executeQuery()) {
             Service.DB_QUERY_CALL_STREAM.println(st);
@@ -152,6 +166,10 @@ public class DatabaseManager implements DataManager {
             Service.DB_QUERY_RESULT_STREAM.println("\tresult: " + res);
             return res;
         }
+    }
+
+    private int nextId() throws SQLException {
+        return queryInt(nextId);
     }
 
     @Override
@@ -175,22 +193,24 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public Integer getPlayerPassword(int i) {
+    public Long getPlayerPassword(int i) {
         try {
             getPlayerPassword.setInt(1, i);
-            return queryInt(getPlayerPassword);
+            return queryLong(getPlayerPassword);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Integer registerPlayer(String name, int password) {
-        int id = name.hashCode(); // FIXME assign indices properly
+    public Integer registerPlayer(String name, long password) {
+        if (playerExists(name))
+            return null;
         try {
+            int id = nextId();
             insertPlayers.setInt(1, id);
             insertPlayers.setString(2, name);
-            insertPlayers.setInt(3, password);
+            insertPlayers.setLong(3, password);
             return update(insertPlayers) > 0 ? id : null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -219,8 +239,10 @@ public class DatabaseManager implements DataManager {
 
     @Override
     public Integer registerGame(String name) {
-        int id = name.hashCode();
+        if (gameExists(name))
+            return null;
         try {
+            int id = nextId();
             insertGames.setInt(1, id);
             insertGames.setString(2, name);
             return update(insertGames) > 0 ? id : null;
@@ -230,7 +252,7 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public int getElo(int player, int game) { // TODO improve
+    public int getElo(int player, int game) {
         try {
             getElo.setInt(1, player);
             getElo.setInt(2, game);
@@ -242,7 +264,7 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public void setElo(int player, int game, int elo) { // TODO improve
+    public void setElo(int player, int game, int elo) {
         try {
             modifyElo.setInt(1, elo);
             modifyElo.setInt(2, player);

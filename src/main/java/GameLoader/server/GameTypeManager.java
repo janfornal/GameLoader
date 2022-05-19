@@ -14,7 +14,6 @@ import java.util.*;
 /**
  * This class is not thread-safe
  */
-
 public class GameTypeManager {
     private final Service service;
     public GameTypeManager(Service s) {

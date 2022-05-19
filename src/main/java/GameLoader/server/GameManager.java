@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class is thread-safe
  */
-
 public class GameManager {
     private final Server server;
     public GameManager(Server s) {
@@ -179,7 +178,7 @@ public class GameManager {
     }
 
     public synchronized void processChatMessage(Message.ChatMessage m, Connection c) {
-        GameInstance g = gameMap.get(c.getId());
+        GameInstance g = gameMap.get(c.getName());
         server.connectionManager.sendMessageTo(m, g.p0);
         server.connectionManager.sendMessageTo(m, g.p1);
     }

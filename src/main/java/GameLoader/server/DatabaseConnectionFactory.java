@@ -2,15 +2,13 @@ package GameLoader.server;
 
 import GameLoader.common.Service;
 
-import java.io.PrintStream;
 import java.sql.*;
 import java.util.function.Supplier;
 
 /**
  * This class is not thread-safe
  */
-
-public class ConnectionFactory implements Supplier<Connection> {
+public class DatabaseConnectionFactory implements Supplier<Connection> {
     private static final String H2_DB_DRIVER = "org.h2.Driver";
     private static final String H2_DB_CONNECTION = "jdbc:h2:./GameLoader";
     private static final String H2_DB_USER = "";
@@ -36,7 +34,7 @@ public class ConnectionFactory implements Supplier<Connection> {
     }
 
     private final Service service;
-    public ConnectionFactory(Service s) {
+    public DatabaseConnectionFactory(Service s) {
         service = s;
     }
 
