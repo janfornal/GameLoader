@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 
 public class ClientGUI extends Application {
@@ -52,8 +53,7 @@ public class ClientGUI extends Application {
         synchronized (authorizationLock) {
             do {
                 AuthorizationDialog startAuth = new AuthorizationDialog();
-                String username = startAuth.getUsername();
-                user.sendMessage(new Message.Authorization(username));
+                startAuth.processAuthorization(stage);
                 authorizationLock.wait();
             } while (user.username == null);
         }
