@@ -29,6 +29,8 @@ public interface Service {
 
     int DEFAULT_ELO = 1000;
 
+    PasswordManager passwordManager = new PasswordManager(); // FIXME should this be here?
+
     void processMessage(Message.Any message, Connection connection);
 
     void reportConnectionClosed(Connection connection);

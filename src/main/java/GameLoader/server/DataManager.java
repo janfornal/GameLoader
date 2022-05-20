@@ -26,12 +26,12 @@ public interface DataManager extends AutoCloseable {
     /**
      * @return password if player with given id exists, null otherwise
      */
-    Long getPlayerPassword(int player);
+    String getPlayerPassword(int player);
 
     /**
      * @return password if player with given name exists, null otherwise
      */
-    default Long getPlayerPassword(String player) {
+    default String getPlayerPassword(String player) {
         Integer id = getPlayerId(player);
         return id == null ? null : getPlayerPassword(id);
     }
@@ -39,13 +39,13 @@ public interface DataManager extends AutoCloseable {
     /**
      * @return id of registered player if successful, null otherwise
      */
-    Integer registerPlayer(String name, long password);
+    Integer registerPlayer(String name, String password);
 
     /**
      * @return true if game with given name exists, false otherwise
      */
     default boolean gameExists(String name) {
-        return getPlayerId(name) != null;
+        return getGameId(name) != null;
     }
 
     /**
@@ -98,4 +98,9 @@ public interface DataManager extends AutoCloseable {
                 getElo(getPlayerId(playerName), getGameId(gameName))
         );
     }
+
+    /**
+     * @return next unique id
+     */
+    int nextId();
 }

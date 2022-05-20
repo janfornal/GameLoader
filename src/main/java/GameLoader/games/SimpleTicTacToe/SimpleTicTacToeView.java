@@ -11,13 +11,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.image.Image;
-
-import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.stream.Stream;
 
 public class SimpleTicTacToeView extends GridPane implements PlayView {
@@ -43,16 +36,15 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
     }
 
     private static Paint playerPaint(int player) {
-        //if (player == 0)
-          //  return Color.RED;
-        //if (player == 1)
-          //  return Color.BLUE;
+        if (player == 0)
+            return Color.RED;
+        if (player == 1)
+            return Color.BLUE;
         return Color.BLACK;
     }
 
-    private static Background playerBackground(int player) throws FileNotFoundException {
+    private static Background playerBackground(int player) {
         BackgroundFill fill = new BackgroundFill(playerPaint(player), CornerRadii.EMPTY, Insets.EMPTY);
-        //var d=new BackgroundImage(a, BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         return new Background(fill);
     }
 

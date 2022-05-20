@@ -69,8 +69,13 @@ public class Connection {
                     if (message instanceof Message.Pong ignored)
                         continue;
 
+                    if (message instanceof Message.EndConnection ignored) {
+                        close();
+                        return;
+                    }
+
                     try {
-                        service.processMessage(message, Connection.this);
+                        service.processMessage(message, this);
                     } catch (Exception e) {
                         e.printStackTrace(service.ERROR_STREAM);
                     }

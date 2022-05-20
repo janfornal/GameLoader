@@ -9,18 +9,22 @@ import java.util.function.Supplier;
  * This class is not thread-safe
  */
 public class DatabaseManager implements DataManager {
-    private final Service service;
+    private final Server server;
     private final Supplier<Connection> connectionSupplier;
 
-    public DatabaseManager(Service s, Supplier<Connection> connectionFactory) {
-        service = s;
+    public DatabaseManager(Server s, Supplier<Connection> connectionFactory) {
+        server = s;
         connectionSupplier = connectionFactory;
+
         openConnection();
 
-        for (int i = 0; i < 100; ++i)
-            registerPlayer("user"+i, 0);;
+        for (String game : server.gameTypeManager.getGameNames())
+            registerGame(game);
+
+        for (int i = 0; i < 10; ++i)
+            registerPlayer("user"+i, "");
     }
-    public DatabaseManager(Service s) {
+    public DatabaseManager(Server s) {
         this(s, new DatabaseConnectionFactory(s));
     }
 
@@ -48,7 +52,7 @@ public class DatabaseManager implements DataManager {
             nextId.close();
             conn.close();
         } catch (SQLException e) {
-            e.printStackTrace(service.ERROR_STREAM);
+            e.printStackTrace(server.ERROR_STREAM);
         } finally {
             conn = null;
             getPlayerName = getPlayerPassword = getPlayerId = insertPlayers = null;
@@ -85,7 +89,7 @@ public class DatabaseManager implements DataManager {
     }
 
     private void initSchema() throws SQLException {
-        final int VERSION = 6;
+        final int VERSION = 8; // increase this to reset database;
 
         try (PreparedStatement st = conn.prepareStatement("SELECT * FROM VERSION")) {
             if (queryInt(st) == VERSION)
@@ -101,8 +105,8 @@ public class DatabaseManager implements DataManager {
                 "CREATE TABLE USERS(" +
                         "ID INT PRIMARY KEY, " +
                         "NAME VARCHAR(40) UNIQUE NOT NULL, " +
-                        "PASSWORD BIGINT NOT NULL)"
-        ));
+                        "PASSWORD VARCHAR(50) NOT NULL)"
+        )); // FIXME how long should be password field?
 
         updateOnce(conn.prepareStatement("DROP TABLE IF EXISTS GAMES CASCADE"));
         updateOnce(conn.prepareStatement("" +
@@ -168,8 +172,13 @@ public class DatabaseManager implements DataManager {
         }
     }
 
-    private int nextId() throws SQLException {
-        return queryInt(nextId);
+    @Override
+    public int nextId() {
+        try {
+            return queryInt(nextId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -193,24 +202,24 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public Long getPlayerPassword(int i) {
+    public String getPlayerPassword(int i) {
         try {
             getPlayerPassword.setInt(1, i);
-            return queryLong(getPlayerPassword);
+            return queryString(getPlayerPassword);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Integer registerPlayer(String name, long password) {
+    public Integer registerPlayer(String name, String password) {
         if (playerExists(name))
             return null;
         try {
             int id = nextId();
             insertPlayers.setInt(1, id);
             insertPlayers.setString(2, name);
-            insertPlayers.setLong(3, password);
+            insertPlayers.setString(3, password);
             return update(insertPlayers) > 0 ? id : null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -257,7 +266,7 @@ public class DatabaseManager implements DataManager {
             getElo.setInt(1, player);
             getElo.setInt(2, game);
             Integer q = queryInt(getElo);
-            return q != null ? q : service.DEFAULT_ELO;
+            return q != null ? q : Service.DEFAULT_ELO;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

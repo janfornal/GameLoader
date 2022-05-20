@@ -16,13 +16,6 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
         modelUser = user;
         modelGame = game;
         myPlayer = id;
-
-        modelGame.getGameStateProperty().addListener((a, b, c) -> {
-            if(modelGame.getGameStateProperty().get() == Game.state.UNFINISHED) {// it can be shortened xd
-                return;
-            }
-            modelUser.sendMessage(new Message.LeaveRoom());
-        });
     }
 
     @Override
@@ -71,6 +64,7 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
         modelGame.makeMove(cmd);
     }
 
+    @Override
     public int playingAs() {
         return myPlayer;
     }

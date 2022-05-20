@@ -3,7 +3,4 @@ package GameLoader.common;
 import java.io.Serializable;
 
 public record PlayerInfo(String name, int elo) implements Serializable {
-    public PlayerInfo(String name) { // TODO delete this
-        this(name, 1000);
-    }
 }

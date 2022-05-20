@@ -14,7 +14,7 @@ public class Server implements Service {
     private ServerSocket serverSocket;
 
     public final GameManager gameManager = new GameManager(this);
-    public final ConnectionManager connectionManager = new ConnectionManager(this);
+    public final UserManager userManager = new UserManager(this);
     public final GameTypeManager gameTypeManager = new GameTypeManager(this);
     public final DataManager dataManager = new DatabaseManager(this);
     public final EloManager eloManager = new SimpleEloManager(this);
@@ -36,7 +36,7 @@ public class Server implements Service {
         execNormal.execute(() -> {
             try {
                 while (!serverSocket.isClosed())
-                    connectionManager.createConnection(serverSocket.accept());
+                    userManager.createConnection(serverSocket.accept());
             } catch (IOException e) {
                 if (!closed) {
                     e.printStackTrace(ERROR_STREAM);
@@ -63,7 +63,7 @@ public class Server implements Service {
         } catch (IOException e) {
             e.printStackTrace(ERROR_STREAM);
         }
-        connectionManager.closeAllConnections();
+        userManager.closeAllConnections();
     }
 
     @Override
@@ -71,11 +71,16 @@ public class Server implements Service {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(c);
 
-        if (msg instanceof Message.Error) {
+        if (msg instanceof Message.Error m) {
+            Service.ERROR_STREAM.println(m);
             return;
         }
-        if (msg instanceof Message.Authorization m) {
-            connectionManager.processAuthorizationMessage(m, c);
+        if (msg instanceof Message.AuthorizationAttempt m) {
+            userManager.processAuthorizationAttemptMessage(m, c);
+            return;
+        }
+        if (msg instanceof Message.RegistrationAttempt m) {
+            userManager.processRegistrationAttemptMessage(m, c);
             return;
         }
         if (!c.isAuthorized()) {
@@ -102,19 +107,6 @@ public class Server implements Service {
             gameTypeManager.processGetGameListMessage(m, c);
             return;
         }
-        if (msg instanceof Message.LeaveRoom m) {
-            gameManager.processLeaveRoomMessage(m, c);
-            return;
-        }
-        if (msg instanceof Message.Resign m) {
-            gameManager.processResignMessage(m, c);
-            return;
-        }
-        if (msg instanceof Message.EndConnection m) {
-            gameManager.processEndConnectionMessage(m, c);
-            c.close();
-            return;
-        }
         if (msg instanceof Message.ChatMessage m) {
             gameManager.processChatMessage(m, c);
             return;
@@ -124,6 +116,6 @@ public class Server implements Service {
 
     @Override
     public void reportConnectionClosed(Connection c) {
-        connectionManager.unregisterConnection(c);
+        userManager.reportConnectionClosed(c);
     }
 }

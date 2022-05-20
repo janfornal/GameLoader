@@ -62,6 +62,7 @@ public class TicTacToeViewModel implements PlayViewModel {
         modelUser.sendMessage(new Message.Move(cmd));
     }
 
+    @Override
     public int playingAs() {
         return myPlayer;
     }

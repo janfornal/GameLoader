@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AuthorizationDialog extends SplitPane {
-
     private AtomicReference<String> username = new AtomicReference<>("");
     private AnchorPane leftPane;
     private Label changeAuthorizationDialog;

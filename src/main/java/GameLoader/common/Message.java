@@ -12,7 +12,12 @@ public interface Message {
     record Pong(String p) implements CtoS, StoC {}
 
     record Error(String cause) implements CtoS, StoC {}
-    record Authorization(String name) implements CtoS {}
+
+    record AuthorizationAttempt(String name, String password) implements CtoS {}
+    record RegistrationAttempt(String name, String password) implements CtoS {}
+
+    record SuccessfulAuthorization() implements StoC {}
+    record UnsuccessfulAuthorization(String cause) implements StoC {}
 
     record GetRoomList() implements CtoS {} // prośba do serwera o poniższe
     record RoomList(ArrayList<RoomInfo> rooms) implements StoC {} // przesyłamy listę obiektów typu RoomInfo które mówią o nierozpoczętych jeszcze grach
@@ -24,8 +29,6 @@ public interface Message {
     record Move(Command move) implements CtoS, StoC {} // wykonany ruch
 
     record InterruptedGame(String cause) implements Any {} // to jest na razie nieistotne
-    record LeaveRoom() implements Any {} // to jest na razie nieistotne
-    record Resign() implements Any {} // to jest na razie nieistotne
     record EndConnection() implements Any {}
 
     record GameList() implements Any {} // to jest na razie nieistotne
