@@ -27,6 +27,7 @@ public class AuthorizationDialog extends SplitPane {
     private Button confirmationButton;
     private boolean isRegister = false;
     private Stage parentStage;
+    private boolean confirmed;
 
     AuthorizationDialog() {
         leftPane = new AnchorPane();
@@ -67,6 +68,7 @@ public class AuthorizationDialog extends SplitPane {
                 return;
             }
             parentStage.hide();
+            confirmed = true;
         });
         rightPane.getChildren().addAll(titleLabel, dataGridPane, confirmationButton);
         AnchorPane.setLeftAnchor(titleLabel, 13.0);
@@ -98,6 +100,7 @@ public class AuthorizationDialog extends SplitPane {
         stage.setScene(new Scene(this));
         stage.setResizable(false);
         stage.showAndWait();
+        if(!confirmed) return null;
         PasswordManager pm = new PasswordManager();
         String hashedPasswd = pm.hash(usernameTextField.getText(), passwordTextField.getText());
         if(isRegister) return new Message.RegistrationAttempt(usernameTextField.getText(), hashedPasswd);

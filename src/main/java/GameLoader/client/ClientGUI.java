@@ -56,7 +56,7 @@ public class ClientGUI extends Application {
                 authStage.setOnCloseRequest(ClientGUI::HandlerFunction);
                 AuthorizationDialog startAuth = new AuthorizationDialog();
                 Message.Any userData = startAuth.processAuthorization(authStage);
-                if(!authStage.isShowing()) return;
+                if(userData == null) return;
                 user.sendMessage(userData);
                 authorizationLock.wait();
             } while (user.username == null);
