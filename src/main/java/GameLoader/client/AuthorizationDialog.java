@@ -1,5 +1,7 @@
 package GameLoader.client;
 
+import GameLoader.common.Message;
+import GameLoader.common.PasswordManager;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -14,17 +16,16 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AuthorizationDialog extends SplitPane {
-    private AtomicReference<String> username = new AtomicReference<>("");
-    private AnchorPane leftPane;
+    private final AnchorPane leftPane;
     private Label changeAuthorizationDialog;
     private Button changeAuthorizationButton;
-    private AnchorPane rightPane;
+    private final AnchorPane rightPane;
     private Label titleLabel;
-    private GridPane dataGridPane;
+    private final GridPane dataGridPane;
     private TextField usernameTextField;
     private PasswordField passwordTextField;
     private Button confirmationButton;
-    private boolean isRegister;
+    private boolean isRegister = false;
     private Stage parentStage;
 
     AuthorizationDialog() {
@@ -92,11 +93,14 @@ public class AuthorizationDialog extends SplitPane {
         passwordTextField.setPromptText("Enter your password");
     }
 
-    void processAuthorization(Stage stage) {
+    Message.Any processAuthorization(Stage stage) {
         parentStage = stage;
         stage.setScene(new Scene(this));
         stage.setResizable(false);
         stage.showAndWait();
-
+        PasswordManager pm = new PasswordManager();
+        String hashedPasswd = pm.hash(usernameTextField.getText(), passwordTextField.getText());
+        if(isRegister) return new Message.RegistrationAttempt(usernameTextField.getText(), hashedPasswd);
+        else return new Message.AuthorizationAttempt(usernameTextField.getText(), hashedPasswd);
     }
 }

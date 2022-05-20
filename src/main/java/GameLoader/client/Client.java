@@ -133,6 +133,9 @@ public class Client implements Service {
         if(message instanceof Message.AuthorizationAttempt messageCast) {
             username = messageCast.name();
         }
+        if(message instanceof Message.RegistrationAttempt messageCast) {
+            username = messageCast.name();
+        }
         activeConnection.sendMessage(message);
     }
 

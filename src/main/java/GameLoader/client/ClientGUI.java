@@ -6,17 +6,16 @@ import GameLoader.common.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;
 import javafx.application.Application;
 import javafx.event.Event;
-import javafx.geometry.Pos;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 
 public class ClientGUI extends Application {
@@ -45,7 +44,7 @@ public class ClientGUI extends Application {
             event.consume();
         else {
             user.sendMessage(new Message.EndConnection());
-            currentStage.close();
+            if(currentStage != null) currentStage.close();
         }
     }
 
@@ -53,8 +52,12 @@ public class ClientGUI extends Application {
     public void start(Stage stage) throws Exception {
         synchronized (authorizationLock) {
             do {
+                Stage authStage = new Stage();
+                authStage.setOnCloseRequest(ClientGUI::HandlerFunction);
                 AuthorizationDialog startAuth = new AuthorizationDialog();
-                startAuth.processAuthorization(stage);
+                Message.Any userData = startAuth.processAuthorization(authStage);
+                if(!authStage.isShowing()) return;
+                user.sendMessage(userData);
                 authorizationLock.wait();
             } while (user.username == null);
         }
