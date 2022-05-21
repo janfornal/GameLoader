@@ -20,9 +20,6 @@ public class DatabaseManager implements DataManager {
 
         for (String game : server.gameTypeManager.getGameNames())
             registerGame(game);
-
-        for (int i = 0; i < 10; ++i)
-            registerPlayer("user"+i, "");
     }
     public DatabaseManager(Server s) {
         this(s, new DatabaseConnectionFactory(s));
@@ -89,7 +86,7 @@ public class DatabaseManager implements DataManager {
     }
 
     private void initSchema() throws SQLException {
-        final int VERSION = 8; // increase this to reset database;
+        final int VERSION = 9; // increase this to reset database;
 
         try (PreparedStatement st = conn.prepareStatement("SELECT * FROM VERSION")) {
             if (queryInt(st) == VERSION)

@@ -11,7 +11,7 @@ public class PasswordManager {
     private final Base64.Encoder encoder = Base64.getEncoder();
     private final MessageDigest sha256;
     {
-        MessageDigest digest = null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
@@ -23,6 +23,6 @@ public class PasswordManager {
     public String hash(String username, String password) {
         String inp = "gameloader" + username + password;
         byte[] hsh = sha256.digest(inp.getBytes());
-        return new String(hsh);
+        return encoder.encodeToString(hsh);
     }
 }

@@ -58,7 +58,7 @@ public class UserManager {
             return;
         }
 
-        if (!expectedPassword.equals(password) && false) { // TODO delete this once registration is implemented
+        if (!expectedPassword.equals(password)) {
             c.sendMessage(new Message.UnsuccessfulAuthorization("Password does not match"));
             return;
         }
