@@ -7,10 +7,15 @@ import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+
+import java.io.File;
 import java.util.stream.Stream;
 
 public class SimpleTicTacToeView extends GridPane implements PlayView {
@@ -22,6 +27,7 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
         game = gvm.getGame();
         int sz = game.getSize();
         int gridSz = sz * 2 - 1;
+
 
         Stream.generate(RowConstraints::new).limit(gridSz).forEach(getRowConstraints()::add);
         Stream.generate(ColumnConstraints::new).limit(gridSz).forEach(getColumnConstraints()::add);
@@ -35,17 +41,22 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
             }
     }
 
-    private static Paint playerPaint(int player) {
-        if (player == 0)
-            return Color.RED;
-        if (player == 1)
-            return Color.BLUE;
-        return Color.BLACK;
-    }
-
     private static Background playerBackground(int player) {
-        BackgroundFill fill = new BackgroundFill(playerPaint(player), CornerRadii.EMPTY, Insets.EMPTY);
-        return new Background(fill);
+            if(player==0){
+                BackgroundImage image=new BackgroundImage(new Image("file:src/main/java/GameLoader/images/tcs3.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
+                BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
+                return new Background(new BackgroundFill[]{fill},new BackgroundImage[]{image});
+            }
+            else if (player==1){
+                BackgroundImage image=new BackgroundImage(new Image("file:src/main/java/GameLoader/images/agh2.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
+                BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
+                return new Background(new BackgroundFill[]{fill},new BackgroundImage[]{image});
+            }
+            else {
+                BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
+                return new Background(fill);
+            }
+
     }
 
     private class ClickableField extends VBox {
@@ -53,6 +64,7 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY)
                     gvm.clickedOn(i, j);
+
             });
 
             IntegerProperty owner = new SimpleIntegerProperty(-1);
@@ -72,6 +84,7 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
                             () -> playerBackground(owner.get()),
                             owner
                     )
+
             );
 
             cursorProperty().bind(
@@ -80,6 +93,7 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
                             clickable
                     )
             );
+
         }
     }
 }

@@ -212,7 +212,7 @@ public class TicTacToe implements Game {
 
     @Override
     public Set<String> possibleSettings() {
-        return Set.of("Small","Medium","Large");
+        return Set.of("Small","Medium","Big");
     }
 
     @Override
