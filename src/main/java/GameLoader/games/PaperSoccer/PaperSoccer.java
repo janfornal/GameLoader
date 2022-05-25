@@ -11,12 +11,13 @@ import javafx.beans.property.SimpleIntegerProperty;
 import java.util.*;
 
 import static java.lang.Math.abs;
+import static GameLoader.common.Utility.runtimeAssert;
 
 public class PaperSoccer implements Game {
     private static final Map<String, IntPair> settingsMap = Map.of(
-            "Small", new IntPair(2, 2),
-            "Medium", new IntPair(4, 5),
-            "Large", new IntPair(6, 8)
+            "Small", new IntPair(6, 6),
+            "Medium", new IntPair(8, 10),
+            "Large", new IntPair(12, 16)
     );
 
     public static final List<IntPair> dirList = List.of(
@@ -87,8 +88,8 @@ public class PaperSoccer implements Game {
 
         Map<IntPair, Field> mp = new HashMap<>();
 
-        for (int i = -sz.x() - 2; i <= sz.x() + 2; ++i)
-            for (int j = -sz.y() - 2; j <= sz.y() + 2; ++j)
+        for (int i = -sz.x() / 2 - 2; i <= sz.x() / 2 + 2; ++i)
+            for (int j = -sz.y() / 2 - 2; j <= sz.y() / 2 + 2; ++j)
                 mp.put(new IntPair(i, j), new Field(i, j));
 
         currField = mp.get(new IntPair(0, 0));
@@ -103,8 +104,16 @@ public class PaperSoccer implements Game {
                 IntPair coordOther = new IntPair(f.pos.x() + dirList.get(d).x(), f.pos.y() + dirList.get(d).y());
                 Field other = mp.get(coordOther);
 
-                if (other != null)
-                    allEdges.add(new Edge(f, other));
+                if (other == null || !other.isPlayable())
+                    continue;
+
+                // weird edge case ; d % 2 == 1 is a diagonal move
+                if (f.isCornerGoal() && other.isBorder() && d % 2 == 1)
+                    continue;
+                if (f.isBorder() && other.isCornerGoal() && d % 2 == 1)
+                    continue;
+
+                allEdges.add(new Edge(f, other));
             }
         }
     }
@@ -121,10 +130,6 @@ public class PaperSoccer implements Game {
 
     public int getTurn() {
         return turn;
-    }
-
-    public IntPair getSz() {
-        return sz;
     }
 
     public Field getCurrField() {
@@ -170,8 +175,6 @@ public class PaperSoccer implements Game {
                 ", currState=" + currState +
                 ", moveCount=" + moveCount +
                 ", turn=" + turn +
-                ", allEdges=" + allEdges +
-                ", allFields=" + allFields +
                 '}';
     }
 
@@ -188,8 +191,11 @@ public class PaperSoccer implements Game {
         public boolean isGoal() {
             return apos.x() <= goalSz && apos.y() == sz.y() / 2 + 1;
         }
+        public boolean isCornerGoal() {
+            return apos.x() == goalSz && apos.y() == sz.y() / 2 + 1;
+        }
         public int whoseGoal() {
-            assert isGoal();
+            runtimeAssert(isGoal());
             return pos.y() > 0 ? 1 : 0;
         }
         public boolean finished() {
@@ -211,8 +217,8 @@ public class PaperSoccer implements Game {
             return apos.x() <= sz.x() / 2 && apos.y() <= sz.y() / 2;
         }
         public void registerEdge(Edge e, int i) {
-            assert isPlayable();
-            assert edges[i] == null;
+            runtimeAssert(isPlayable());
+            runtimeAssert(edges[i] == null);
             edges[i] = e;
 
             if (e.border)
@@ -221,7 +227,7 @@ public class PaperSoccer implements Game {
                 ++active;
         }
         public void play() {
-            assert !finished();
+            runtimeAssert(!finished());
             ++used;
             --active;
         }
@@ -239,17 +245,30 @@ public class PaperSoccer implements Game {
     }
     public class Edge {
         public final Field f, g;
-        public final boolean border;
+        public final boolean border, diagonal;
+        public final int goalBorder;
         public boolean active;
 
         public Edge(Field f1, Field f2) {
             f = f1;
             g = f2;
 
-            border = f.isBorder() && g.isBorder();
+            int jmp = dirMap.get(new IntPair(g.pos.x() - f.pos.x(), g.pos.y() - f.pos.y()));
+            diagonal = jmp % 2 == 1;
+
+            border = f.isBorder() && g.isBorder() && diagonal;
             active = !border;
 
-            int jmp = dirMap.get(new IntPair(g.pos.x() - f.pos.x(), g.pos.y() - f.pos.y()));
+            int goalBorderVal;
+            if (!border)
+                goalBorderVal = -1;
+            else if (f.isGoal())
+                goalBorderVal = f.whoseGoal();
+            else if (g.isGoal())
+                goalBorderVal = g.whoseGoal();
+            else
+                goalBorderVal = -1;
+            goalBorder = goalBorderVal;
 
             f.registerEdge(this, jmp);
             g.registerEdge(this, jmp ^ 4);
@@ -259,7 +278,7 @@ public class PaperSoccer implements Game {
          * @return true if the other field has active edge, false otherwise
          */
         public boolean play(Field played) {
-            assert active;
+            runtimeAssert(active);
             boolean ret = other(played).jumpy();
             f.play();
             g.play();
@@ -267,7 +286,7 @@ public class PaperSoccer implements Game {
             return ret;
         }
         public Field other(Field o) {
-            assert o == f || o == g;
+            runtimeAssert(o == f || o == g);
             return o == f ? g : f;
         }
 
