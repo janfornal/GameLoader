@@ -28,7 +28,7 @@ public class MenuViewModel implements ViewModel {
     record guiElements(
             ChoiceBox<String> choiceGameBox,
             ChoiceBox<String> choiceSizeBox,
-            Label createRoomLabel,
+            //Label createRoomLabel,
             TableView<RoomInfo> roomTableView,
             Button createRoomButton,
             Button getRoomList,
@@ -40,8 +40,8 @@ public class MenuViewModel implements ViewModel {
     ) implements GuiElements {
     }
 
-    int prefWindowWidth = 600;
-    int prefWindowHeight = 400;
+    int prefWindowWidth = 800;
+    int prefWindowHeight = 600;
     private guiElements guiVisual;
     private final Client modelUser;
 

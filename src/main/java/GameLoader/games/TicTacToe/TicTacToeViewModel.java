@@ -1,15 +1,10 @@
 package GameLoader.games.TicTacToe;
 
 import GameLoader.client.Client;
-import GameLoader.client.ClientGUI;
 import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
 import GameLoader.common.Command;
-import GameLoader.common.Game;
 import GameLoader.common.Message;
-import javafx.application.Platform;
-
-import java.util.concurrent.TimeUnit;
 
 public class TicTacToeViewModel implements PlayViewModel {
     public TicTacToeViewModel(Client user, int id, TicTacToe game) {

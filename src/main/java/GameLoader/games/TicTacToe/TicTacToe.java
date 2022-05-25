@@ -5,14 +5,9 @@ import GameLoader.common.Command;
 import GameLoader.common.Game;
 import GameLoader.common.ResignationCommand;
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 public class TicTacToe implements Game {
     private int winscore=5;
@@ -36,7 +31,6 @@ public class TicTacToe implements Game {
             int pl = tttMove.getPlayer();
             int row = tttMove.getRow();
             int col = tttMove.getCol();
-
             T[row][col] = pl;
             turn = 1 - turn;
             currState = calcState(row,col);

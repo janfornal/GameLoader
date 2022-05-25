@@ -30,7 +30,7 @@ public class MenuView extends GridPane implements GeneralView {
             this.getColumnConstraints().get(i).setPercentWidth(columnWidth.get(i));
         }
 
-        List <Integer> rowHeight = Arrays.asList(90, 21, 19, 24, 24, 24, 24, 24, 24, 106);
+        List <Integer> rowHeight = Arrays.asList(100, 24, 22, 30, 30, 30, 30, 30, 30, 120);
         this.getRowConstraints().addAll(rowHeight.stream()
                 .map(t -> new RowConstraints()).toList());
 
@@ -41,7 +41,7 @@ public class MenuView extends GridPane implements GeneralView {
         nvm.setElements(new MenuViewModel.guiElements(
             new ChoiceBox<String>(FXCollections.observableArrayList( new DotsAndBoxes().getName(), new TicTacToe().getName())),
             new ChoiceBox<String>(),
-            new Label("Create Room"),
+            //new Label("Create Room"),
             new TableView<RoomInfo>(),
             new Button("Create Room"),
             new Button("Get Room List"),
@@ -53,7 +53,7 @@ public class MenuView extends GridPane implements GeneralView {
                 //TODO add new tab that shows user profile or show elos under the player's names
         ));
 
-        nvm.getElements().titleLabel().setFont(new Font("Helvetica", 24));
+        nvm.getElements().titleLabel().setFont(new Font("Helvetica", 40));
         add(nvm.getElements().titleLabel(), 0, 0, 4, 1);
 
         add(nvm.getElements().roomTableView(), 0, 3, 1, 6);
@@ -85,9 +85,9 @@ public class MenuView extends GridPane implements GeneralView {
 
 
 
-        add(nvm.getElements().createRoomLabel(), 2, 2, 1, 1);
-        nvm.getElements().createRoomLabel().setTextAlignment(TextAlignment.CENTER);
-        setHalignment(nvm.getElements().createRoomLabel(), HPos.CENTER);
+        //add(nvm.getElements().createRoomLabel(), 2, 2, 1, 1);
+        //nvm.getElements().createRoomLabel().setTextAlignment(TextAlignment.CENTER);
+        //setHalignment(nvm.getElements().createRoomLabel(), HPos.CENTER);
 
         add(nvm.getElements().choiceGameBox(),  2, 4, 1, 1);
         nvm.getElements().choiceGameBox().getSelectionModel().select("Last game?");
