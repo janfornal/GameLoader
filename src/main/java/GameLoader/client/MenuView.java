@@ -48,6 +48,7 @@ public class MenuView extends GridPane implements GeneralView {
             new TableColumn<RoomInfo, String>("Game"),
             new TableColumn<RoomInfo, String>("Size"),
             new TableColumn<RoomInfo, String>("User"),
+            new TableColumn<RoomInfo, Integer>("Elo"),
             new Label("Game Server")
         ));
 
@@ -70,10 +71,15 @@ public class MenuView extends GridPane implements GeneralView {
                 g -> new ReadOnlyObjectWrapper<String>(g.getValue().p0().name())
         );
 
+        nvm.getElements().eloColumn().setCellValueFactory(
+                g -> new ReadOnlyObjectWrapper<Integer>(g.getValue().p0().elo())
+        );
+
         nvm.getElements().roomTableView().getColumns().addAll(
                 nvm.getElements().gameColumn(),
                 nvm.getElements().sizeColumn(),
-                nvm.getElements().userColumn());
+                nvm.getElements().userColumn(),
+                nvm.getElements().eloColumn());
         nvm.addGetToRoomHandler(nvm.getElements().roomTableView());
 
         add(nvm.getElements().createRoomLabel(), 2, 2, 1, 1);

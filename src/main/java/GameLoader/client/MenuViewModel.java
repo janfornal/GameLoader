@@ -35,6 +35,7 @@ public class MenuViewModel implements ViewModel {
             TableColumn<RoomInfo, String> gameColumn,
             TableColumn<RoomInfo, String> sizeColumn,
             TableColumn<RoomInfo, String> userColumn,
+            TableColumn<RoomInfo, Integer> eloColumn,
             Label titleLabel
     ) implements GuiElements {
     }
