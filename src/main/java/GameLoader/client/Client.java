@@ -140,4 +140,5 @@ public class Client implements Service {
             messageProperty = new SimpleObjectProperty<Message.ChatMessage>(new Message.ChatMessage(""));
         return messageProperty;
     }
+
 }

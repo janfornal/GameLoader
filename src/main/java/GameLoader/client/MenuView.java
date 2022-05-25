@@ -20,7 +20,7 @@ public class MenuView extends GridPane implements GeneralView {
 
         setPrefSize(nvm.prefWindowWidth, nvm.prefWindowHeight);
 
-        setPadding(new Insets(10, 20, 10, 20));
+        setPadding(new Insets(20, 20, 10, 20));
 
         List<Integer> columnWidth = Arrays.asList(270, 100, 210);
         this.getColumnConstraints().addAll(columnWidth.stream()
@@ -49,10 +49,11 @@ public class MenuView extends GridPane implements GeneralView {
             new TableColumn<RoomInfo, String>("Size"),
             new TableColumn<RoomInfo, String>("User"),
             new TableColumn<RoomInfo, Integer>("Elo"),
-            new Label("Game Server")
+            new Label("LET'S GO " + nvm.getModelUser().username)
+                //TODO add new tab that shows user profile or show elos under the player's names
         ));
 
-        nvm.getElements().titleLabel().setFont(new Font("Javanese Text", 24));
+        nvm.getElements().titleLabel().setFont(new Font("Helvetica", 24));
         add(nvm.getElements().titleLabel(), 0, 0, 4, 1);
 
         add(nvm.getElements().roomTableView(), 0, 3, 1, 6);
@@ -82,14 +83,18 @@ public class MenuView extends GridPane implements GeneralView {
                 nvm.getElements().eloColumn());
         nvm.addGetToRoomHandler(nvm.getElements().roomTableView());
 
+
+
         add(nvm.getElements().createRoomLabel(), 2, 2, 1, 1);
         nvm.getElements().createRoomLabel().setTextAlignment(TextAlignment.CENTER);
         setHalignment(nvm.getElements().createRoomLabel(), HPos.CENTER);
 
         add(nvm.getElements().choiceGameBox(),  2, 4, 1, 1);
+        nvm.getElements().choiceGameBox().getSelectionModel().select("Last game?");
         setHalignment(nvm.getElements().choiceGameBox(), HPos.CENTER);
 
         add(nvm.getElements().choiceSizeBox(), 2, 6, 1, 1);
+        nvm.getElements().choiceSizeBox().getSelectionModel().select("GO");
         setFillWidth(nvm.getElements().choiceSizeBox(), true);
         setHgrow(nvm.getElements().choiceSizeBox(), Priority.ALWAYS);
         setHalignment(nvm.getElements().choiceSizeBox(), HPos.CENTER);
@@ -102,5 +107,6 @@ public class MenuView extends GridPane implements GeneralView {
         add(nvm.getElements().getRoomList(), 2, 8, 1, 1);
         setHalignment(nvm.getElements().getRoomList(), HPos.RIGHT);
         nvm.addGetRoomHandler(nvm.getElements().getRoomList());
+
     }
 }

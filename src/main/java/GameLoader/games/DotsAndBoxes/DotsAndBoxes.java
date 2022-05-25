@@ -131,9 +131,9 @@ public class DotsAndBoxes implements Game {
     }
 
     private static final Map<String, Coord> settingsMap = Map.of(
-            "Big", new Coord(6, 8),
+            "Small", new Coord(2, 3),
             "Medium", new Coord(4, 5),
-            "Small", new Coord(2, 3)
+            "Big", new Coord(6, 8)
     );// it has to be this way, otherwise it is in reverse
 
     @Override
@@ -143,7 +143,7 @@ public class DotsAndBoxes implements Game {
 
     @Override
     public List<String> possibleSettings() {
-        return new ArrayList<>(settingsMap.keySet());
+        return new ArrayList<>(List.of("Small", "Medium", "Big"));
     }
 
     @Override
