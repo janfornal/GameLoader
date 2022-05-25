@@ -2,6 +2,7 @@ package GameLoader.client;
 
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
+import GameLoader.games.PaperSoccer.PaperSoccer;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import GameLoader.games.TicTacToe.TicTacToe;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -38,8 +39,8 @@ public class MenuView extends GridPane implements GeneralView {
             this.getRowConstraints().get(i).setPercentHeight(rowHeight.get(i));
         }
 
-        nvm.setElements(new MenuViewModel.guiElements(
-            new ChoiceBox<String>(FXCollections.observableArrayList(new SimpleTicTacToe().getName(), new DotsAndBoxes().getName(), new TicTacToe().getName())),
+        nvm.setElements(new MenuViewModel.guiElements( // FIXME hardcoding game names in 50 places is a terrible idea
+            new ChoiceBox<String>(FXCollections.observableArrayList(new SimpleTicTacToe().getName(), new DotsAndBoxes().getName(), new TicTacToe().getName(), new PaperSoccer().getName())),
             new ChoiceBox<String>(),
             new Label("Create Room"),
             new TableView<RoomInfo>(),
@@ -74,6 +75,8 @@ public class MenuView extends GridPane implements GeneralView {
         nvm.getElements().eloColumn().setCellValueFactory(
                 g -> new ReadOnlyObjectWrapper<Integer>(g.getValue().p0().elo())
         );
+
+        nvm.getElements().choiceSizeBox().prefWidthProperty().bind(nvm.getElements().choiceGameBox().widthProperty());
 
         nvm.getElements().roomTableView().getColumns().addAll(
                 nvm.getElements().gameColumn(),

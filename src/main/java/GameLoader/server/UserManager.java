@@ -2,6 +2,7 @@ package GameLoader.server;
 
 import GameLoader.common.Connection;
 import GameLoader.common.Message;
+import GameLoader.common.PlayerInfo;
 
 import java.net.Socket;
 import java.util.*;
@@ -73,7 +74,9 @@ public class UserManager {
 
         c.authorize(name);
         connectionMap.put(name, c);
-        c.sendMessage(new Message.SuccessfulAuthorization());
+//        c.sendMessage(new Message.SuccessfulAuthorization());
+        c.sendMessages(new Message.SuccessfulAuthorization(),
+                new Message.StartGame("Paper soccer", "Small", 1, new PlayerInfo("1", 1), new PlayerInfo("2", 2)));
     }
 
     public synchronized void processRegistrationAttemptMessage(Message.RegistrationAttempt msg, Connection c) {
