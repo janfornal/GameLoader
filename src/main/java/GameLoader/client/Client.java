@@ -15,10 +15,7 @@ import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Client implements Service {
     private MenuViewModel currentModel;
@@ -29,7 +26,6 @@ public class Client implements Service {
     public String username;
     public final Map<String, GameClasses> gameMap = new HashMap<>() {{
         put(new DotsAndBoxes().getName(), new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
-        put(new SimpleTicTacToe().getName(), new GameClasses(SimpleTicTacToe.class, SimpleTicTacToeView.class, SimpleTicTacToeViewModel.class));
         put(new TicTacToe().getName(),new GameClasses(TicTacToe.class,TicTacToeView.class, TicTacToeViewModel.class));
     }};
 
@@ -49,7 +45,7 @@ public class Client implements Service {
         chosenGame = game;
     }
 
-    public Set<String> getGameSettings(String game) {  /// reflection used
+    public List<String> getGameSettings(String game) {  /// reflection used
         try {
             Game helperGameObject = gameMap.get(game).gameClass.getConstructor().newInstance();
             return helperGameObject.possibleSettings();

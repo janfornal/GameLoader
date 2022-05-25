@@ -23,14 +23,14 @@ public class GameTypeManager {
         registerGameClass(TicTacToe.class);
     }
 
-    private record GameType(Set<String> settings, Constructor<? extends Game> constructor) {}
+    private record GameType(List<String> settings, Constructor<? extends Game> constructor) {}
     private final Map<String, GameType> gameTypes = new HashMap<>();
 
-    public Set<String> getGameNames() {
-        return Collections.unmodifiableSet(gameTypes.keySet());
+    public List<String> getGameNames() {
+        return new ArrayList<>(gameTypes.keySet());
     }
 
-    public Set<String> possibleSettings(String name) {
+    public List<String> possibleSettings(String name) {
         GameType type = gameTypes.get(name);
         if (type == null)
             return null;
@@ -66,7 +66,7 @@ public class GameTypeManager {
             Game g = constructor.newInstance();
 
             String name = g.getName();
-            Set<String> settings = g.possibleSettings();
+            List<String> settings = g.possibleSettings();
 
             Objects.requireNonNull(name);
             if (gameTypes.containsKey(name))

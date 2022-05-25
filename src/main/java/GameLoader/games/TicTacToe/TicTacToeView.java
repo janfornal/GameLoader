@@ -1,25 +1,24 @@
 package GameLoader.games.TicTacToe;
 
 import GameLoader.client.PlayView;
-import GameLoader.client.PlayViewModel;
 import GameLoader.common.Game;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+import java.io.File;
 import java.util.stream.Stream;
 
 public class TicTacToeView extends GridPane implements PlayView {
-    private static final Paint backgroundPaint = Color.BLACK;
     private final TicTacToeViewModel gvm;
     private final TicTacToe game;
 
@@ -27,31 +26,75 @@ public class TicTacToeView extends GridPane implements PlayView {
         gvm = model;
         game = gvm.getGame();
         int sz = game.getSize();
-        int gridSz = sz * 2 - 1;
+        int gridSz = 2 * sz - 1;
+
 
         Stream.generate(RowConstraints::new).limit(gridSz).forEach(getRowConstraints()::add);
         Stream.generate(ColumnConstraints::new).limit(gridSz).forEach(getColumnConstraints()::add);
-        getRowConstraints().forEach(c -> { c.setPercentHeight(100); c.setVgrow(Priority.ALWAYS); });
-        getColumnConstraints().forEach(c -> { c.setPercentWidth(100); c.setHgrow(Priority.ALWAYS); });
-
-        for (int i = 0; i < sz; ++i)
+        var tmp = getRowConstraints();
+        int tmp_i = 0;
+        for (var c : tmp) {
+            if (tmp_i % 2 == 0) {
+                c.setPercentHeight(100);
+                c.setVgrow(Priority.ALWAYS);
+            } else {
+                c.setPercentHeight(20);
+                c.setVgrow(Priority.ALWAYS);
+            }
+            tmp_i++;
+        }
+        tmp_i = 0;
+        var tmp2 = getColumnConstraints();
+        for (var c : tmp2) {
+            if (tmp_i % 2 == 0) {
+                c.setPercentWidth(100);
+                c.setHgrow(Priority.ALWAYS);
+            } else {
+                c.setPercentWidth(20);
+                c.setHgrow(Priority.ALWAYS);
+            }
+            tmp_i++;
+        }
+        for (int i = 0; i < sz; ++i){
             for (int j = 0; j < sz; ++j) {
-                Node child = new TicTacToeView.ClickableField(i, j);
+                Node child = new ClickableField(i, j);
                 add(child, i * 2, j * 2);
             }
+        }
+        for(int i=0;i< gridSz;++i){
+            for (int j=0;j<gridSz;++j){
+                if(j%2==1||i%2==1){
+                    Node child = new NotClickableField(i, j);
+                    add(child,i,j);
+                }
+            }
+        }
     }
 
-    private static Paint playerPaint(int player) {
-        if (player == 0)
-            return Color.RED;
-        if (player == 1)
-            return Color.GREEN;
-        return backgroundPaint;
-    }
 
     private static Background playerBackground(int player) {
-        BackgroundFill fill = new BackgroundFill(playerPaint(player), CornerRadii.EMPTY, Insets.EMPTY);
-        return new Background(fill);
+        if(player==0){
+            BackgroundImage image=new BackgroundImage(new Image("file:src/main/java/GameLoader/images/tcs2.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
+            BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
+            return new Background(new BackgroundFill[]{fill},new BackgroundImage[]{image});
+        }
+        else if (player==1){
+            BackgroundImage image=new BackgroundImage(new Image("file:src/main/java/GameLoader/images/agh2.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
+            BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
+            return new Background(new BackgroundFill[]{fill},new BackgroundImage[]{image});
+        }
+        else {
+            BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
+            return new Background(fill);
+        }
+
+    }
+    private static class NotClickableField extends VBox{
+        public NotClickableField(int i,int j){
+            BackgroundFill fill = new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY);
+            Background tmp = new Background(fill);
+            backgroundProperty().set(tmp);
+        }
     }
 
     private class ClickableField extends VBox {
@@ -59,6 +102,7 @@ public class TicTacToeView extends GridPane implements PlayView {
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY)
                     gvm.clickedOn(i, j);
+
             });
 
             IntegerProperty owner = new SimpleIntegerProperty(-1);
@@ -66,13 +110,11 @@ public class TicTacToeView extends GridPane implements PlayView {
 
             game.getMoveCountProperty().addListener((obs, oldVal, newVal) -> {
                 int newOwner = game.getFieldAt(i, j);
-                if (newOwner != owner.get())
-                    owner.setValue(newOwner);
+                owner.setValue(newOwner);
 
                 boolean newClickable = newOwner == -1 && game.getState() == Game.state.UNFINISHED
                         && game.getTurn() == gvm.playingAs();
-                if (newClickable != clickable.get())
-                    clickable.setValue(newClickable);
+                clickable.setValue(newClickable);
             });
 
             backgroundProperty().bind(
@@ -80,6 +122,7 @@ public class TicTacToeView extends GridPane implements PlayView {
                             () -> playerBackground(owner.get()),
                             owner
                     )
+
             );
 
             cursorProperty().bind(
@@ -88,6 +131,7 @@ public class TicTacToeView extends GridPane implements PlayView {
                             clickable
                     )
             );
+
         }
     }
 }

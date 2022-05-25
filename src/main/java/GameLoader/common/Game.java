@@ -3,6 +3,7 @@ package GameLoader.common;
 import GameLoader.client.Client;
 import GameLoader.client.PlayViewModel;
 
+import java.util.List;
 import java.util.Set;
 
 public interface Game {
@@ -20,5 +21,5 @@ public interface Game {
 
     // "static" methods
     String getName();
-    Set<String> possibleSettings();
+    List<String> possibleSettings();
 }

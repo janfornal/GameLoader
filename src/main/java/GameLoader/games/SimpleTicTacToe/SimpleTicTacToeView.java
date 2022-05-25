@@ -43,7 +43,7 @@ public class SimpleTicTacToeView extends GridPane implements PlayView {
 
     private static Background playerBackground(int player) {
             if(player==0){
-                BackgroundImage image=new BackgroundImage(new Image("file:src/main/java/GameLoader/images/tcs3.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
+                BackgroundImage image=new BackgroundImage(new Image("file:src/main/java/GameLoader/images/tcs2.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
                 BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
                 return new Background(new BackgroundFill[]{fill},new BackgroundImage[]{image});
             }

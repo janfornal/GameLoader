@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 public class SimpleTicTacToe implements Game {
@@ -107,8 +108,8 @@ public class SimpleTicTacToe implements Game {
     }
 
     @Override
-    public Set<String> possibleSettings() {
-        return Set.of("Small");
+    public List<String> possibleSettings() {
+        return List.of("Small");
     }
 
     @Override

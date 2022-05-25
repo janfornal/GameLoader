@@ -39,7 +39,7 @@ public class MenuView extends GridPane implements GeneralView {
         }
 
         nvm.setElements(new MenuViewModel.guiElements(
-            new ChoiceBox<String>(FXCollections.observableArrayList(new SimpleTicTacToe().getName(), new DotsAndBoxes().getName(), new TicTacToe().getName())),
+            new ChoiceBox<String>(FXCollections.observableArrayList( new DotsAndBoxes().getName(), new TicTacToe().getName())),
             new ChoiceBox<String>(),
             new Label("Create Room"),
             new TableView<RoomInfo>(),

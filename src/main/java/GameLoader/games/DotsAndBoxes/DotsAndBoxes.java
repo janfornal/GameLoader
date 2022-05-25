@@ -7,10 +7,7 @@ import GameLoader.common.ResignationCommand;
 import javafx.beans.property.*;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DotsAndBoxes implements Game {
     private Coord sz, mostRecent;
@@ -123,6 +120,7 @@ public class DotsAndBoxes implements Game {
             if (isFieldInBoard(n) && !isMarked(n))
                 return false;
         return true;
+
     }
 
     public boolean isAlone(Coord field) {
@@ -133,10 +131,10 @@ public class DotsAndBoxes implements Game {
     }
 
     private static final Map<String, Coord> settingsMap = Map.of(
-            "Small", new Coord(2, 3),
+            "Big", new Coord(6, 8),
             "Medium", new Coord(4, 5),
-            "Big", new Coord(6, 8)
-    );
+            "Small", new Coord(2, 3)
+    );// it has to be this way, otherwise it is in reverse
 
     @Override
     public String getName() {
@@ -144,8 +142,8 @@ public class DotsAndBoxes implements Game {
     }
 
     @Override
-    public Set<String> possibleSettings() {
-        return settingsMap.keySet();
+    public List<String> possibleSettings() {
+        return new ArrayList<>(settingsMap.keySet());
     }
 
     @Override
