@@ -135,7 +135,7 @@ public class DotsAndBoxes implements Game {
     private static final Map<String, Coord> settingsMap = Map.of(
             "Small", new Coord(2, 3),
             "Medium", new Coord(4, 5),
-            "Big", new Coord(6, 8)
+            "Large", new Coord(6, 8)
     );
 
     @Override

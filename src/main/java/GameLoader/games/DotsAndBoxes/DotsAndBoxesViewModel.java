@@ -33,35 +33,13 @@ public class DotsAndBoxesViewModel implements PlayViewModel {
     }
 
     @Override
-    public void setElements(GuiElements fooElements) {
-
-    }
-
-    @Override
     public DotsAndBoxesView createView() {
         return new DotsAndBoxesView(this);
     }
 
-    @Override
-    public void processMoveMessage(Message.Move msg) {
-        Command cmd = msg.move();
-        if (cmd.getPlayer() == myPlayer)
-            return;
-        if (!modelGame.isMoveLegal(cmd)) {
-            modelUser.sendError("this move is illegal?");
-            return;
-        }
-        modelGame.makeMove(cmd);
-    }
-
     public void clickedOn(DotsAndBoxes.Coord c) {
         Command cmd = new DotsAndBoxesCommand(playingAs(), c);
-
-        if (!modelGame.isMoveLegal(cmd))
-            return;
-
-        modelUser.sendMessage(new Message.Move(cmd));
-        modelGame.makeMove(cmd);
+        userCmd(cmd);
     }
 
     @Override

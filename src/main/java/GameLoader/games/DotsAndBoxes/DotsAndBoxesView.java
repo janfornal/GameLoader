@@ -2,22 +2,17 @@ package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.PlayView;
 import GameLoader.common.Game;
-import GameLoader.games.chat.ChatWindow;
-import javafx.animation.FadeTransition;
-import javafx.animation.TranslateTransition;
+import GameLoader.common.HBoxFixedRatio;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
 
 public class DotsAndBoxesView extends VBox implements PlayView { // TODO refactor everything
     private final DotsAndBoxesViewModel gvm;
@@ -127,21 +122,6 @@ public class DotsAndBoxesView extends VBox implements PlayView { // TODO refacto
             for (VBox v : spacer)
                 setHgrow(v, Priority.ALWAYS);
 
-        }
-    }
-
-    private static class HBoxFixedRatio extends HBox {
-        public HBoxFixedRatio(Pane pain, double HtoWRatio) {
-            SimpleDoubleProperty width = new SimpleDoubleProperty(10);
-
-            pain.maxHeightProperty().bind(width.multiply(HtoWRatio));
-            pain.maxWidthProperty().bind(width);
-
-            width.bind(Bindings.min(heightProperty().divide(HtoWRatio), widthProperty()));
-
-            setAlignment(Pos.CENTER);
-            getChildren().add(pain);
-            setHgrow(pain, Priority.ALWAYS);
         }
     }
 

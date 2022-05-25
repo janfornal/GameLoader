@@ -2,39 +2,36 @@ package GameLoader.games.PaperSoccer;
 
 import GameLoader.client.Client;
 import GameLoader.client.GeneralView;
-import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
-import GameLoader.common.Game;
-import GameLoader.common.Message;
 
 public class PaperSoccerViewModel implements PlayViewModel {
-    @Override
-    public Game getGame() {
-        return null;
+    public PaperSoccerViewModel(Client user, int id, PaperSoccer game) {
+        modelUser = user;
+        modelGame = game;
+        myPlayer = id;
     }
 
     @Override
-    public void processMoveMessage(Message.Move msg) {
-
+    public PaperSoccer getGame() {
+        return modelGame;
     }
+
+    private final Client modelUser;
+    private final PaperSoccer modelGame;
+    private final int myPlayer;
 
     @Override
     public int playingAs() {
-        return 0;
+        return myPlayer;
     }
 
     @Override
     public Client getModelUser() {
-        return null;
-    }
-
-    @Override
-    public void setElements(GuiElements fooElements) {
-
+        return modelUser;
     }
 
     @Override
     public GeneralView createView() {
-        return null;
+        return new PaperSoccerView(this);
     }
 }

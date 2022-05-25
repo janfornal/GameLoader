@@ -2,27 +2,21 @@ package GameLoader.games.PaperSoccer;
 
 import GameLoader.common.Command;
 public class PaperSoccerCommand extends Command {
-    private final int row, col;
+    private final int dir;
 
-    public PaperSoccerCommand(int player, int r, int c) {
+    public PaperSoccerCommand(int player, int d) {
         super(player);
-        row = r;
-        col = c;
+        dir = d;
     }
 
-    public int getRow() {
-        return row;
-    }
-
-    public int getCol() {
-        return col;
+    public int getDir() {
+        return dir;
     }
 
     @Override
     public String toString() {
         return "PaperSoccerCommand{" +
-                "row=" + row +
-                ", col=" + col +
+                "dir=" + dir +
                 ", player=" + getPlayer() +
                 '}';
     }

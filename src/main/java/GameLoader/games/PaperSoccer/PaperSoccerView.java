@@ -5,4 +5,7 @@ import javafx.scene.layout.VBox;
 
 
 public class PaperSoccerView extends VBox implements PlayView {
+    public PaperSoccerView(PaperSoccerViewModel model) { // TODO
+
+    }
 }
