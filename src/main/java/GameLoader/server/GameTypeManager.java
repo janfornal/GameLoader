@@ -1,7 +1,7 @@
 package GameLoader.server;
 
 import GameLoader.common.Connection;
-import GameLoader.common.Message;
+import static GameLoader.common.Messages.*;
 import GameLoader.games.PaperSoccer.PaperSoccer;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
@@ -29,7 +29,7 @@ public class GameTypeManager {
     private final Map<String, GameType> gameTypes = new HashMap<>();
 
     public List<String> getGameNames() {
-        return new ArrayList<>(gameTypes.keySet());
+        return List.copyOf(gameTypes.keySet());
     }
 
     public List<String> possibleSettings(String name) {
@@ -86,8 +86,8 @@ public class GameTypeManager {
         }
     }
 
-    public void processGetGameListMessage(Message.GetGameList ignored, Connection c) {
-        c.sendMessage(new Message.GameList()); // TODO implement
+    public void processGetGameListMessage(GetGameListMessage ignored, Connection c) {
+        c.sendMessage(new GameListMessage()); // TODO implement
     }
 
 }

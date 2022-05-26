@@ -1,15 +1,8 @@
 package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.Client;
-import GameLoader.client.ClientGUI;
-import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
 import GameLoader.common.Command;
-import GameLoader.common.Game;
-import GameLoader.common.Message;
-import javafx.application.Platform;
-
-import java.util.concurrent.TimeUnit;
 
 public class DotsAndBoxesViewModel implements PlayViewModel {
     public DotsAndBoxesViewModel(Client user, int id, DotsAndBoxes game) {

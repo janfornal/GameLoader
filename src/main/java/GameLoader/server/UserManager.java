@@ -1,8 +1,7 @@
 package GameLoader.server;
 
 import GameLoader.common.Connection;
-import GameLoader.common.Message;
-import GameLoader.common.PlayerInfo;
+import static GameLoader.common.Messages.*;
 
 import java.net.Socket;
 import java.util.*;
@@ -41,7 +40,7 @@ public class UserManager {
         return connectionMap.get(name);
     }
 
-    public synchronized void processAuthorizationAttemptMessage(Message.AuthorizationAttempt msg, Connection c) {
+    public synchronized void processAuthorizationAttemptMessage(AuthorizationAttemptMessage msg, Connection c) {
         if (c.isAuthorized()) {
             c.sendError("You are already authorized");
             return;
@@ -52,34 +51,34 @@ public class UserManager {
         String expectedPassword = server.dataManager.getPlayerPassword(name);
 
         if (expectedPassword == null) {
-            c.sendMessage(new Message.UnsuccessfulAuthorization("This account does not exist"));
+            c.sendMessage(new UnsuccessfulAuthorizationMessage("This account does not exist"));
             return;
         }
 
         if (!expectedPassword.equals(password)) {
-            c.sendMessage(new Message.UnsuccessfulAuthorization("Password does not match"));
+            c.sendMessage(new UnsuccessfulAuthorizationMessage("Password does not match"));
             return;
         }
 
         if (server.dataManager.getPlayerId(name) == null) {
-            c.sendMessage(new Message.UnsuccessfulAuthorization("Your account does not exist"));
+            c.sendMessage(new UnsuccessfulAuthorizationMessage("Your account does not exist"));
             return;
         }
 
         if (connectionMap.containsKey(name)) {
-            c.sendMessage(new Message.UnsuccessfulAuthorization("You are already connected, disconnecting..."));
+            c.sendMessage(new UnsuccessfulAuthorizationMessage("You are already connected, disconnecting..."));
             getConnection(name).close();
             return;
         }
 
         c.authorize(name);
         connectionMap.put(name, c);
-        c.sendMessage(new Message.SuccessfulAuthorization());
-//        c.sendMessages(new Message.SuccessfulAuthorization(),
-//                new Message.StartGame("Paper soccer", "Small", 1, new PlayerInfo("1", 1), new PlayerInfo("2", 2)));
+        c.sendMessage(new SuccessfulAuthorizationMessage());
+//        c.sendMessages(new SuccessfulAuthorizationMessage(),
+//                new StartGameMessage("Paper soccer", "Small", 1, new PlayerInfo("1", 1), new PlayerInfo("2", 2)));
     }
 
-    public synchronized void processRegistrationAttemptMessage(Message.RegistrationAttempt msg, Connection c) {
+    public synchronized void processRegistrationAttemptMessage(RegistrationAttemptMessage msg, Connection c) {
         if (c.isAuthorized()) {
             c.sendError("You are already authorized");
             return;
@@ -89,21 +88,21 @@ public class UserManager {
         String password = server.passwordManager.hash(name, msg.password());
 
         if (server.dataManager.playerExists(name)) {
-            c.sendMessage(new Message.UnsuccessfulAuthorization("User with this name already exists"));
+            c.sendMessage(new UnsuccessfulAuthorizationMessage("User with this name already exists"));
             return;
         }
 
         if (server.dataManager.registerPlayer(name, password) == null) {
-            c.sendMessage(new Message.UnsuccessfulAuthorization("Unsuccessful registration"));
+            c.sendMessage(new UnsuccessfulAuthorizationMessage("Unsuccessful registration"));
             return;
         }
 
         c.authorize(name);
         connectionMap.put(name, c);
-        c.sendMessage(new Message.SuccessfulAuthorization());
+        c.sendMessage(new SuccessfulAuthorizationMessage());
     }
 
-    public void sendMessageTo(Message.Any msg, String... to) {
+    public void sendMessageTo(AnyMessage msg, String... to) {
         for (String name : to) {
             Connection c = getConnection(name);
             if (c == null)
@@ -113,6 +112,6 @@ public class UserManager {
     }
 
     public void sendErrorTo(String cause, String... to) {
-        sendMessageTo(new Message.Error(cause), to);
+        sendMessageTo(new ErrorMessage(cause), to);
     }
 }

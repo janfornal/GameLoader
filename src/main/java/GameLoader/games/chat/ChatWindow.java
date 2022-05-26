@@ -1,7 +1,7 @@
 package GameLoader.games.chat;
 
 import GameLoader.client.Client;
-import GameLoader.common.Message;
+import static GameLoader.common.Messages.*;
 import javafx.animation.ScaleTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,7 +16,7 @@ import javafx.util.Duration;
 public class ChatWindow extends VBox {
     private final Button openBtn;
     private final AppriopriateWindow chatWindow;
-    private final SimpleObjectProperty<Message.ChatMessage> obs;
+    private final SimpleObjectProperty<ChatMessage> obs;
 
     private void insertChat() {
         getChildren().add(chatWindow);
@@ -68,7 +68,7 @@ public class ChatWindow extends VBox {
             input.setOnAction(event -> {
                 String message = this.username + ": " + input.getText() + "\n";
                 input.clear();
-                user.sendMessage(new Message.ChatMessage(message));
+                user.sendMessage(new ChatMessage(message));
             });
             messageArea.textProperty().bind(Bindings.createObjectBinding(
                     () -> messageArea.getText() + obs.get().text(),

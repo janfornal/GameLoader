@@ -1,9 +1,9 @@
 package GameLoader.client;
 
 import GameLoader.common.Game;
-import GameLoader.common.Message;
 import GameLoader.common.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;
+import static GameLoader.common.Messages.*;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.scene.Node;
@@ -41,7 +41,7 @@ public class ClientGUI extends Application {
         if(!type.equals(closeResponse.get()))
             event.consume();
         else {
-            user.sendMessage(new Message.EndConnection());
+            user.sendMessage(new EndConnectionMessage());
             if(currentStage != null) currentStage.close();
         }
     }
@@ -53,7 +53,7 @@ public class ClientGUI extends Application {
                 Stage authStage = new Stage();
                 authStage.setOnCloseRequest(ClientGUI::HandlerFunction);
                 AuthorizationDialog startAuth = new AuthorizationDialog();
-                Message.Any userData = startAuth.processAuthorization(authStage);
+                AnyMessage userData = startAuth.processAuthorization(authStage);
                 if(userData == null) return;
                 user.sendMessage(userData);
                 authorizationLock.wait();
@@ -67,7 +67,7 @@ public class ClientGUI extends Application {
         tab.setContent((Node) view);
         tabpane.getTabs().add(tab);
         currentStage = stage;
-        user.sendMessage(new Message.GetRoomList());
+        user.sendMessage(new GetRoomListMessage());
         stage.setTitle("Game Server");
         Scene scene = new Scene(tabpane);
         scene.setFill(Color.WHITE);
@@ -99,7 +99,7 @@ public class ClientGUI extends Application {
             if(!type.equals(closeResponse.get())) {
                 e.consume();
             }
-            else user.sendMessage(new Message.Move(new ResignationCommand(viewModel.playingAs())));
+            else user.sendMessage(new MoveMessage(new ResignationCommand(viewModel.playingAs())));
         });
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);

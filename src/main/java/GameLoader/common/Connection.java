@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Objects;
+import static GameLoader.common.Messages.*;
 
 public class Connection {
     public static final String defaultIP = "localhost";
@@ -50,20 +51,20 @@ public class Connection {
         service.execDaemon.execute(() -> {
             while (!closed) {
                 try {
-                    Message.Any message = (Message.Any) input.readObject();
+                    AnyMessage message = (AnyMessage) input.readObject();
 
                     service.INC_MESSAGE.println(message + "\t\treceived from " + this);
 
                     Objects.requireNonNull(message);
 
-                    if (message instanceof Message.Ping pm) {
-                        sendMessage(new Message.Pong(pm.p()));
+                    if (message instanceof PingMessage pm) {
+                        sendMessage(new PongMessage(pm.p()));
                         continue;
                     }
-                    if (message instanceof Message.Pong ignored)
+                    if (message instanceof PongMessage ignored)
                         continue;
 
-                    if (message instanceof Message.EndConnection ignored) {
+                    if (message instanceof EndConnectionMessage ignored) {
                         close();
                         return;
                     }
@@ -86,15 +87,15 @@ public class Connection {
     }
 
     public void sendError(String cause) {
-        sendMessage(new Message.Error(cause));
+        sendMessage(new ErrorMessage(cause));
     }
 
-    public void sendMessage(Message.Any message) {
+    public void sendMessage(AnyMessage message) {
         sendMessages(message);
     }
 
-    public void sendMessages(Message.Any... messages) {
-        for (Message.Any message : messages)
+    public void sendMessages(AnyMessage... messages) {
+        for (AnyMessage message : messages)
             service.SND_MESSAGE.println(message + "\t\tsending to " + this);
 
         if (closed)
@@ -102,7 +103,7 @@ public class Connection {
 
         service.execDaemon.execute(() -> {
             synchronized (output) {
-                for (Message.Any message : messages) {
+                for (AnyMessage message : messages) {
                     try {
                         output.writeObject(message);
 

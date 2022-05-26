@@ -2,7 +2,7 @@ package GameLoader.server;
 
 import GameLoader.common.Service;
 import GameLoader.common.Connection;
-import GameLoader.common.Message;
+import static GameLoader.common.Messages.*;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -67,19 +67,19 @@ public class Server implements Service {
     }
 
     @Override
-    public void processMessage(Message.Any msg, Connection c) {
+    public void processMessage(AnyMessage msg, Connection c) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(c);
 
-        if (msg instanceof Message.Error m) {
+        if (msg instanceof ErrorMessage m) {
             Service.ERROR_STREAM.println(m);
             return;
         }
-        if (msg instanceof Message.AuthorizationAttempt m) {
+        if (msg instanceof AuthorizationAttemptMessage m) {
             userManager.processAuthorizationAttemptMessage(m, c);
             return;
         }
-        if (msg instanceof Message.RegistrationAttempt m) {
+        if (msg instanceof RegistrationAttemptMessage m) {
             userManager.processRegistrationAttemptMessage(m, c);
             return;
         }
@@ -87,27 +87,27 @@ public class Server implements Service {
             c.sendError("You are not authorized");
             return;
         }
-        if (msg instanceof Message.Move m) {
+        if (msg instanceof MoveMessage m) {
             gameManager.processMoveMessage(m, c);
             return;
         }
-        if (msg instanceof Message.CreateRoom m) {
+        if (msg instanceof CreateRoomMessage m) {
             gameManager.processCreateRoomMessage(m, c);
             return;
         }
-        if (msg instanceof Message.GetRoomList m) {
+        if (msg instanceof GetRoomListMessage m) {
             gameManager.processGetRoomListMessage(m, c);
             return;
         }
-        if (msg instanceof Message.JoinRoom m) {
+        if (msg instanceof JoinRoomMessage m) {
             gameManager.processJoinRoomMessage(m, c);
             return;
         }
-        if (msg instanceof Message.GetGameList m) {
+        if (msg instanceof GetGameListMessage m) {
             gameTypeManager.processGetGameListMessage(m, c);
             return;
         }
-        if (msg instanceof Message.ChatMessage m) {
+        if (msg instanceof ChatMessage m) {
             gameManager.processChatMessage(m, c);
             return;
         }

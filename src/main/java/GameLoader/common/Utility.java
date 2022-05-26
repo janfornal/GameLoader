@@ -1,7 +1,10 @@
 package GameLoader.common;
 
-public class Utility {
-    public static void runtimeAssert(boolean b) {
+import java.io.Serializable;
+import java.util.List;
+
+public interface Utility {
+    static void runtimeAssert(boolean b) {
         if (!b)
             throw new RuntimeException();
     }

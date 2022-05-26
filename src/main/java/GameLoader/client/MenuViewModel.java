@@ -1,13 +1,12 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
+import static GameLoader.common.Messages.*;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.scene.Cursor;
 import javafx.scene.control.*;
 
 import java.util.Collections;
-import java.util.List;
 
 public class MenuViewModel implements ViewModel {
 
@@ -60,7 +59,7 @@ public class MenuViewModel implements ViewModel {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     RoomInfo rowData = row.getItem();
-                    Message.Any jr = new Message.JoinRoom(rowData);
+                    AnyMessage jr = new JoinRoomMessage(rowData);
                     modelUser.sendMessage(jr);
                 }
             });
@@ -81,7 +80,7 @@ public class MenuViewModel implements ViewModel {
                 String game = guiVisual.choiceGameBox().getValue();
                 String settings = guiVisual.choiceSizeBox().getValue();
 
-                Message.Any crm = new Message.CreateRoom(game, settings);
+                AnyMessage crm = new CreateRoomMessage(game, settings);
                 modelUser.sendMessage(crm);
             }
         });
@@ -98,7 +97,7 @@ public class MenuViewModel implements ViewModel {
 
     void addGetRoomHandler(Button button) {
         button.setOnMouseClicked(event -> {
-            Message.Any crm = new Message.GetRoomList();
+            AnyMessage crm = new GetRoomListMessage();
             modelUser.sendMessage(crm);
         });
     }

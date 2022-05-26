@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import static GameLoader.common.Messages.*;
 
 public interface Service {
     ExecutorService execNormal = Executors.newCachedThreadPool();
@@ -31,7 +32,7 @@ public interface Service {
 
     PasswordManager passwordManager = new PasswordManager(); // FIXME should this be here?
 
-    void processMessage(Message.Any message, Connection connection);
+    void processMessage(AnyMessage message, Connection connection);
 
     void reportConnectionClosed(Connection connection);
 }

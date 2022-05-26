@@ -3,8 +3,8 @@ package GameLoader.client;
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.*;
 import GameLoader.games.PaperSoccer.*;
-import GameLoader.games.SimpleTicTacToe.*;
 import GameLoader.games.TicTacToe.*;
+import static GameLoader.common.Messages.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -18,7 +18,7 @@ public class Client implements Service {
     private MenuViewModel currentModel;
     public PlayViewModel currentPlayModel;
     private final Connection activeConnection;
-    private SimpleObjectProperty<Message.ChatMessage> messageProperty = null;
+    private SimpleObjectProperty<ChatMessage> messageProperty = null;
     public String username;
     public final Map<String, GameClasses> gameMap = new HashMap<>() {{
         put(new DotsAndBoxes().getName(), new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
@@ -52,17 +52,17 @@ public class Client implements Service {
     }
 
     @Override
-    public void processMessage(Message.Any message, Connection c) {
+    public void processMessage(AnyMessage message, Connection c) {
         Objects.requireNonNull(message);
         Objects.requireNonNull(c);
 
-        if(message instanceof Message.SuccessfulAuthorization)
+        if(message instanceof SuccessfulAuthorizationMessage)
             ClientGUI.authorizationLockNotify();
-        else if(message instanceof Message.RoomList messageCast) {
+        else if(message instanceof RoomListMessage messageCast) {
             System.out.println(FXCollections.observableArrayList(messageCast.rooms()));
             currentModel.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
         }
-        else if(message instanceof Message.StartGame messageCast) {
+        else if(message instanceof StartGameMessage messageCast) {
             GameClasses gamePackage = gameMap.get(messageCast.game());
             Game starterInstance;
             PlayViewModel currentModelLocal;
@@ -71,7 +71,7 @@ public class Client implements Service {
                 currentModelLocal = starterInstance.createViewModel(this, messageCast.p0().name().equals(username) ? 0 : 1);
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
-                sendMessage(new Message.Error("Constructor of game cannot be called"));
+                sendMessage(new ErrorMessage("Constructor of game cannot be called"));
                 return;
             }
             currentPlayModel = currentModelLocal;
@@ -81,10 +81,10 @@ public class Client implements Service {
                     () -> ClientGUI.startNewTab(currentPlayModel, playerNames[0].equals(username) ? playerNames[1] : playerNames[0])
             );
         }
-        else if(message instanceof Message.ChatMessage messageCast) {
+        else if(message instanceof ChatMessage messageCast) {
             messageProperty.set(messageCast);
         }
-        else if(message instanceof Message.Move messageCast) {
+        else if(message instanceof MoveMessage messageCast) {
             if (messageCast.move() instanceof ResignationCommand res && currentPlayModel.playingAs() != res.getPlayer())
                 Platform.runLater(
                         () -> new Alert(Alert.AlertType.ERROR, "Your opponent resigned").showAndWait()
@@ -94,12 +94,12 @@ public class Client implements Service {
                     () -> currentPlayModel.processMoveMessage(messageCast)
             );
         }
-        else if(message instanceof Message.Error messageCast) {
+        else if(message instanceof ErrorMessage messageCast) {
             Platform.runLater(
                     () -> new Alert(Alert.AlertType.ERROR, messageCast.cause()).showAndWait()
             );
         }
-        else if(message instanceof Message.UnsuccessfulAuthorization messageCast) {
+        else if(message instanceof UnsuccessfulAuthorizationMessage messageCast) {
             Platform.runLater(
                     () -> new Alert(Alert.AlertType.ERROR, messageCast.cause()).showAndWait()
             );
@@ -115,22 +115,22 @@ public class Client implements Service {
     }
 
     public void sendError(String cause) {
-        sendMessage(new Message.Error(cause));
+        sendMessage(new ErrorMessage(cause));
     }
 
-    public void sendMessage(Message.Any message) {
-        if(message instanceof Message.AuthorizationAttempt messageCast) {
+    public void sendMessage(AnyMessage message) {
+        if(message instanceof AuthorizationAttemptMessage messageCast) {
             username = messageCast.name();
         }
-        if(message instanceof Message.RegistrationAttempt messageCast) {
+        if(message instanceof RegistrationAttemptMessage messageCast) {
             username = messageCast.name();
         }
         activeConnection.sendMessage(message);
     }
 
-    public SimpleObjectProperty<Message.ChatMessage> getMessageProperty() {   // why am I here?
+    public SimpleObjectProperty<ChatMessage> getMessageProperty() {   // why am I here?
         if (messageProperty == null)
-            messageProperty = new SimpleObjectProperty<Message.ChatMessage>(new Message.ChatMessage(""));
+            messageProperty = new SimpleObjectProperty<ChatMessage>(new ChatMessage(""));
         return messageProperty;
     }
 

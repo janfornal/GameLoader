@@ -1,6 +1,6 @@
 import GameLoader.common.Service;
 import GameLoader.common.Connection;
-import GameLoader.common.Message;
+import static GameLoader.common.Messages.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,14 +16,14 @@ public class MockClient implements Service {
         connection = new Connection(this);
     }
 
-    public void sendMessage(Message.Any message) {
+    public void sendMessage(AnyMessage message) {
         logs.add(MESSAGE.SENT);
         logs.add(message);
         connection.sendMessage(message);
     }
 
     @Override
-    public void processMessage(Message.Any message, Connection connection) {
+    public void processMessage(AnyMessage message, Connection connection) {
         logs.add(MESSAGE.RECEIVED);
         logs.add(message);
     }

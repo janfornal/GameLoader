@@ -1,6 +1,6 @@
 package GameLoader.client;
 
-import GameLoader.common.Message;
+import static GameLoader.common.Messages.*;
 import GameLoader.common.PasswordManager;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -94,7 +94,7 @@ public class AuthorizationDialog extends SplitPane {
         passwordTextField.setPromptText("Enter your password");
     }
 
-    Message.Any processAuthorization(Stage stage) {
+    AnyMessage processAuthorization(Stage stage) {
         parentStage = stage;
         stage.setScene(new Scene(this));
         stage.setResizable(false);
@@ -102,7 +102,7 @@ public class AuthorizationDialog extends SplitPane {
         if(!confirmed) return null;
         PasswordManager pm = new PasswordManager();
         String hashedPasswd = pm.hash(usernameTextField.getText(), passwordTextField.getText());
-        if(isRegister) return new Message.RegistrationAttempt(usernameTextField.getText(), hashedPasswd);
-        else return new Message.AuthorizationAttempt(usernameTextField.getText(), hashedPasswd);
+        if(isRegister) return new RegistrationAttemptMessage(usernameTextField.getText(), hashedPasswd);
+        else return new AuthorizationAttemptMessage(usernameTextField.getText(), hashedPasswd);
     }
 }

@@ -2,6 +2,7 @@ package GameLoader.server;
 
 import GameLoader.common.*;
 import GameLoader.common.IntPair;
+import static GameLoader.common.Messages.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +27,7 @@ public class GameManager {
         return gameMap.get(name) != null;
     }
 
-    public synchronized void processCreateRoomMessage(Message.CreateRoom msg, Connection c) {
+    public synchronized void processCreateRoomMessage(CreateRoomMessage msg, Connection c) {
         String name = c.getName();
 
         if (isPlaying(name)) {
@@ -50,11 +51,11 @@ public class GameManager {
         roomsToJoin.put(name, info);
     }
 
-    public synchronized void processGetRoomListMessage(Message.GetRoomList ignored, Connection c) {
-        c.sendMessage(new Message.RoomList(new ArrayList<>(roomsToJoin.values())));
+    public synchronized void processGetRoomListMessage(GetRoomListMessage ignored, Connection c) {
+        c.sendMessage(new RoomListMessage(new ArrayList<>(roomsToJoin.values())));
     }
 
-    public synchronized void processJoinRoomMessage(Message.JoinRoom msg, Connection c) {
+    public synchronized void processJoinRoomMessage(JoinRoomMessage msg, Connection c) {
         RoomInfo info = msg.room();
 
         String p0 = info.p0().name();
@@ -101,14 +102,14 @@ public class GameManager {
         gameMap.put(p0, instance);
         gameMap.put(p1, instance);
 
-        Message.StartGame stg = new Message.StartGame(
+        StartGameMessage stg = new StartGameMessage(
                 gameName, info.settings(), seed,
                 server.dataManager.getPlayerInfo(p0, gameName),
                 server.dataManager.getPlayerInfo(p1, gameName));
         server.userManager.sendMessageTo(stg, p0, p1);
     }
 
-    public /* unsynchronized */ void processMoveMessage(Message.Move msg, Connection c) {
+    public /* unsynchronized */ void processMoveMessage(MoveMessage msg, Connection c) {
         Command cmd = msg.move();
 
         if (cmd == null) {
@@ -170,10 +171,10 @@ public class GameManager {
             return;
 
         Command res = new ResignationCommand(g.p0.equals(name) ? 0 : 1);
-        processMoveMessage(new Message.Move(res), c);
+        processMoveMessage(new MoveMessage(res), c);
     }
 
-    public synchronized void processChatMessage(Message.ChatMessage m, Connection c) {
+    public synchronized void processChatMessage(ChatMessage m, Connection c) {
         GameInstance g = gameMap.get(c.getName());
         server.userManager.sendMessageTo(m, g.p0);
         server.userManager.sendMessageTo(m, g.p1);

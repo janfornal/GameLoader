@@ -4,7 +4,7 @@ import GameLoader.client.Client;
 import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
 import GameLoader.common.Command;
-import GameLoader.common.Message;
+import static GameLoader.common.Messages.*;
 
 public class TicTacToeViewModel implements PlayViewModel {
     public TicTacToeViewModel(Client user, int id, TicTacToe game) {
@@ -38,7 +38,7 @@ public class TicTacToeViewModel implements PlayViewModel {
     }
 
     @Override
-    public void processMoveMessage(Message.Move msg) {
+    public void processMoveMessage(MoveMessage msg) {
         Command cmd = msg.move();
         if (cmd.getPlayer() == myPlayer)
             return;
@@ -55,7 +55,7 @@ public class TicTacToeViewModel implements PlayViewModel {
         if (!modelGame.isMoveLegal(cmd))
             return;
 
-        modelUser.sendMessage(new Message.Move(cmd));
+        modelUser.sendMessage(new MoveMessage(cmd));
         modelGame.makeMove(cmd);
     }
 

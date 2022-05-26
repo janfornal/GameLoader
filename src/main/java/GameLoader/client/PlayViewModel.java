@@ -2,7 +2,7 @@ package GameLoader.client;
 
 import GameLoader.common.Command;
 import GameLoader.common.Game;
-import GameLoader.common.Message;
+import static GameLoader.common.Messages.*;
 
 public interface PlayViewModel extends ViewModel {
     Game getGame();
@@ -12,7 +12,7 @@ public interface PlayViewModel extends ViewModel {
     default void setElements(GuiElements fooElements) {
     }
 
-    default void processMoveMessage(Message.Move msg) {
+    default void processMoveMessage(MoveMessage msg) {
         Command cmd = msg.move();
         if (cmd.getPlayer() == playingAs())
             return;
@@ -27,7 +27,7 @@ public interface PlayViewModel extends ViewModel {
         if (!getGame().isMoveLegal(cmd))
             return;
 
-        getModelUser().sendMessage(new Message.Move(cmd));
+        getModelUser().sendMessage(new MoveMessage(cmd));
         getGame().makeMove(cmd);
     }
 }
