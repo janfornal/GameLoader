@@ -15,7 +15,7 @@ import static GameLoader.common.Utility.runtimeAssert;
 
 public class PaperSoccer implements Game {
     private static final Map<String, IntPair> settingsMap = Map.of(
-            "Small", new IntPair(6, 6),
+            "Small", new IntPair(4, 4),
             "Medium", new IntPair(8, 10),
             "Large", new IntPair(12, 16)
     );
@@ -52,11 +52,15 @@ public class PaperSoccer implements Game {
             int dir = psCmd.getDir();
 
             Edge e = currField.edges[dir];
-            boolean changePlayer = !e.play(currField);
+            boolean changePlayer = !e.other(currField).jumpy();
+
+            e.play();
             currField = e.other(currField);
 
             if (currField.isGoal())
                 currState = currField.whoseGoal() == 0 ? state.P1_WON : state.P0_WON;
+            else if (currField.finished())
+                currState = turn == 0 ? state.P1_WON : state.P0_WON;
             else if (changePlayer)
                 turn = 1 - turn;
         }
@@ -72,7 +76,7 @@ public class PaperSoccer implements Game {
         if (cmd instanceof PaperSoccerCommand psCmd) {
             int pl = psCmd.getPlayer();
             int dir = psCmd.getDir();
-            return settings != null && getState() == state.UNFINISHED
+            return 0 <= dir && dir < dirList.size() && settings != null && getState() == state.UNFINISHED
                     && turn == pl && currField.edges[dir] != null && currField.edges[dir].active;
         }
         return false;
@@ -88,8 +92,8 @@ public class PaperSoccer implements Game {
 
         Map<IntPair, Field> mp = new HashMap<>();
 
-        for (int i = -sz.x() / 2 - 2; i <= sz.x() / 2 + 2; ++i)
-            for (int j = -sz.y() / 2 - 2; j <= sz.y() / 2 + 2; ++j)
+        for (int i = -sz.x() / 2; i <= sz.x() / 2; ++i)
+            for (int j = -sz.y() / 2 - 1; j <= sz.y() / 2 + 1; ++j)
                 mp.put(new IntPair(i, j), new Field(i, j));
 
         currField = mp.get(new IntPair(0, 0));
@@ -178,6 +182,10 @@ public class PaperSoccer implements Game {
                 '}';
     }
 
+    public static Integer calcDir(Field from, Field to) {
+        return dirMap.get(new IntPair(to.pos.x() - from.pos.x(), to.pos.y() - from.pos.y()));
+    }
+
     public class Field {
         public final IntPair pos, apos;
         public final Edge[] edges = new Edge[8];
@@ -253,10 +261,10 @@ public class PaperSoccer implements Game {
             f = f1;
             g = f2;
 
-            int jmp = dirMap.get(new IntPair(g.pos.x() - f.pos.x(), g.pos.y() - f.pos.y()));
+            int jmp = calcDir(f, g);
             diagonal = jmp % 2 == 1;
 
-            border = f.isBorder() && g.isBorder() && diagonal;
+            border = f.isBorder() && g.isBorder() && !diagonal;
             active = !border;
 
             int goalBorderVal;
@@ -274,16 +282,11 @@ public class PaperSoccer implements Game {
             g.registerEdge(this, jmp ^ 4);
         }
 
-        /**
-         * @return true if the other field has active edge, false otherwise
-         */
-        public boolean play(Field played) {
+        public void play() {
             runtimeAssert(active);
-            boolean ret = other(played).jumpy();
             f.play();
             g.play();
             active = false;
-            return ret;
         }
         public Field other(Field o) {
             runtimeAssert(o == f || o == g);
