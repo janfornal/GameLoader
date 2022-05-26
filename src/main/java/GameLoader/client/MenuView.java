@@ -2,6 +2,7 @@ package GameLoader.client;
 
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
+import GameLoader.games.PaperSoccer.PaperSoccer;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import GameLoader.games.TicTacToe.TicTacToe;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -38,8 +39,8 @@ public class MenuView extends GridPane implements GeneralView {
             this.getRowConstraints().get(i).setPercentHeight(rowHeight.get(i));
         }
 
-        nvm.setElements(new MenuViewModel.guiElements(
-            new ChoiceBox<String>(FXCollections.observableArrayList( new DotsAndBoxes().getName(), new TicTacToe().getName())),
+        nvm.setElements(new MenuViewModel.guiElements( // FIXME hardcoding game names in 50 places is a terrible idea
+            new ChoiceBox<String>(FXCollections.observableArrayList(new DotsAndBoxes().getName(), new TicTacToe().getName(), new PaperSoccer().getName())),
             new ChoiceBox<String>(),
             //new Label("Create Room"),
             new TableView<RoomInfo>(),
@@ -76,6 +77,8 @@ public class MenuView extends GridPane implements GeneralView {
                 g -> new ReadOnlyObjectWrapper<Integer>(g.getValue().p0().elo())
         );
 
+        nvm.getElements().choiceSizeBox().prefWidthProperty().bind(nvm.getElements().choiceGameBox().widthProperty());
+
         nvm.getElements().roomTableView().getColumns().addAll(
                 nvm.getElements().gameColumn(),
                 nvm.getElements().sizeColumn(),
@@ -90,11 +93,11 @@ public class MenuView extends GridPane implements GeneralView {
         //setHalignment(nvm.getElements().createRoomLabel(), HPos.CENTER);
 
         add(nvm.getElements().choiceGameBox(),  2, 4, 1, 1);
-        nvm.getElements().choiceGameBox().getSelectionModel().select("Last game?");
+//        nvm.getElements().choiceGameBox().getSelectionModel().select("Last game?");
         setHalignment(nvm.getElements().choiceGameBox(), HPos.CENTER);
 
         add(nvm.getElements().choiceSizeBox(), 2, 6, 1, 1);
-        nvm.getElements().choiceSizeBox().getSelectionModel().select("GO");
+//        nvm.getElements().choiceSizeBox().getSelectionModel().select("GO");
         setFillWidth(nvm.getElements().choiceSizeBox(), true);
         setHgrow(nvm.getElements().choiceSizeBox(), Priority.ALWAYS);
         setHalignment(nvm.getElements().choiceSizeBox(), HPos.CENTER);

@@ -1,7 +1,7 @@
 package GameLoader.server;
 
 import GameLoader.common.*;
-import GameLoader.utility.IntPair;
+import GameLoader.common.IntPair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

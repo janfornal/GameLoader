@@ -55,7 +55,6 @@ public class MenuViewModel implements ViewModel {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     RoomInfo rowData = row.getItem();
-                    modelUser.setChosenGame(rowData);
                     Message.Any jr = new Message.JoinRoom(rowData);
                     modelUser.sendMessage(jr);
                 }
@@ -78,7 +77,6 @@ public class MenuViewModel implements ViewModel {
                 String settings = guiVisual.choiceSizeBox().getValue();
 
                 Message.Any crm = new Message.CreateRoom(game, settings);
-                modelUser.setChosenGame(new RoomInfo(game, settings, new PlayerInfo(modelUser.username, 0))); // FIXME dont use playerinfo here
                 modelUser.sendMessage(crm);
             }
         });

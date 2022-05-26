@@ -1,6 +1,6 @@
 # GameLoader
 
-Client and server apps allowing users to play simple games online, made as an assignment project for OOP course 2021/22. Project code is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Client and server apps allowing users to play simple games online, made as an assignment project for OOP course 2021/22.
 
 ## Goals
 
@@ -10,8 +10,14 @@ Client and server apps allowing users to play simple games online, made as an as
 - [x] dots and boxes game (03.05)
 
 #### First presentation (05.05)
-- [ ] tic-tac-toe game with multiple settings
-- [ ] elo system persistent between server runs
+
+- [x] in-game chat (16.05)
+- [x] database integration (user accounts, elo system) (19.05)
+- [x] tic-tac-toe game with multiple settings (24.05)
+- [x] paper soccer game (25.05)
+
+#### Second presentation (26.05)
+
 - [ ] game history
 - [ ] rejoining games after disconnection
 - [ ] loading games as plugins

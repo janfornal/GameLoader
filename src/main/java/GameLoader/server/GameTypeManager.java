@@ -2,6 +2,7 @@ package GameLoader.server;
 
 import GameLoader.common.Connection;
 import GameLoader.common.Message;
+import GameLoader.games.PaperSoccer.PaperSoccer;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.common.Service;
@@ -21,6 +22,7 @@ public class GameTypeManager {
         registerGameClass(SimpleTicTacToe.class);
         registerGameClass(DotsAndBoxes.class);
         registerGameClass(TicTacToe.class);
+        registerGameClass(PaperSoccer.class);
     }
 
     private record GameType(List<String> settings, Constructor<? extends Game> constructor) {}

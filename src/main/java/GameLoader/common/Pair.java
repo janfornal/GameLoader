@@ -1,4 +1,4 @@
-package GameLoader.utility;
+package GameLoader.common;
 
 public record Pair<U, V>(U first, V second) {
     public U x() {

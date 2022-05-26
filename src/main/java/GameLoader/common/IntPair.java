@@ -1,4 +1,4 @@
-package GameLoader.utility;
+package GameLoader.common;
 
 public record IntPair(int first, int second) {
     public int x() {

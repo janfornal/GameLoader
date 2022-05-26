@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class AuthorizationDialog extends SplitPane {
     private final AnchorPane leftPane;

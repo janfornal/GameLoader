@@ -66,13 +66,13 @@ public class DatabaseManager implements DataManager {
             conn = connectionSupplier.get();
             initSchema();
 
-            getPlayerName       = conn.prepareStatement("SELECT NAME FROM USERS WHERE id = ?");
-            getPlayerPassword   = conn.prepareStatement("SELECT PASSWORD FROM USERS WHERE id = ?");
-            getPlayerId         = conn.prepareStatement("SELECT ID FROM USERS WHERE name = ?");
+            getPlayerName       = conn.prepareStatement("SELECT NAME FROM USERS WHERE ID = ?");
+            getPlayerPassword   = conn.prepareStatement("SELECT PASSWORD FROM USERS WHERE ID = ?");
+            getPlayerId         = conn.prepareStatement("SELECT ID FROM USERS WHERE NAME = ?");
             insertPlayers       = conn.prepareStatement("INSERT INTO USERS VALUES (?, ?, ?)");
 
-            getGameName         = conn.prepareStatement("SELECT NAME FROM GAMES WHERE id = ?");
-            getGameId           = conn.prepareStatement("SELECT ID FROM GAMES WHERE name = ?");
+            getGameName         = conn.prepareStatement("SELECT NAME FROM GAMES WHERE ID = ?");
+            getGameId           = conn.prepareStatement("SELECT ID FROM GAMES WHERE NAME = ?");
             insertGames         = conn.prepareStatement("INSERT INTO GAMES VALUES (?, ?)");
 
             getElo              = conn.prepareStatement("SELECT VAL FROM ELO WHERE PLAYER = ? AND GAME = ?");
@@ -164,7 +164,7 @@ public class DatabaseManager implements DataManager {
         try (ResultSet rs = st.executeQuery()) {
             Service.DB_QUERY_CALL_STREAM.println(st);
             String res = rs.next() ? rs.getString(1) : null;
-            Service.DB_QUERY_RESULT_STREAM.println("\tresult: " + res);
+            Service.DB_QUERY_RESULT_STREAM.println(st + "\tresult: " + res);
             return res;
         }
     }

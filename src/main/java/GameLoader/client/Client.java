@@ -2,13 +2,10 @@ package GameLoader.client;
 
 import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.*;
+import GameLoader.games.PaperSoccer.*;
 import GameLoader.games.SimpleTicTacToe.*;
-import GameLoader.games.TicTacToe.TicTacToe;
-import GameLoader.games.TicTacToe.TicTacToeView;
-import GameLoader.games.TicTacToe.TicTacToeViewModel;
+import GameLoader.games.TicTacToe.*;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
@@ -22,11 +19,11 @@ public class Client implements Service {
     public PlayViewModel currentPlayModel;
     private final Connection activeConnection;
     private SimpleObjectProperty<Message.ChatMessage> messageProperty = null;
-    private RoomInfo chosenGame;
     public String username;
     public final Map<String, GameClasses> gameMap = new HashMap<>() {{
         put(new DotsAndBoxes().getName(), new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
         put(new TicTacToe().getName(),new GameClasses(TicTacToe.class,TicTacToeView.class, TicTacToeViewModel.class));
+        put(new PaperSoccer().getName(),new GameClasses(PaperSoccer.class, PaperSoccerView.class, PaperSoccerViewModel.class));
     }};
 
     private record GameClasses(Class<? extends Game> gameClass,
@@ -40,10 +37,6 @@ public class Client implements Service {
     }
 
     public void setCurrentModel(MenuViewModel viewModel) {currentModel = viewModel;}
-
-    public void setChosenGame(RoomInfo game) {
-        chosenGame = game;
-    }
 
     public List<String> getGameSettings(String game) {  /// reflection used
         try {

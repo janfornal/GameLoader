@@ -142,7 +142,7 @@ public class DotsAndBoxes implements Game {
     }
 
     @Override
-    public List<String> possibleSettings() {
+    public List<String> possibleSettings() { // FIXME hardcoding is bad
         return new ArrayList<>(List.of("Small", "Medium", "Big"));
     }
 
