@@ -1,8 +1,9 @@
 package GameLoader.server;
 
 import GameLoader.common.*;
-import GameLoader.common.IntPair;
+import static GameLoader.common.Utility.IntPair;
 import static GameLoader.common.Messages.*;
+import static GameLoader.common.Serializables.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

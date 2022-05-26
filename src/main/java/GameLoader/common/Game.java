@@ -2,9 +2,9 @@ package GameLoader.common;
 
 import GameLoader.client.Client;
 import GameLoader.client.PlayViewModel;
+import static GameLoader.common.Serializables.*;
 
 import java.util.List;
-import java.util.Set;
 
 public interface Game {
     // derived classes should provide default constructor

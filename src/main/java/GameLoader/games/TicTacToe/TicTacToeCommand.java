@@ -1,6 +1,6 @@
 package GameLoader.games.TicTacToe;
 
-import GameLoader.common.Command;
+import static GameLoader.common.Serializables.Command;
 
 public class TicTacToeCommand extends Command {
     private final int row, col;

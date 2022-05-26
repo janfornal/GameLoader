@@ -2,7 +2,7 @@ package GameLoader.server;
 
 import GameLoader.common.Service;
 import GameLoader.common.Game;
-import GameLoader.common.IntPair;
+import static GameLoader.common.Utility.IntPair;
 
 /**
  * This class is thread-safe

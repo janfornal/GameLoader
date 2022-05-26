@@ -1,10 +1,9 @@
 package GameLoader.games.PaperSoccer;
 
 import GameLoader.client.Client;
-import GameLoader.common.Command;
 import GameLoader.common.Game;
-import GameLoader.common.IntPair;
-import GameLoader.common.ResignationCommand;
+import static GameLoader.common.Utility.IntPair;
+import static GameLoader.common.Serializables.*;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 

@@ -1,6 +1,6 @@
 package GameLoader.server;
 
-import GameLoader.common.PlayerInfo;
+import static GameLoader.common.Serializables.PlayerInfo;
 
 /**
  * This class is not thread-safe

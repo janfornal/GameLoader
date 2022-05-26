@@ -3,7 +3,7 @@ package GameLoader.games.TicTacToe;
 import GameLoader.client.Client;
 import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
-import GameLoader.common.Command;
+import static GameLoader.common.Serializables.Command;
 import static GameLoader.common.Messages.*;
 
 public class TicTacToeViewModel implements PlayViewModel {

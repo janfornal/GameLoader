@@ -1,9 +1,8 @@
 package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.Client;
-import GameLoader.common.Command;
 import GameLoader.common.Game;
-import GameLoader.common.ResignationCommand;
+import static GameLoader.common.Serializables.*;
 import javafx.beans.property.*;
 
 import java.io.Serializable;

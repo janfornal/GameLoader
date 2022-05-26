@@ -1,6 +1,6 @@
 package GameLoader.client;
 
-import GameLoader.common.Command;
+import static GameLoader.common.Serializables.*;
 import GameLoader.common.Game;
 import static GameLoader.common.Messages.*;
 

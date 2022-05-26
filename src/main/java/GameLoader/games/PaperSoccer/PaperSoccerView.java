@@ -2,13 +2,10 @@ package GameLoader.games.PaperSoccer;
 
 import GameLoader.client.PlayView;
 import GameLoader.common.Game;
-import GameLoader.common.HBoxFixedRatio;
-import GameLoader.common.IntPair;
+import static GameLoader.common.UtilityGUI.HBoxFixedRatio;
+import static GameLoader.common.Utility.IntPair;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
@@ -21,7 +18,6 @@ import javafx.scene.text.Font;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import static java.lang.Math.max;

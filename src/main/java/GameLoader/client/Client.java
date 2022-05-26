@@ -4,6 +4,7 @@ import GameLoader.common.*;
 import GameLoader.games.DotsAndBoxes.*;
 import GameLoader.games.PaperSoccer.*;
 import GameLoader.games.TicTacToe.*;
+import static GameLoader.common.Serializables.ResignationCommand;
 import static GameLoader.common.Messages.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;

@@ -1,6 +1,6 @@
 package GameLoader.games.DotsAndBoxes;
 
-import GameLoader.common.Command;
+import static GameLoader.common.Serializables.Command;
 
 public class DotsAndBoxesCommand extends Command {
     private final DotsAndBoxes.Coord crd;

@@ -1,9 +1,8 @@
 package GameLoader.games.TicTacToe;
 
 import GameLoader.client.Client;
-import GameLoader.common.Command;
 import GameLoader.common.Game;
-import GameLoader.common.ResignationCommand;
+import static GameLoader.common.Serializables.*;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import java.util.Arrays;
@@ -170,7 +169,6 @@ public class TicTacToe implements Game {
         if(tmp_score == winscore){
             winner = pl;
         }
-        System.out.print(tmp_score);
         tmp_score=1;
         tmp_col=col;
         tmp_row=row;

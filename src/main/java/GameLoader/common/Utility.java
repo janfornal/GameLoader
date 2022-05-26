@@ -8,4 +8,22 @@ public interface Utility {
         if (!b)
             throw new RuntimeException();
     }
+
+    record IntPair(int first, int second) {
+        public int x() {
+            return first;
+        }
+        public int y() {
+            return second;
+        }
+    }
+
+    record Pair<U, V>(U first, V second) {
+        public U x() {
+            return first;
+        }
+        public V y() {
+            return second;
+        }
+    }
 }

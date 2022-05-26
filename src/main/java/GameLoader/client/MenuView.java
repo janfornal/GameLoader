@@ -5,6 +5,7 @@ import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.games.PaperSoccer.PaperSoccer;
 import GameLoader.games.SimpleTicTacToe.SimpleTicTacToe;
 import GameLoader.games.TicTacToe.TicTacToe;
+import static GameLoader.common.Serializables.*;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.geometry.*;

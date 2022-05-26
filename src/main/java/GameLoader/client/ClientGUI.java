@@ -1,7 +1,7 @@
 package GameLoader.client;
 
 import GameLoader.common.Game;
-import GameLoader.common.ResignationCommand;
+import static GameLoader.common.Serializables.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;
 import static GameLoader.common.Messages.*;
 import javafx.application.Application;

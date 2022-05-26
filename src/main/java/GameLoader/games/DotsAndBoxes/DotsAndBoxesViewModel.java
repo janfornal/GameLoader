@@ -2,7 +2,7 @@ package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.Client;
 import GameLoader.client.PlayViewModel;
-import GameLoader.common.Command;
+import static GameLoader.common.Serializables.Command;
 
 public class DotsAndBoxesViewModel implements PlayViewModel {
     public DotsAndBoxesViewModel(Client user, int id, DotsAndBoxes game) {

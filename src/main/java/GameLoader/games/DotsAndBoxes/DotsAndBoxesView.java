@@ -2,7 +2,7 @@ package GameLoader.games.DotsAndBoxes;
 
 import GameLoader.client.PlayView;
 import GameLoader.common.Game;
-import GameLoader.common.HBoxFixedRatio;
+import static GameLoader.common.UtilityGUI.HBoxFixedRatio;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.geometry.Insets;

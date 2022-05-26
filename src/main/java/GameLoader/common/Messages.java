@@ -2,6 +2,7 @@ package GameLoader.common;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import static GameLoader.common.Serializables.*;
 
 public interface Messages {
     interface AnyMessage extends Serializable {}

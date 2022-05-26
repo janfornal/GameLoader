@@ -1,6 +1,6 @@
 package GameLoader.client;
 
-import GameLoader.common.*;
+import static GameLoader.common.Serializables.*;
 import static GameLoader.common.Messages.*;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;

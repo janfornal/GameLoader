@@ -1,6 +1,7 @@
 package GameLoader.games.PaperSoccer;
 
-import GameLoader.common.Command;
+import static GameLoader.common.Serializables.Command;
+
 public class PaperSoccerCommand extends Command {
     private final int dir;
 

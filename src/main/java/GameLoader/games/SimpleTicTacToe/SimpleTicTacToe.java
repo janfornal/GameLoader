@@ -1,17 +1,13 @@
 package GameLoader.games.SimpleTicTacToe;
 
 import GameLoader.client.Client;
-import GameLoader.common.Command;
 import GameLoader.common.Game;
-import GameLoader.common.ResignationCommand;
+import static GameLoader.common.Serializables.*;
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class SimpleTicTacToe implements Game {
     private final int sz = 3;
