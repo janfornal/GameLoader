@@ -14,11 +14,16 @@ import static java.lang.Math.abs;
 import static GameLoader.common.Utility.runtimeAssert;
 
 public class PaperSoccer implements Game {
-    private static final Map<String, IntPair> settingsMap = Map.of(
-            "Small", new IntPair(4, 4),
-            "Medium", new IntPair(8, 10),
-            "Large", new IntPair(12, 16)
-    );
+    private static final List<String> settingsList;
+    private static final Map<String, IntPair> settingsMap;
+    static {
+        Map<String, IntPair> mp = new LinkedHashMap<>();
+        mp.put("Small", new IntPair(4, 4));
+        mp.put("Medium", new IntPair(8, 10));
+        mp.put("Large", new IntPair(12, 16));
+        settingsMap = Collections.unmodifiableMap(mp);
+        settingsList = List.copyOf(mp.keySet());
+    }
 
     public static final List<IntPair> dirList = List.of(
             new IntPair(0, 1), new IntPair(1, 1), new IntPair(1, 0), new IntPair(1, -1),
@@ -160,8 +165,7 @@ public class PaperSoccer implements Game {
 
     @Override
     public List<String> possibleSettings() {
-//        return List.copyOf(settingsMap.keySet()); FIXME hardcoding is bad
-        return new ArrayList<>(List.of("Small", "Medium", "Large"));
+        return settingsList;
     }
 
     public ReadOnlyIntegerProperty getMoveCountProperty() {

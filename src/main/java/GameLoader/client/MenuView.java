@@ -101,7 +101,7 @@ public class MenuView extends GridPane implements GeneralView {
         setFillWidth(nvm.getElements().choiceSizeBox(), true);
         setHgrow(nvm.getElements().choiceSizeBox(), Priority.ALWAYS);
         setHalignment(nvm.getElements().choiceSizeBox(), HPos.CENTER);
-        nvm.addChoiceSettingsHandler(nvm.getElements().choiceSizeBox());
+        nvm.addChoiceSettingsHandler(nvm.getElements().choiceGameBox(), nvm.getElements().choiceSizeBox());
 
         add(nvm.getElements().createRoomButton(), 2, 8, 1, 1);
         setHalignment(nvm.getElements().createRoomButton(), HPos.LEFT);

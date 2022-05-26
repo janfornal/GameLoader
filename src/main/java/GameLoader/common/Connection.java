@@ -11,8 +11,8 @@ public class Connection {
 
     private final Service service;
     private final Socket socket;
-    private final ObjectOutputStream output;
-    private final ObjectInputStream input;
+    private /*final*/ ObjectOutputStream output;
+    private /*final*/ ObjectInputStream input;
 
     private String playerName = null;
     private boolean closed = false;
@@ -40,18 +40,12 @@ public class Connection {
         this.service = service;
         this.socket = socket;
 
-        ObjectOutputStream temp_output = null;
-        ObjectInputStream temp_input = null;
-
         try {
-            temp_output = new ObjectOutputStream(socket.getOutputStream());
-            temp_input = new ObjectInputStream(socket.getInputStream());
+            output = new ObjectOutputStream(socket.getOutputStream());
+            input = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             close();
         }
-
-        output = temp_output;
-        input = temp_input;
 
         service.execDaemon.execute(() -> {
             while (!closed) {
@@ -144,8 +138,10 @@ public class Connection {
             return;
         closed = true;
         try {
-            input.close();
-            output.close();
+            if (input != null)
+                input.close();
+            if (output != null)
+                output.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace(service.ERROR_STREAM);

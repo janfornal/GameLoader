@@ -66,7 +66,7 @@ public class ChatWindow extends VBox {
             messageArea.setEditable(false);
             System.out.println(messageArea.getText());
             input.setOnAction(event -> {
-                String message = "Player " + this.username + ": " + input.getText() + "\n";
+                String message = this.username + ": " + input.getText() + "\n";
                 input.clear();
                 user.sendMessage(new Message.ChatMessage(message));
             });

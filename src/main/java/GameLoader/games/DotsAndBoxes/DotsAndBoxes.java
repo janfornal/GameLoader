@@ -10,6 +10,17 @@ import java.io.Serializable;
 import java.util.*;
 
 public class DotsAndBoxes implements Game {
+    private static final List<String> settingsList;
+    private static final Map<String, Coord> settingsMap;
+    static {
+        Map<String, Coord> mp = new LinkedHashMap<>();
+        mp.put("Small", new Coord(2, 3));
+        mp.put("Medium", new Coord(4, 5));
+        mp.put("Large", new Coord(6, 8));
+        settingsMap = Collections.unmodifiableMap(mp);
+        settingsList = List.copyOf(mp.keySet());
+    }
+
     private Coord sz, mostRecent;
     private int[][] T;
     // 0 = unmarked, 1 = marked for edges
@@ -130,20 +141,14 @@ public class DotsAndBoxes implements Game {
         return true;
     }
 
-    private static final Map<String, Coord> settingsMap = Map.of(
-            "Small", new Coord(2, 3),
-            "Medium", new Coord(4, 5),
-            "Big", new Coord(6, 8)
-    );// it has to be this way, otherwise it is in reverse
-
     @Override
     public String getName() {
         return "Dots and boxes";
     }
 
     @Override
-    public List<String> possibleSettings() { // FIXME hardcoding is bad
-        return new ArrayList<>(List.of("Small", "Medium", "Big"));
+    public List<String> possibleSettings() {
+        return settingsList;
     }
 
     @Override

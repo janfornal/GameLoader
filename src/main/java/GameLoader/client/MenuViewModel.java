@@ -1,8 +1,13 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
+
+import java.util.Collections;
+import java.util.List;
 
 public class MenuViewModel implements ViewModel {
 
@@ -82,13 +87,13 @@ public class MenuViewModel implements ViewModel {
         });
     }
 
-    void addChoiceSettingsHandler(ChoiceBox<String> choiceBox) {
-        choiceBox.setOnMouseClicked(event -> {
-            if (guiVisual.choiceGameBox.getValue() == null || guiVisual.choiceGameBox.getValue().equals("Please select game"))
-                guiVisual.choiceGameBox.setValue("Please select game");
-            else
-                choiceBox.setItems(FXCollections.observableList(modelUser.getGameSettings(guiVisual.choiceGameBox.getValue()).stream().toList()));
-        });
+    void addChoiceSettingsHandler(ChoiceBox<String> choiceGame, ChoiceBox<String> choiceSettings) {
+        choiceSettings.itemsProperty().bind(Bindings.createObjectBinding(
+                () -> FXCollections.observableArrayList(
+                        choiceGame.getValue() == null ? Collections.emptyList() : modelUser.getGameSettings(choiceGame.getValue())
+                ),
+                choiceGame.valueProperty()
+        ));
     }
 
     void addGetRoomHandler(Button button) {
