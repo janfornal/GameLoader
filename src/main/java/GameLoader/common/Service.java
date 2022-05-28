@@ -1,10 +1,15 @@
 package GameLoader.common;
 
+import GameLoader.client.Client;
+import GameLoader.server.Server;
+
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static GameLoader.common.Messages.*;
+import static GameLoader.common.Utility.callDef;
 
 public interface Service {
     ExecutorService execNormal = Executors.newCachedThreadPool();
@@ -13,6 +18,9 @@ public interface Service {
         th.setDaemon(true);
         return th;
     });
+
+    String defaultIP = "localhost";
+    int defaultPort = 6666;
 
     PrintStream NULL_STREAM = new PrintStream(OutputStream.nullOutputStream());
     PrintStream ERROR_STREAM = System.err;
@@ -42,4 +50,17 @@ public interface Service {
     void processMessage(AnyMessage message, Connection connection);
 
     void reportConnectionClosed(Connection connection);
+
+    static void main(String[] args) throws IOException {
+        if (args.length > 0 && args[0].equalsIgnoreCase("server")) {
+            int port = args.length > 1 ? Integer.parseInt(args[1]) : defaultPort;
+
+            new Server(port);
+        } else {
+            String ip = args.length > 1 ? args[1] : defaultIP;
+            int port = args.length > 2 ? Integer.parseInt(args[2]) : defaultPort;
+
+            new Client(ip, port);
+        }
+    }
 }

@@ -2,6 +2,7 @@ package GameLoader.common;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public interface Utility {
     static void runtimeAssert(boolean b) {
@@ -24,6 +25,15 @@ public interface Utility {
         }
         public V y() {
             return second;
+        }
+    }
+
+    static <E> E callDef(Callable<E> call, E def) {
+        try {
+            return call.call();
+        } catch (Exception e) {
+            e.printStackTrace(Service.ERROR_STREAM);
+            return def;
         }
     }
 }

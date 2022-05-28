@@ -18,7 +18,7 @@ public class Client implements Service {
     private SimpleObjectProperty<ChatMessage> messageProperty = null;
     public String username;
 
-    Client(String ip, int port) throws IOException {
+    public Client(String ip, int port) throws IOException {
         ClientGUI.user = this;
         activeConnection = new Connection(Client.this, ip, port);
         ClientGUI.launch(ClientGUI.class);

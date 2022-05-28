@@ -100,7 +100,7 @@ public class SimpleTicTacToe implements Game {
 
     @Override
     public String getName() {
-        return "Simple Tic Tac Toe";
+        return "Simple tic-tac-toe";
     }
 
     @Override

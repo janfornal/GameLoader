@@ -7,9 +7,6 @@ import java.util.Objects;
 import static GameLoader.common.Messages.*;
 
 public class Connection {
-    public static final String defaultIP = "localhost";
-    public static final int defaultPort = 6666;
-
     private final Service service;
     private final Socket socket;
     private /*final*/ ObjectOutputStream output;
@@ -23,15 +20,15 @@ public class Connection {
     }
 
     public Connection(Service service, String ip) throws IOException {
-        this(service, ip, defaultPort);
+        this(service, ip, Service.defaultPort);
     }
 
     public Connection(Service service, int port) throws IOException {
-        this(service, defaultIP, port);
+        this(service, Service.defaultIP, port);
     }
 
     public Connection(Service service) throws IOException {
-        this(service, defaultIP, defaultPort);
+        this(service, Service.defaultIP, Service.defaultPort);
     }
 
     public Connection(Service service, Socket socket) {

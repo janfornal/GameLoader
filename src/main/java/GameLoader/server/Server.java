@@ -19,7 +19,7 @@ public class Server implements Service {
     public final EloManager eloManager = new SimpleEloManager();
 
     public Server() {
-        this(Connection.defaultPort);
+        this(Service.defaultPort);
     }
 
     public Server(int port) {

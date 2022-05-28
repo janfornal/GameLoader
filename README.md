@@ -18,24 +18,27 @@ Client and server apps allowing users to play simple games online, made as an as
 
 #### Second presentation (26.05)
 
+- [x] loading games as plugins (28.05)
 - [ ] game history
 - [ ] rejoining games after disconnection
-- [ ] loading games as plugins
+
+#### Third presentation (09.06)
 
 ## Requirements
 
 - Java 17
-- OpenJFX 17
 - Maven 3 as the build system
-- JUnit 4 for unit tests
 
 ## Compiling
 
-    mvn clean package                                                               # Compile everything
+    mvn clean package                                           # Compile everything
 
 ## Basic usage
 
-    java -jar target/GameLoader-1-shaded.jar <ip> <port>                            # Run client
-    java -cp target/GameLoader-1-shaded.jar GameLoader/server/ServerRun <port>      # Run server
+    java -jar target/GameLoader.jar client <ip> <port>          # Run client
+    java -jar target/GameLoader.jar server <port>               # Run server
 
 If not specified ``port`` defaults to ``6666``, and ``ip`` defaults to ``localhost``.
+
+## Games
+Currently, there are three hardcoded games: dots and boxes, tic-tac-toe, paper soccer. Games can also be loaded as plugins, as the ``games`` folder is scanned for ``.jar`` files containing classes that implement ``GameLoader.common.Game`` interface.
