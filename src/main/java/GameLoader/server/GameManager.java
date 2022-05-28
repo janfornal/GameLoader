@@ -43,7 +43,7 @@ public class GameManager {
         String game = msg.game();
         String settings = msg.settings();
 
-        if (!server.gameTypeManager.areSettingsCorrect(game, settings)) {
+        if (!server.gameTypeManager.checkSettings(game, settings)) {
             c.sendError("game <" + game + "> does not support setting: <" + settings + ">");
             return;
         }

@@ -21,9 +21,6 @@ public class DatabaseManager implements DataManager {
         for (String game : server.gameTypeManager.getGameNames())
             registerGame(game);
     }
-    public DatabaseManager(Server s) {
-        this(s, new DatabaseConnectionFactory(s));
-    }
 
     // these variables should either be all nulls or all non-nulls
     private Connection conn;

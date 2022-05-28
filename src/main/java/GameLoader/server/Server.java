@@ -1,7 +1,7 @@
 package GameLoader.server;
 
-import GameLoader.common.Service;
-import GameLoader.common.Connection;
+import GameLoader.common.*;
+
 import static GameLoader.common.Messages.*;
 
 import java.io.IOException;
@@ -14,10 +14,9 @@ public class Server implements Service {
     private ServerSocket serverSocket;
 
     public final GameManager gameManager = new GameManager(this);
+    public final DataManager dataManager = new DatabaseManager(this, new DatabaseConnectionFactory());
     public final UserManager userManager = new UserManager(this);
-    public final GameTypeManager gameTypeManager = new GameTypeManager(this);
-    public final DataManager dataManager = new DatabaseManager(this);
-    public final EloManager eloManager = new SimpleEloManager(this);
+    public final EloManager eloManager = new SimpleEloManager();
 
     public Server() {
         this(Connection.defaultPort);
@@ -101,10 +100,6 @@ public class Server implements Service {
         }
         if (msg instanceof JoinRoomMessage m) {
             gameManager.processJoinRoomMessage(m, c);
-            return;
-        }
-        if (msg instanceof GetGameListMessage m) {
-            gameTypeManager.processGetGameListMessage(m, c);
             return;
         }
         if (msg instanceof ChatMessage m) {

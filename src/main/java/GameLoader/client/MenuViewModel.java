@@ -89,7 +89,7 @@ public class MenuViewModel implements ViewModel {
     void addChoiceSettingsHandler(ChoiceBox<String> choiceGame, ChoiceBox<String> choiceSettings) {
         choiceSettings.itemsProperty().bind(Bindings.createObjectBinding(
                 () -> FXCollections.observableArrayList(
-                        choiceGame.getValue() == null ? Collections.emptyList() : modelUser.getGameSettings(choiceGame.getValue())
+                        modelUser.gameTypeManager.possibleSettings(choiceGame.getValue())
                 ),
                 choiceGame.valueProperty()
         ));

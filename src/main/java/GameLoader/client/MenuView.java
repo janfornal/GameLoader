@@ -40,8 +40,8 @@ public class MenuView extends GridPane implements GeneralView {
             this.getRowConstraints().get(i).setPercentHeight(rowHeight.get(i));
         }
 
-        nvm.setElements(new MenuViewModel.guiElements( // FIXME hardcoding game names in 50 places is a terrible idea
-            new ChoiceBox<String>(FXCollections.observableArrayList(new DotsAndBoxes().getName(), new TicTacToe().getName(), new PaperSoccer().getName())),
+        nvm.setElements(new MenuViewModel.guiElements(
+            new ChoiceBox<String>(FXCollections.observableArrayList(nvm.getModelUser().gameTypeManager.getGameNames())),
             new ChoiceBox<String>(),
             //new Label("Create Room"),
             new TableView<RoomInfo>(),

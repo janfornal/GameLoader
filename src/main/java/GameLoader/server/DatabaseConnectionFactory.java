@@ -33,11 +33,6 @@ public class DatabaseConnectionFactory implements Supplier<Connection> {
         }
     }
 
-    private final Service service;
-    public DatabaseConnectionFactory(Service s) {
-        service = s;
-    }
-
     private Connection get(String url, String user, String password) {
         try {
             return DriverManager.getConnection(url, user, password);

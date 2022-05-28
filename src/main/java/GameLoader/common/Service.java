@@ -24,13 +24,20 @@ public interface Service {
 
     PrintStream DB_DRIVER_ERROR_STREAM = ERROR_STREAM;
     PrintStream DB_CONNECTION_ERROR_STREAM = NULL_STREAM;
-    PrintStream DB_CONNECTION_INFO_STREAM = INFO_STREAM;
+    PrintStream DB_CONNECTION_INFO_STREAM = NULL_STREAM;
+
     PrintStream DB_QUERY_CALL_STREAM = NULL_STREAM;
     PrintStream DB_QUERY_RESULT_STREAM = INFO_STREAM;
 
+    PrintStream GAME_TYPE_ERROR_STREAM = ERROR_STREAM;
+    PrintStream GAME_TYPE_INFO_STREAM = INFO_STREAM;
+
+    // constants related to database connections are stored in server.DatabaseConnectionFactory
+
     int DEFAULT_ELO = 1000;
 
-    PasswordManager passwordManager = new PasswordManager(); // FIXME should this be here?
+    PasswordManager passwordManager = new PasswordManager();
+    GameTypeManager gameTypeManager = new DynamicGameTypeManager("games");
 
     void processMessage(AnyMessage message, Connection connection);
 

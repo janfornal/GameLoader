@@ -1,9 +1,6 @@
 package GameLoader.client;
 
 import GameLoader.common.*;
-import GameLoader.games.DotsAndBoxes.*;
-import GameLoader.games.PaperSoccer.*;
-import GameLoader.games.TicTacToe.*;
 import static GameLoader.common.Serializables.ResignationCommand;
 import static GameLoader.common.Messages.*;
 import javafx.application.Platform;
@@ -12,7 +9,6 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class Client implements Service {
@@ -21,15 +17,6 @@ public class Client implements Service {
     private final Connection activeConnection;
     private SimpleObjectProperty<ChatMessage> messageProperty = null;
     public String username;
-    public final Map<String, GameClasses> gameMap = new HashMap<>() {{
-        put(new DotsAndBoxes().getName(), new GameClasses(DotsAndBoxes.class, DotsAndBoxesView.class, DotsAndBoxesViewModel.class));
-        put(new TicTacToe().getName(),new GameClasses(TicTacToe.class,TicTacToeView.class, TicTacToeViewModel.class));
-        put(new PaperSoccer().getName(),new GameClasses(PaperSoccer.class, PaperSoccerView.class, PaperSoccerViewModel.class));
-    }};
-
-    private record GameClasses(Class<? extends Game> gameClass,
-                               Class<? extends PlayView> gameViewClass,
-                               Class<? extends PlayViewModel> gameModelClass) {}
 
     Client(String ip, int port) throws IOException {
         ClientGUI.user = this;
@@ -38,16 +25,6 @@ public class Client implements Service {
     }
 
     public void setCurrentModel(MenuViewModel viewModel) {currentModel = viewModel;}
-
-    public List<String> getGameSettings(String game) {  /// reflection used
-        try {
-            Game helperGameObject = gameMap.get(game).gameClass.getConstructor().newInstance();
-            return helperGameObject.possibleSettings();
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            System.err.println("You want to get settings list of game, which doesn't exist!");
-        }
-        return null;
-    }
 
     void gameEnded() {
     }
@@ -64,18 +41,14 @@ public class Client implements Service {
             currentModel.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
         }
         else if(message instanceof StartGameMessage messageCast) {
-            GameClasses gamePackage = gameMap.get(messageCast.game());
-            Game starterInstance;
-            PlayViewModel currentModelLocal;
-            try {
-                starterInstance = gamePackage.gameClass().getConstructor().newInstance();
-                currentModelLocal = starterInstance.createViewModel(this, messageCast.p0().name().equals(username) ? 0 : 1);
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+            Game starterInstance = gameTypeManager.createGame(messageCast.game(), messageCast.settings());
+
+            if (starterInstance == null) {
                 sendMessage(new ErrorMessage("Constructor of game cannot be called"));
                 return;
             }
-            currentPlayModel = currentModelLocal;
+
+            currentPlayModel = starterInstance.createViewModel(this, messageCast.p0().name().equals(username) ? 0 : 1);
             starterInstance.start(messageCast.settings(), messageCast.seed());
             String [] playerNames = new String[]{messageCast.p0().name(), messageCast.p1().name()};
             Platform.runLater(
