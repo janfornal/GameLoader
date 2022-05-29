@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Objects;
 import static GameLoader.common.Messages.*;
+import static GameLoader.common.Utility.ObjectInputStreamWithClassLoader;
 
 public class Connection {
     private final Service service;
@@ -40,7 +41,9 @@ public class Connection {
 
         try {
             output = new ObjectOutputStream(socket.getOutputStream());
-            input = new ObjectInputStream(socket.getInputStream());
+            input = new ObjectInputStreamWithClassLoader(
+                    socket.getInputStream(), service.gameTypeManager.getClassLoader()
+            );
         } catch (IOException e) {
             close();
         }

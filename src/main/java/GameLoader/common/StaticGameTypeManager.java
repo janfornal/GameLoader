@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 /**
- * This class is not thread-safe
+ * This class is thread-safe
  */
 public class StaticGameTypeManager implements GameTypeManager {
     public StaticGameTypeManager() {
@@ -85,6 +85,11 @@ public class StaticGameTypeManager implements GameTypeManager {
         gameTypes.put(name, new GameType(settings, factory));
         Service.GAME_TYPE_INFO_STREAM.println(cl + " successfully registered game: " + name);
         return true;
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return ClassLoader.getSystemClassLoader();
     }
 }
 
