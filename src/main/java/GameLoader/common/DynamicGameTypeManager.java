@@ -15,11 +15,12 @@ import static GameLoader.common.Utility.uncheckURL;
  * This class is thread-safe
  */
 public class DynamicGameTypeManager extends StaticGameTypeManager {
-    protected final ClassLoader loader;
+    protected ClassLoader loader = super.getClassLoader();
 
-    public DynamicGameTypeManager(String gamesPath) {
+    public DynamicGameTypeManager load(String... paths) {
         List<JarFile> JARs = new ArrayList<>();
-        searchForJars(new File(gamesPath), JARs);
+        for (String path : paths)
+            searchForJARs(new File(path), JARs);
 
         URL[] urls = JARs
                 .stream()
@@ -27,18 +28,20 @@ public class DynamicGameTypeManager extends StaticGameTypeManager {
                 .filter(Objects::nonNull)
                 .toArray(URL[]::new);
 
-        loader = new URLClassLoader(urls);
+        loader = new URLClassLoader(urls, loader);
 
         for (JarFile file : JARs)
             processJarFile(file);
+
+        return this;
     }
 
-    protected void searchForJars(File file, List<JarFile> JARs) {
+    protected void searchForJARs(File file, List<JarFile> JARs) {
         if (file.isDirectory()) {
             File[] subFiles = file.listFiles();
             if (subFiles != null)
                 for (File entry : subFiles)
-                    searchForJars(entry, JARs);
+                    searchForJARs(entry, JARs);
         }
 
         if (file.isFile() && file.toString().endsWith(".jar"))

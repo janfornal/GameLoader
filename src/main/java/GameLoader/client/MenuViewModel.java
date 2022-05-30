@@ -2,11 +2,11 @@ package GameLoader.client;
 
 import static GameLoader.common.Serializables.*;
 import static GameLoader.common.Messages.*;
+
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
-
-import java.util.Collections;
 
 public class MenuViewModel implements ViewModel {
 
@@ -59,7 +59,7 @@ public class MenuViewModel implements ViewModel {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     RoomInfo rowData = row.getItem();
-                    AnyMessage jr = new JoinRoomMessage(rowData);
+                    Message jr = new JoinRoomMessage(rowData);
                     modelUser.sendMessage(jr);
                 }
             });
@@ -69,20 +69,18 @@ public class MenuViewModel implements ViewModel {
 
     void addCreateRoomHandler(Button button) {
         button.setOnMouseClicked(event -> {
-            if (guiVisual.choiceSizeBox.getValue() == null || guiVisual.choiceSizeBox.getValue().equals("Please select size")) {
-                guiVisual.choiceSizeBox.setValue("Please select size");
-                if (guiVisual.choiceGameBox.getValue() == null || guiVisual.choiceGameBox.getValue().equals("Please select game")) {
-                    guiVisual.choiceGameBox.setValue("Please select game");
-                }
-            } else if (guiVisual.choiceGameBox.getValue() == null || guiVisual.choiceGameBox.getValue().equals("Please select game")) {
-                guiVisual.choiceGameBox.setValue("Please select game");
-            } else {
-                String game = guiVisual.choiceGameBox().getValue();
-                String settings = guiVisual.choiceSizeBox().getValue();
+            String game = guiVisual.choiceGameBox().getValue();
+            String settings = guiVisual.choiceSizeBox().getValue();
 
-                AnyMessage crm = new CreateRoomMessage(game, settings);
-                modelUser.sendMessage(crm);
+            if (game == null || settings == null) {
+                Platform.runLater(
+                        () -> new Alert(Alert.AlertType.ERROR, "Please select game and settings").showAndWait()
+                );
+                return;
             }
+
+            Message crm = new CreateRoomMessage(game, settings);
+            modelUser.sendMessage(crm);
         });
     }
 
@@ -97,7 +95,7 @@ public class MenuViewModel implements ViewModel {
 
     void addGetRoomHandler(Button button) {
         button.setOnMouseClicked(event -> {
-            AnyMessage crm = new GetRoomListMessage();
+            Message crm = new GetRoomListMessage();
             modelUser.sendMessage(crm);
         });
     }

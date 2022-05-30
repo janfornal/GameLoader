@@ -102,7 +102,7 @@ public class UserManager {
         c.sendMessage(new SuccessfulAuthorizationMessage());
     }
 
-    public void sendMessageTo(AnyMessage msg, String... to) {
+    public void sendMessageTo(Message msg, String... to) {
         for (String name : to) {
             Connection c = getConnection(name);
             if (c == null)

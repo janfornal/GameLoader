@@ -94,7 +94,7 @@ public class AuthorizationDialog extends SplitPane {
         passwordTextField.setPromptText("Enter your password");
     }
 
-    AnyMessage processAuthorization(Stage stage) {
+    Message processAuthorization(Stage stage) {
         parentStage = stage;
         stage.setScene(new Scene(this));
         stage.setResizable(false);

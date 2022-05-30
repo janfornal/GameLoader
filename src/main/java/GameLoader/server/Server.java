@@ -66,7 +66,7 @@ public class Server implements Service {
     }
 
     @Override
-    public void processMessage(AnyMessage msg, Connection c) {
+    public void processMessage(Message msg, Connection c) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(c);
 

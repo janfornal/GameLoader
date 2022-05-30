@@ -8,9 +8,20 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 public interface Utility {
-    static void runtimeAssert(boolean b) {
-        if (!b)
+    /**
+     * @throws RuntimeException if {@code val} is {@code false}
+     */
+    static void runtimeAssert(boolean val) {
+        if (!val)
             throw new RuntimeException();
+    }
+
+    /**
+     * @throws RuntimeException if {@code val} is {@code false}
+     */
+    static void runtimeAssert(boolean val, String exc) {
+        if (!val)
+            throw new RuntimeException(exc);
     }
 
     record IntPair(int first, int second) {

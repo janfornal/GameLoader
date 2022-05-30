@@ -41,9 +41,22 @@ public class Connection {
 
         try {
             output = new ObjectOutputStream(socket.getOutputStream());
-            input = new ObjectInputStreamWithClassLoader(
-                    socket.getInputStream(), service.gameTypeManager.getClassLoader()
-            );
+            input = new ObjectInputStream(socket.getInputStream()) {
+                @Override
+                protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException {
+                    String name = desc.getName();
+                    try {
+                        return Class.forName(name, false, Service.gameTypeManager.getClassLoader());
+                    } catch (ClassNotFoundException ex) {
+                        try {
+                            return super.resolveClass(desc);
+                        } catch (IOException | ClassNotFoundException e) {
+                            throw ex;
+                        }
+                    }
+                }
+            };
+
         } catch (IOException e) {
             close();
         }
@@ -51,7 +64,7 @@ public class Connection {
         service.execDaemon.execute(() -> {
             while (!closed) {
                 try {
-                    AnyMessage message = (AnyMessage) input.readObject();
+                    Message message = (Message) input.readObject();
 
                     service.INC_MESSAGE.println(message + "\t\treceived from " + this);
 
@@ -90,12 +103,12 @@ public class Connection {
         sendMessage(new ErrorMessage(cause));
     }
 
-    public void sendMessage(AnyMessage message) {
+    public void sendMessage(Message message) {
         sendMessages(message);
     }
 
-    public void sendMessages(AnyMessage... messages) {
-        for (AnyMessage message : messages)
+    public void sendMessages(Message... messages) {
+        for (Message message : messages)
             service.SND_MESSAGE.println(message + "\t\tsending to " + this);
 
         if (closed)
@@ -103,7 +116,7 @@ public class Connection {
 
         service.execDaemon.execute(() -> {
             synchronized (output) {
-                for (AnyMessage message : messages) {
+                for (Message message : messages) {
                     try {
                         output.writeObject(message);
 
