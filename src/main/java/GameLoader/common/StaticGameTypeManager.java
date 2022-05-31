@@ -5,10 +5,11 @@ import GameLoader.games.DotsAndBoxes.DotsAndBoxes;
 import GameLoader.games.TicTacToe.TicTacToe;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
- * This class is not thread-safe
+ * This class is thread-safe
  */
 public class StaticGameTypeManager implements GameTypeManager {
     public StaticGameTypeManager() {
@@ -18,7 +19,7 @@ public class StaticGameTypeManager implements GameTypeManager {
     }
 
     private record GameType(List<String> settings, Supplier<Game> factory) {}
-    private final Map<String, GameType> gameTypes = new HashMap<>();
+    private final Map<String, GameType> gameTypes = new ConcurrentHashMap<>();
 
     @Override
     public List<String> getGameNames() {
@@ -27,7 +28,7 @@ public class StaticGameTypeManager implements GameTypeManager {
 
     @Override
     public List<String> possibleSettings(String game) {
-        GameType type = gameTypes.get(game);
+        GameType type = game != null ? gameTypes.get(game) : null;
         if (type == null)
             return Collections.emptyList();
 
@@ -35,8 +36,8 @@ public class StaticGameTypeManager implements GameTypeManager {
     }
 
     @Override
-    public boolean checkSettings(String name, String settings) {
-        GameType type = gameTypes.get(name);
+    public boolean checkSettings(String game, String settings) {
+        GameType type = game != null ? gameTypes.get(game) : null;
         if (type == null)
             return false;
 
@@ -44,8 +45,8 @@ public class StaticGameTypeManager implements GameTypeManager {
     }
 
     @Override
-    public Game createGame(String name, String settings) {
-        GameType type = gameTypes.get(name);
+    public Game createGame(String game, String settings) {
+        GameType type = game != null ? gameTypes.get(game) : null;
         if (type == null || !type.settings.contains(settings))
             return null;
 
@@ -85,6 +86,11 @@ public class StaticGameTypeManager implements GameTypeManager {
         gameTypes.put(name, new GameType(settings, factory));
         Service.GAME_TYPE_INFO_STREAM.println(cl + " successfully registered game: " + name);
         return true;
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return ClassLoader.getSystemClassLoader();
     }
 }
 

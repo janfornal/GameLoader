@@ -30,7 +30,7 @@ public class Client implements Service {
     }
 
     @Override
-    public void processMessage(AnyMessage message, Connection c) {
+    public void processMessage(Message message, Connection c) {
         Objects.requireNonNull(message);
         Objects.requireNonNull(c);
 
@@ -48,8 +48,8 @@ public class Client implements Service {
                 return;
             }
 
-            currentPlayModel = starterInstance.createViewModel(this, messageCast.p0().name().equals(username) ? 0 : 1);
             starterInstance.start(messageCast.settings(), messageCast.seed());
+            currentPlayModel = starterInstance.createViewModel(this, messageCast.p0().name().equals(username) ? 0 : 1);
             String [] playerNames = new String[]{messageCast.p0().name(), messageCast.p1().name()};
             Platform.runLater(
                     () -> ClientGUI.startNewTab(currentPlayModel, playerNames[0].equals(username) ? playerNames[1] : playerNames[0])
@@ -61,7 +61,7 @@ public class Client implements Service {
         else if(message instanceof MoveMessage messageCast) {
             if (messageCast.move() instanceof ResignationCommand res && currentPlayModel.playingAs() != res.getPlayer())
                 Platform.runLater(
-                        () -> new Alert(Alert.AlertType.ERROR, "Your opponent resigned").showAndWait()
+                        () -> new Alert(Alert.AlertType.INFORMATION, "Your opponent resigned").showAndWait()
                 );
 
             Platform.runLater(
@@ -96,7 +96,7 @@ public class Client implements Service {
         sendMessage(new ErrorMessage(cause));
     }
 
-    public void sendMessage(AnyMessage message) {
+    public void sendMessage(Message message) {
         if(message instanceof AuthorizationAttemptMessage messageCast) {
             username = messageCast.name();
         }

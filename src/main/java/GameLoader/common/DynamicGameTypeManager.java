@@ -5,36 +5,54 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.jar.JarFile;
+import static GameLoader.common.Utility.uncheckURL;
 
 /**
- * This class is not thread-safe
+ * This class is thread-safe
  */
 public class DynamicGameTypeManager extends StaticGameTypeManager {
-    public DynamicGameTypeManager(String gamesPath) {
-        processFile(new File(gamesPath));
+    protected ClassLoader loader = super.getClassLoader();
+
+    public DynamicGameTypeManager load(String... paths) {
+        List<JarFile> JARs = new ArrayList<>();
+        for (String path : paths)
+            searchForJARs(new File(path), JARs);
+
+        URL[] urls = JARs
+                .stream()
+                .map(file -> uncheckURL("jar:file:" + file.getName() + "!/", Service.GAME_TYPE_ERROR_STREAM))
+                .filter(Objects::nonNull)
+                .toArray(URL[]::new);
+
+        loader = new URLClassLoader(urls, loader);
+
+        for (JarFile file : JARs)
+            processJarFile(file);
+
+        return this;
     }
 
-    protected void processFile(File file) {
+    protected void searchForJARs(File file, List<JarFile> JARs) {
         if (file.isDirectory()) {
             File[] subFiles = file.listFiles();
             if (subFiles != null)
                 for (File entry : subFiles)
-                    processFile(entry);
+                    searchForJARs(entry, JARs);
         }
 
         if (file.isFile() && file.toString().endsWith(".jar"))
             try {
-                processJarFile(new JarFile(file));
+                JARs.add(new JarFile(file));
             } catch (IOException e) {
                 e.printStackTrace(Service.GAME_TYPE_ERROR_STREAM);
             }
     }
 
-    protected void processJarFile(JarFile jarFile) throws IOException {
-        URL[] urls = { new URL("jar:file:" + jarFile.getName() + "!/") };
-        URLClassLoader loader = URLClassLoader.newInstance(urls);
-
+    protected void processJarFile(JarFile jarFile) {
         jarFile.stream().forEach(je -> {
             String fileName = je.getName();
             if (je.isDirectory() || !fileName.endsWith(".class"))
@@ -55,5 +73,10 @@ public class DynamicGameTypeManager extends StaticGameTypeManager {
 
             } catch (ClassNotFoundException | NoClassDefFoundError | ClassCastException ignored) {}
         });
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return loader;
     }
 }

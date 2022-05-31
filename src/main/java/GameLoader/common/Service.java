@@ -9,7 +9,6 @@ import java.io.PrintStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static GameLoader.common.Messages.*;
-import static GameLoader.common.Utility.callDef;
 
 public interface Service {
     ExecutorService execNormal = Executors.newCachedThreadPool();
@@ -32,7 +31,7 @@ public interface Service {
 
     PrintStream DB_DRIVER_ERROR_STREAM = ERROR_STREAM;
     PrintStream DB_CONNECTION_ERROR_STREAM = NULL_STREAM;
-    PrintStream DB_CONNECTION_INFO_STREAM = NULL_STREAM;
+    PrintStream DB_CONNECTION_INFO_STREAM = INFO_STREAM;
 
     PrintStream DB_QUERY_CALL_STREAM = NULL_STREAM;
     PrintStream DB_QUERY_RESULT_STREAM = INFO_STREAM;
@@ -45,9 +44,9 @@ public interface Service {
     int DEFAULT_ELO = 1000;
 
     PasswordManager passwordManager = new PasswordManager();
-    GameTypeManager gameTypeManager = new DynamicGameTypeManager("games");
+    GameTypeManager gameTypeManager = new DynamicGameTypeManager().load("games");
 
-    void processMessage(AnyMessage message, Connection connection);
+    void processMessage(Message message, Connection connection);
 
     void reportConnectionClosed(Connection connection);
 

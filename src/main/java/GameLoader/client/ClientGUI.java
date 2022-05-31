@@ -59,7 +59,7 @@ public class ClientGUI extends Application {
                 Stage authStage = new Stage();
                 authStage.setOnCloseRequest(ClientGUI::HandlerFunction);
                 AuthorizationDialog startAuth = new AuthorizationDialog();
-                AnyMessage userData = startAuth.processAuthorization(authStage);
+                Message userData = startAuth.processAuthorization(authStage);
                 if(userData == null) return;
                 user.sendMessage(userData);
                 authorizationLock.wait();

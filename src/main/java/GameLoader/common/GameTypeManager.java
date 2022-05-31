@@ -1,9 +1,8 @@
 package GameLoader.common;
 
 import java.util.List;
-
 /**
- * This class is not thread-safe
+ * This class is thread-safe
  */
 public interface GameTypeManager {
     /**
@@ -25,4 +24,9 @@ public interface GameTypeManager {
      * @return game instance if manager succeeds, {@code null} otherwise
      */
     Game createGame(String name, String settings);
+
+    /**
+     * @return custom class loader that should be used when deserializing messages
+     */
+    ClassLoader getClassLoader();
 }

@@ -140,7 +140,7 @@ public class GameManager {
             }
             game.makeMove(cmd);
 
-            server.userManager.sendMessageTo(msg, g.p0, g.p1);
+            server.userManager.sendMessageTo(msg, cmd.getPlayer() == 0 ? g.p1 : g.p0);
 
             if (game.getState() != Game.state.UNFINISHED)
                 reportGameEnded(g);

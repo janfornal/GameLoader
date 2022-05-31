@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import static GameLoader.common.Serializables.*;
 
 public interface Messages {
-    interface AnyMessage extends Serializable {}
+    interface Message extends Serializable {}
 
-    interface ClientToServerMessage extends AnyMessage {}
-    interface ServerToClientMessage extends AnyMessage {}
+    interface ClientToServerMessage extends Message {}
+    interface ServerToClientMessage extends Message {}
 
     record PingMessage(String p) implements ClientToServerMessage, ServerToClientMessage {}
     record PongMessage(String p) implements ClientToServerMessage, ServerToClientMessage {}
@@ -32,13 +32,13 @@ public interface Messages {
     record StartGameMessage(String game, String settings, int seed, PlayerInfo p0, PlayerInfo p1) implements ServerToClientMessage {} // gra ma się rozpocząć
     record MoveMessage(Command move) implements ClientToServerMessage, ServerToClientMessage {} // wykonany ruch
 
-    record InterruptedGameMessage(String cause) implements AnyMessage {} // to jest na razie nieistotne
-    record EndConnectionMessage() implements AnyMessage {}
+    record InterruptedGameMessage(String cause) implements Message {} // to jest na razie nieistotne
+    record EndConnectionMessage() implements Message {}
 
-    record GameListMessage() implements AnyMessage {} // to jest na razie nieistotne
-    record GetGameListMessage() implements AnyMessage {} // to jest na razie nieistotne
-    record ChatMessage(String text) implements AnyMessage {}
+    record GameListMessage() implements Message {} // to jest na razie nieistotne
+    record GetGameListMessage() implements Message {} // to jest na razie nieistotne
+    record ChatMessage(String text) implements Message {}
 
-    record StatisticsQueryMessage(String gameName) implements AnyMessage {} // prosimy o statystyki z baz danych
-    record StatisticsDatabaseMessage(ArrayList<Pair<String, Integer>> eloList) implements AnyMessage {} // przesylamy dane do statystyk z bazy danych
+    record StatisticsQueryMessage(String gameName) implements Message {} // prosimy o statystyki z baz danych
+    record StatisticsDatabaseMessage(ArrayList<Pair<String, Integer>> eloList) implements Message {} // przesylamy dane do statystyk z bazy danych
 }
