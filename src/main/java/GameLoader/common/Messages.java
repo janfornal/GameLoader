@@ -1,5 +1,7 @@
 package GameLoader.common;
 
+import javafx.util.Pair;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import static GameLoader.common.Serializables.*;
@@ -36,4 +38,7 @@ public interface Messages {
     record GameListMessage() implements AnyMessage {} // to jest na razie nieistotne
     record GetGameListMessage() implements AnyMessage {} // to jest na razie nieistotne
     record ChatMessage(String text) implements AnyMessage {}
+
+    record StatisticsQueryMessage(String gameName) implements AnyMessage {} // prosimy o statystyki z baz danych
+    record StatisticsDatabaseMessage(ArrayList<Pair<String, Integer>> eloList) implements AnyMessage {} // przesylamy dane do statystyk z bazy danych
 }

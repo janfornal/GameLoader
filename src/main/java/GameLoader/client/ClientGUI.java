@@ -1,18 +1,23 @@
 package GameLoader.client;
 
+import GameLoader.client.statistics.MainStatisticsWindow;
+import GameLoader.client.statistics.StatisticsPane;
 import GameLoader.common.Game;
 import static GameLoader.common.Serializables.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;
 import static GameLoader.common.Messages.*;
 import javafx.application.Application;
 import javafx.event.Event;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Optional;
 
 
@@ -22,6 +27,7 @@ public class ClientGUI extends Application {
     static GeneralView view;
     static Client user;
     static TabPane tabpane;
+    static MainStatisticsWindow mainStatisticsWindow;
     private static final Object authorizationLock = new Object();
 
     public static void authorizationLockNotify() {
@@ -101,6 +107,26 @@ public class ClientGUI extends Application {
             }
             else user.sendMessage(new MoveMessage(new ResignationCommand(viewModel.playingAs())));
         });
+        tabpane.getTabs().add(tab);
+        tabpane.getSelectionModel().select(tab);
+    }
+
+    public static void startStatisticsTab () {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(ClientGUI.class.getResource("/mainStatisticsWindow.fxml"));
+        Tab tab = new Tab("Server statistics");
+        tab.setOnCloseRequest(e -> {
+            mainStatisticsWindow = null;
+        });
+        try {
+            Parent root = loader.load();
+            MainStatisticsWindow statWindow = loader.getController();
+            statWindow.passClientInstance(user);
+            mainStatisticsWindow = statWindow;
+            tab.setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);
     }

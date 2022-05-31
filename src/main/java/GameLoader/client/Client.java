@@ -80,6 +80,10 @@ public class Client implements Service {
             username = null;
             ClientGUI.authorizationLockNotify();
         }
+        else if(message instanceof StatisticsDatabaseMessage messageCast) {
+            if(ClientGUI.mainStatisticsWindow == null) c.sendError("Message not recognized");
+            else ClientGUI.mainStatisticsWindow.showStatistics(messageCast);
+        }
         else c.sendError("Message not recognized");
     }
 

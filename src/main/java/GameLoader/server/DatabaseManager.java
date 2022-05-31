@@ -1,8 +1,10 @@
 package GameLoader.server;
 
 import GameLoader.common.Service;
+import javafx.util.Pair;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 /**
@@ -26,6 +28,7 @@ public class DatabaseManager implements DataManager {
     private Connection conn;
     private PreparedStatement getPlayerName, getPlayerPassword, getPlayerId, insertPlayers;
     private PreparedStatement getGameName, getGameId, insertGames;
+    private PreparedStatement showGameStatistics;
     private PreparedStatement getElo, modifyElo, insertElo;
     private PreparedStatement nextId;
 
@@ -40,6 +43,7 @@ public class DatabaseManager implements DataManager {
             getGameName.close();
             getGameId.close();
             insertGames.close();
+            showGameStatistics.close();
             getElo.close();
             modifyElo.close();
             insertElo.close();
@@ -71,6 +75,8 @@ public class DatabaseManager implements DataManager {
             getGameName         = conn.prepareStatement("SELECT NAME FROM GAMES WHERE ID = ?");
             getGameId           = conn.prepareStatement("SELECT ID FROM GAMES WHERE NAME = ?");
             insertGames         = conn.prepareStatement("INSERT INTO GAMES VALUES (?, ?)");
+
+            showGameStatistics  = conn.prepareStatement("SELECT USERS.NAME, VAL FROM ELO LEFT JOIN USERS ON (ELO.PLAYER = USERS.ID) WHERE GAME = ?");
 
             getElo              = conn.prepareStatement("SELECT VAL FROM ELO WHERE PLAYER = ? AND GAME = ?");
             modifyElo           = conn.prepareStatement("UPDATE ELO SET VAL = ? WHERE PLAYER = ? AND GAME = ?");
@@ -163,6 +169,18 @@ public class DatabaseManager implements DataManager {
             String res = rs.next() ? rs.getString(1) : null;
             Service.DB_QUERY_RESULT_STREAM.println(st + "\tresult: " + res);
             return res;
+        }
+    }
+
+    private ArrayList<Pair<String, Integer>> queryStatsList(PreparedStatement st) throws SQLException {
+        try (ResultSet rs = st.executeQuery()) {
+            Service.DB_QUERY_CALL_STREAM.println(st);
+            ArrayList<Pair<String, Integer>> returnList = new ArrayList<>();
+            while(rs.next()) {
+                returnList.add(new Pair<String, Integer>(rs.getString(1), rs.getInt(2)));
+            }
+            Service.DB_QUERY_RESULT_STREAM.println(st + "\tresult: " + returnList);  // this can be quite long
+            return returnList;
         }
     }
 
@@ -278,6 +296,16 @@ public class DatabaseManager implements DataManager {
                 insertElo.setInt(3, game);
                 update(insertElo);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<Pair<String, Integer>> showGameStatistics(String gameName) {
+        try {
+            showGameStatistics.setString(1, gameName);
+            return queryStatsList(showGameStatistics);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

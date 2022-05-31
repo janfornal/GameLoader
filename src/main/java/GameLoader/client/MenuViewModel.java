@@ -6,6 +6,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class MenuViewModel implements ViewModel {
@@ -56,6 +57,17 @@ public class MenuViewModel implements ViewModel {
     void addGetToRoomHandler(TableView<RoomInfo> table) {
         table.setRowFactory(tv -> {
             TableRow<RoomInfo> row = new TableRow<>();
+            final ContextMenu rowMenu = new ContextMenu();
+            MenuItem editItem = new MenuItem("Show User's statistics");
+            editItem.setOnAction(event -> {
+                ClientGUI.startStatisticsTab();
+            });
+            rowMenu.getItems().addAll(editItem);
+
+            row.contextMenuProperty().bind(
+                    Bindings.when(row.emptyProperty())
+                            .then((ContextMenu) null)
+                            .otherwise(rowMenu));
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     RoomInfo rowData = row.getItem();

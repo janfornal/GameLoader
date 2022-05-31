@@ -1,6 +1,8 @@
 package GameLoader.server;
 
 import GameLoader.common.*;
+import javafx.util.Pair;
+
 import static GameLoader.common.Utility.IntPair;
 import static GameLoader.common.Messages.*;
 import static GameLoader.common.Serializables.*;
@@ -179,5 +181,10 @@ public class GameManager {
         GameInstance g = gameMap.get(c.getName());
         server.userManager.sendMessageTo(m, g.p0);
         server.userManager.sendMessageTo(m, g.p1);
+    }
+
+    public void processStatisticsQueryMessage(StatisticsQueryMessage m, Connection c) {
+        ArrayList<Pair<String, Integer>> ret = server.dataManager.showGameStatistics(m.gameName());
+        c.sendMessage(new StatisticsDatabaseMessage(ret));
     }
 }

@@ -1,5 +1,9 @@
 package GameLoader.server;
 
+import javafx.util.Pair;
+
+import java.util.ArrayList;
+
 import static GameLoader.common.Serializables.PlayerInfo;
 
 /**
@@ -103,4 +107,9 @@ public interface DataManager extends AutoCloseable {
      * @return next unique id
      */
     int nextId();
+
+    /**
+     * @return show ranking of all players
+     */
+    ArrayList<Pair<String, Integer>> showGameStatistics(String gameName);
 }
