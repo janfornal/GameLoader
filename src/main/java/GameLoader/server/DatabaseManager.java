@@ -76,7 +76,7 @@ public class DatabaseManager implements DataManager {
             getGameId           = conn.prepareStatement("SELECT ID FROM GAMES WHERE NAME = ?");
             insertGames         = conn.prepareStatement("INSERT INTO GAMES VALUES (?, ?)");
 
-            showGameStatistics  = conn.prepareStatement("SELECT USERS.NAME, VAL FROM ELO LEFT JOIN USERS ON (ELO.PLAYER = USERS.ID) WHERE GAME = ?");
+            showGameStatistics  = conn.prepareStatement("SELECT NAME, (SELECT VAL FROM ELO WHERE ELO.PLAYER = us.ID AND ELO.GAME = ?) FROM USERS us");
 
             getElo              = conn.prepareStatement("SELECT VAL FROM ELO WHERE PLAYER = ? AND GAME = ?");
             modifyElo           = conn.prepareStatement("UPDATE ELO SET VAL = ? WHERE PLAYER = ? AND GAME = ?");
@@ -304,7 +304,8 @@ public class DatabaseManager implements DataManager {
     @Override
     public ArrayList<Pair<String, Integer>> showGameStatistics(String gameName) {
         try {
-            showGameStatistics.setString(1, gameName);
+            int gameId = getGameId(gameName);
+            showGameStatistics.setInt(1, gameId);
             return queryStatsList(showGameStatistics);
         } catch (SQLException e) {
             throw new RuntimeException(e);
