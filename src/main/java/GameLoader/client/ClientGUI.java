@@ -1,7 +1,6 @@
 package GameLoader.client;
 
 import GameLoader.client.statistics.MainStatisticsWindow;
-import GameLoader.client.statistics.StatisticsPane;
 import GameLoader.common.Game;
 import static GameLoader.common.Serializables.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;

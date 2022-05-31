@@ -1,13 +1,17 @@
 package GameLoader.client.statistics;
 
+import GameLoader.client.Client;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import org.controlsfx.control.SegmentedBar;
 
-import java.util.AbstractMap;
+import java.io.IOException;
+import java.util.*;
 
 public class PersonalStatistics {
 
@@ -17,24 +21,33 @@ public class PersonalStatistics {
     @FXML
     private Label titleLabel;
 
+    private HashMap<String, PersonalGameStats> personalGameControllers;  //keys represented games
+    private Client user;
+
     @FXML
     void initialize() {
-//        SegmentedBar<SegmentedBar.Segment> segments = new SegmentedBar<>();
-//        segments.setOrientation(Orientation.HORIZONTAL);
-//        segments.getSegments().addAll(
-//                new SegmentedBar.Segment(10, "10"),
-//                new SegmentedBar.Segment(90, "90")
-//        );
-//        segments.setSegmentViewFactory(segment -> {
-//            SegmentedBar<SegmentedBar.Segment>.SegmentView view = segments.new SegmentView(segment);
-//            String color = segment.getValue() < 50 ? "#66C2A5" : "#FC8D62" ;
-//            view.setStyle("-fx-background-color: "+color);
-//            return view ;
-//        });
-//
-//        personalStatistics.getChildren().add(segments);
-//        AnchorPane.setLeftAnchor(segments, 0.0);
-//        AnchorPane.setTopAnchor(segments, 200.0);
+        int position = 0;
+        personalGameControllers = new HashMap<>();
+        try {
+            for(String s : user.gameTypeManager.getGameNames()) {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(PersonalStatistics.class.getResource("/personalGameStats.fxml"));
+                Parent root = loader.load();
+                PersonalGameStats personalGameStats = loader.getController();
+                personalGameControllers.put(s, personalGameStats);
+                personalStatistics.getChildren().add(root);
+                AnchorPane.setTopAnchor(root, 100.0*position + 100.0);
+                position++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for(Map.Entry<String, PersonalGameStats> t : personalGameControllers.entrySet()) {
+            t.getValue().setGameName(t.getKey());
+        }
     }
 
+    public void passClientInstance(Client client) {
+        user = client;
+    }
 }

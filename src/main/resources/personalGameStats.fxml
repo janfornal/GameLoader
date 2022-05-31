@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import org.controlsfx.control.SegmentedBar?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameLoader.client.statistics.PersonalGameStats">
+   <children>
+      <SegmentedBar fx:id="wonToLostBar" layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="472.0" />
+      <Label fx:id="gameLabel" layoutX="14.0" layoutY="56.0" prefHeight="30.0" prefWidth="173.0" text="Game: " />
+      <Label fx:id="eloLabel" layoutX="312.0" layoutY="56.0" prefHeight="30.0" prefWidth="173.0" text="Elo points:" />
+   </children>
+</AnchorPane>

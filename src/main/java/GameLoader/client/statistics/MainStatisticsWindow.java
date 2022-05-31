@@ -21,6 +21,7 @@ public class MainStatisticsWindow {
     public void passClientInstance(Client client) {
         user = client;
         statisticsPaneController.passClientInstance(client);
+        personalStatisticsController.passClientInstance(client);
     }
 
     public void showStatistics(Messages.StatisticsDatabaseMessage msg) {
