@@ -80,9 +80,19 @@ public class Client implements Service {
             username = null;
             ClientGUI.authorizationLockNotify();
         }
-        else if(message instanceof StatisticsDatabaseMessage messageCast) {
+        else if(message instanceof AnswerMessage messageCast) {
             if(ClientGUI.mainStatisticsWindow == null) c.sendError("Message not recognized");
-            else ClientGUI.mainStatisticsWindow.showStatistics(messageCast);
+            Serializables.DatabaseAnswer ans = messageCast.answer();
+            if(ans == null) c.sendError("Got null database query answer");
+            if(ans instanceof Serializables.EloAnswer eloans) {
+                ClientGUI.mainStatisticsWindow.personalStatisticsController.setElo(eloans.game(), eloans.value());
+            }
+            if(ans instanceof Serializables.StatisticsAnswer statans) {
+                ClientGUI.mainStatisticsWindow.statisticsPaneController.setItems(statans.eloList());
+            }
+            if(ans instanceof Serializables.GamesAnswer gameans) {
+                ClientGUI.mainStatisticsWindow.personalStatisticsController.setBar(gameans.game(), gameans.won(), gameans.draw(), gameans.lost());
+            }
         }
         else c.sendError("Message not recognized");
     }

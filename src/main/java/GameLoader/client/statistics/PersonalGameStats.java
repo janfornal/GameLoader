@@ -9,6 +9,7 @@ public class PersonalGameStats {
 
     private SegmentedBar.Segment greySegment = new SegmentedBar.Segment(100, "0");
     private SegmentedBar.Segment greenSegment = new SegmentedBar.Segment(0, "0");
+    private SegmentedBar.Segment blueSegment = new SegmentedBar.Segment(0, "0");
     private SegmentedBar.Segment redSegment = new SegmentedBar.Segment(0, "0");
 
     @FXML
@@ -24,9 +25,7 @@ public class PersonalGameStats {
     void initialize() {
         wonToLostBar.setOrientation(Orientation.HORIZONTAL);
         wonToLostBar.getSegments().addAll(
-            greySegment,
-            greenSegment,
-            redSegment
+            greySegment, greenSegment, blueSegment, redSegment
         );
         wonToLostBar.setSegmentViewFactory(segment -> {
             SegmentedBar<SegmentedBar.Segment>.SegmentView view = wonToLostBar.new SegmentView(segment);
@@ -36,6 +35,9 @@ public class PersonalGameStats {
             }
             else if(segment.equals(greenSegment)) {
                 color = "#32CD32";
+            }
+            else if(segment.equals(blueSegment)) {
+                color = "#63C5DA";
             }
             else if(segment.equals(redSegment)) {
                 color = "#E34234";
@@ -47,8 +49,20 @@ public class PersonalGameStats {
 
     }
 
-
-    public void setGameName(String key) {
+    public void setGameLabel(String key) {
         gameLabel.setText("Game: " + key);
+    }
+
+    public void setEloLabel(int key) {
+        eloLabel.setText("Elo: " + key);
+    }
+
+    public void setBar(int won, int draw, int lost) {
+        greenSegment.setValue((double) won);
+        greenSegment.setText("" + won);
+        blueSegment.setValue((double) draw);
+        blueSegment.setText("" + draw);
+        redSegment.setValue((double) lost);
+        redSegment.setText("" + lost);
     }
 }

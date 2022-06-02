@@ -163,6 +163,12 @@ public class GameManager {
 
         server.dataManager.setElo(g.p0, game, res.first());
         server.dataManager.setElo(g.p1, game, res.second());
+
+        int ww = g.game.getState().ordinal();
+        if(ww == 1) ww = 0;
+        if(ww == 2) ww = 1;
+        if(ww == 3) ww = -1;
+        server.dataManager.insertGameInstance(game, g.p0, g.p1, ww);
     }
 
     public synchronized void reportConnectionClosed(Connection c) {
@@ -183,8 +189,26 @@ public class GameManager {
         server.userManager.sendMessageTo(m, g.p1);
     }
 
-    public void processStatisticsQueryMessage(StatisticsQueryMessage m, Connection c) {
-        ArrayList<Pair<String, Integer>> ret = server.dataManager.showGameStatistics(m.gameName());
-        c.sendMessage(new StatisticsDatabaseMessage(ret));
+    public void processQueryMessage(QueryMessage m, Connection c) {
+        Query que = m.query();
+        if (que == null) {
+            c.sendError("query is null");
+            return;
+        }
+        if(que instanceof StatisticsQuery) {
+            ArrayList<Pair<String, Integer>> ret = server.dataManager.showGameStatistics(que.getGame());
+            c.sendMessage(new AnswerMessage(new StatisticsAnswer(ret)));
+        }
+        if(que instanceof GamesQuery) {
+            int won[] = new int[3];
+            for(int i=0; i<3; i++) {
+                won[i] = server.dataManager.getGameStates(que.getPlayer(), que.getGame(), i-1);
+            }
+            c.sendMessage(new AnswerMessage(new GamesAnswer(que.getGame(), won[2], won[1], won[0])));
+        }
+        if(que instanceof EloQuery) {
+            int elo = server.dataManager.getElo(que.getPlayer(), que.getGame());
+            c.sendMessage(new AnswerMessage(new EloAnswer(que.getGame(), elo)));
+        }
     }
 }

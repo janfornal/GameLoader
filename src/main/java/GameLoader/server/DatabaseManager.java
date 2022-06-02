@@ -30,6 +30,8 @@ public class DatabaseManager implements DataManager {
     private PreparedStatement getGameName, getGameId, insertGames;
     private PreparedStatement showGameStatistics;
     private PreparedStatement getElo, modifyElo, insertElo;
+    private PreparedStatement insertGameInstance;
+    private PreparedStatement getGameStates[] = new PreparedStatement[2];
     private PreparedStatement nextId;
 
     public void close() {
@@ -47,6 +49,9 @@ public class DatabaseManager implements DataManager {
             getElo.close();
             modifyElo.close();
             insertElo.close();
+            insertGameInstance.close();
+            getGameStates[0].close();
+            getGameStates[1].close();
             nextId.close();
             conn.close();
         } catch (SQLException e) {
@@ -56,6 +61,7 @@ public class DatabaseManager implements DataManager {
             getPlayerName = getPlayerPassword = getPlayerId = insertPlayers = null;
             getGameName = getGameId = null;
             getElo = modifyElo = insertElo = null;
+            insertGameInstance = getGameStates[0] = getGameStates[1] = null;
             nextId = null;
         }
     }
@@ -82,6 +88,10 @@ public class DatabaseManager implements DataManager {
             modifyElo           = conn.prepareStatement("UPDATE ELO SET VAL = ? WHERE PLAYER = ? AND GAME = ?");
             insertElo           = conn.prepareStatement("INSERT INTO ELO VALUES (?, ?, ?)");
 
+            insertGameInstance  = conn.prepareStatement("INSERT INTO GAMES_HISTORY VALUES (?, ?, ?, ?, ?)");
+            getGameStates[0]    = conn.prepareStatement("SELECT COUNT(*) FROM GAMES_HISTORY WHERE GAME_ID = ? AND PLAYER_0 = ? AND WINNER = ?");
+            getGameStates[1]    = conn.prepareStatement("SELECT COUNT(*) FROM GAMES_HISTORY WHERE GAME_ID = ? AND PLAYER_1 = ? AND WINNER = ?");
+
             nextId              = conn.prepareStatement("SELECT NEXTVAL('SEQ_ID')");
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -89,7 +99,7 @@ public class DatabaseManager implements DataManager {
     }
 
     private void initSchema() throws SQLException {
-        final int VERSION = 9; // increase this to reset database;
+        final int VERSION = 10; // increase this to reset database;
 
         try (PreparedStatement st = conn.prepareStatement("SELECT * FROM VERSION")) {
             if (queryInt(st) == VERSION)
@@ -122,6 +132,16 @@ public class DatabaseManager implements DataManager {
                 "PLAYER INT NOT NULL REFERENCES USERS(ID), " +
                 "GAME INT NOT NULL REFERENCES GAMES(ID), " +
                 "UNIQUE (PLAYER, GAME))"
+        ));
+
+        updateOnce(conn.prepareStatement("DROP TABLE IF EXISTS GAMES_HISTORY CASCADE"));
+        updateOnce(conn.prepareStatement("" +
+                "CREATE TABLE GAMES_HISTORY(" +
+                "ID INT PRIMARY KEY, " +
+                "GAME_ID INT NOT NULL REFERENCES GAMES(ID), " +
+                "PLAYER_0 INT NOT NULL REFERENCES USERS(ID), " +
+                "PLAYER_1 INT NOT NULL REFERENCES USERS(ID), " +
+                "WINNER INT)"
         ));
 
         updateOnce(conn.prepareStatement("DROP SEQUENCE IF EXISTS SEQ_ID"));
@@ -302,11 +322,41 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
+    public void insertGameInstance(int game, int p0, int p1, int win) {
+        try {
+            int id = nextId();
+            insertGames.setInt(1, id);
+            insertGames.setInt(2, game);
+            insertGames.setInt(3, p0);
+            insertGames.setInt(4, p1);
+            insertGames.setInt(5, win);
+            update(insertGames);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public ArrayList<Pair<String, Integer>> showGameStatistics(String gameName) {
         try {
             int gameId = getGameId(gameName);
             showGameStatistics.setInt(1, gameId);
             return queryStatsList(showGameStatistics);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public int getGameStates(int which, int gameId, int player, int winner) {
+        try {
+            if(which != 0 && which != 1) {
+                throw new RuntimeException("players are indexed with 0 and 1");
+            }
+            getGameStates[which].setInt(1, gameId);
+            getGameStates[which].setInt(2, player);
+            getGameStates[which].setInt(3, winner);
+            return queryInt(getGameStates[which]);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

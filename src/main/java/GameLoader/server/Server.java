@@ -106,8 +106,8 @@ public class Server implements Service {
             gameManager.processChatMessage(m, c);
             return;
         }
-        if (msg instanceof StatisticsQueryMessage m) {
-            gameManager.processStatisticsQueryMessage(m, c);
+        if (msg instanceof QueryMessage m) {
+            gameManager.processQueryMessage(m, c);
             return;
         }
         c.sendError("Message not recognized");

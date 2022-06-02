@@ -59,7 +59,7 @@ public class MenuViewModel implements ViewModel {
             final ContextMenu rowMenu = new ContextMenu();
             MenuItem editItem = new MenuItem("Show User's statistics");
             editItem.setOnAction(event -> {
-                ClientGUI.startStatisticsTab();
+                ClientGUI.startStatisticsTab(row.getItem().p0().name());
             });
             rowMenu.getItems().addAll(editItem);
 

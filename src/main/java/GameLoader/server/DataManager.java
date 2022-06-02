@@ -109,7 +109,29 @@ public interface DataManager extends AutoCloseable {
     int nextId();
 
     /**
+     * @return insert instance of game to history of games
+     */
+    void insertGameInstance(int game, int p0, int p1, int win);
+
+    default void insertGameInstance(String game, String p0, String p1, int win) {
+        insertGameInstance(getGameId(game), getPlayerId(p0), getPlayerId(p1), win);
+    };
+
+    /**
      * @return show ranking of all players
      */
     ArrayList<Pair<String, Integer>> showGameStatistics(String gameName);
+
+    /**
+     * @return returns number of won/lost/tied matches
+     */
+    int getGameStates(int which, int gameId, int player, int winner);
+
+    default int getGameStates(String player, String game, int win) {
+        int gameId = getGameId(game);
+        int playerId = getPlayerId(player);
+        int s0 = getGameStates(0, gameId, playerId, win);
+        int s1 = getGameStates(1, gameId, playerId, -win);
+        return s0 + s1;
+    };
 }

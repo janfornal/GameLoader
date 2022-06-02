@@ -1,6 +1,9 @@
 package GameLoader.common;
 
+import javafx.util.Pair;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public interface Serializables {
     record PlayerInfo(String name, int elo) implements Serializable {}
@@ -32,4 +35,46 @@ public interface Serializables {
                     "}";
         }
     }
+
+    abstract class Query implements Serializable {
+        private final String player;
+        private final String gameName;
+
+        protected Query(String player, String gameName) {
+            this.player = player;
+            this.gameName = gameName;
+        }
+
+        public final String getPlayer() {
+            return player;
+        }
+
+        public final String getGame() {
+            return gameName;
+        }
+    }
+
+    class StatisticsQuery extends Query {
+        public StatisticsQuery(String player, String gameName) {
+            super(player, gameName);
+        }
+    }
+
+    class EloQuery extends Query {
+        public EloQuery(String player, String gameName) {
+            super(player, gameName);
+        }
+    }
+
+    class GamesQuery extends Query {
+        public GamesQuery(String player, String gameName) {
+            super(player, gameName);
+        }
+    }
+
+    interface DatabaseAnswer extends Serializable {}
+
+    record StatisticsAnswer(ArrayList<Pair<String, Integer>> eloList) implements DatabaseAnswer {}
+    record EloAnswer(String game, int value) implements DatabaseAnswer {}
+    record GamesAnswer(String game, int won, int draw, int lost) implements DatabaseAnswer {}
 }

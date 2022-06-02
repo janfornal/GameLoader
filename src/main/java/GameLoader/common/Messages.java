@@ -39,6 +39,7 @@ public interface Messages {
     record GetGameListMessage() implements Message {} // to jest na razie nieistotne
     record ChatMessage(String text) implements Message {}
 
-    record StatisticsQueryMessage(String gameName) implements Message {} // prosimy o statystyki z baz danych
-    record StatisticsDatabaseMessage(ArrayList<Pair<String, Integer>> eloList) implements Message {} // przesylamy dane do statystyk z bazy danych
+    record QueryMessage(Query query) implements ClientToServerMessage {};
+    record AnswerMessage(DatabaseAnswer answer) implements ServerToClientMessage {}
+
 }

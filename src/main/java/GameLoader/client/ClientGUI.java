@@ -110,18 +110,18 @@ public class ClientGUI extends Application {
         tabpane.getSelectionModel().select(tab);
     }
 
-    public static void startStatisticsTab () {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(ClientGUI.class.getResource("/mainStatisticsWindow.fxml"));
+    public static void startStatisticsTab(String playerName) {
         Tab tab = new Tab("Server statistics");
         tab.setOnCloseRequest(e -> {
             mainStatisticsWindow = null;
         });
         try {
+            FXMLLoader loader = new FXMLLoader();
+            mainStatisticsWindow = new MainStatisticsWindow();
+            loader.setLocation(ClientGUI.class.getResource("/mainStatisticsWindow.fxml"));
+            loader.setController(mainStatisticsWindow);
             Parent root = loader.load();
-            MainStatisticsWindow statWindow = loader.getController();
-            statWindow.passClientInstance(user);
-            mainStatisticsWindow = statWindow;
+            mainStatisticsWindow.passData(user, playerName);
             tab.setContent(root);
         } catch (IOException e) {
             e.printStackTrace();
