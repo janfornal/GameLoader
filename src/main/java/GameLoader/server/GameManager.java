@@ -3,7 +3,7 @@ package GameLoader.server;
 import GameLoader.common.*;
 import javafx.util.Pair;
 
-import static GameLoader.common.Utility.IntPair;
+import static GameLoader.common.Utility.IntDoublePair;
 import static GameLoader.common.Messages.*;
 import static GameLoader.common.Serializables.*;
 
@@ -153,22 +153,25 @@ public class GameManager {
 
         String game = g.game.getName();
 
-        IntPair res = server.eloManager.calculate(
+        //TODO NOW!
+         IntDoublePair res = server.eloManager.calculate(
                 server.dataManager.getElo(g.p0, game),
                 server.dataManager.getElo(g.p1, game),
                 -1,
                 -1,
                 g.game.getState()
         );
+        server.dataManager.setElo(g.p0, game, res.first(),res.third());
+        server.dataManager.setElo(g.p1, game, res.second(),res.fourth());
 
-        server.dataManager.setElo(g.p0, game, res.first());
-        server.dataManager.setElo(g.p1, game, res.second());
+
 
         int ww = g.game.getState().ordinal();
         if(ww == 1) ww = 0;
         if(ww == 2) ww = 1;
         if(ww == 3) ww = -1;
         server.dataManager.insertGameInstance(game, g.p0, g.p1, ww);
+
     }
 
     public synchronized void reportConnectionClosed(Connection c) {

@@ -33,6 +33,13 @@ public interface Utility {
         }
     }
 
+    record IntDoublePair(int first, int second, double third, double fourth){
+        public int x(){return first;}
+        public int y(){return second;}
+        public double z(){return third;}
+        public double w(){return fourth;}
+    }
+
     record Pair<U, V>(U first, V second) {
         public U x() {
             return first;

@@ -41,7 +41,8 @@ public interface Service {
 
     // constants related to database connections are stored in server.DatabaseConnectionFactory
 
-    int DEFAULT_ELO = 1000;
+    int DEFAULT_ELO = 1500;
+    int DEFAULT_DEVIATION = 350;
 
     PasswordManager passwordManager = new PasswordManager();
     GameTypeManager gameTypeManager = new DynamicGameTypeManager().load("games");

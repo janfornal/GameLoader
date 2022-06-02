@@ -71,12 +71,11 @@ public interface DataManager extends AutoCloseable {
      * @return elo value if pair (player, game) exists in elo table, {@code Service.DEFAULT_ELO} otherwise
      */
     int getElo(int player, int game);
-
+    double getRD(int player,int game);
     /**
      *  if player or game does not exist nothing happens
      */
-    void setElo(int player, int game, int elo);
-
+    void setElo(int player, int game, int elo, double rd);
     /**
      * @return elo value if pair (player, game) exists in elo table, {@code Service.DEFAULT_ELO} otherwise
      * @throws NullPointerException if player or game does not exist
@@ -84,14 +83,13 @@ public interface DataManager extends AutoCloseable {
     default int getElo(String player, String game) {
         return getElo(getPlayerId(player), getGameId(game));
     }
-
+    default double getRD(String player, String game)  {return getRD(getPlayerId(player), getGameId(game));}
     /**
      * @throws NullPointerException if player or game does not exist
      */
-    default void setElo(String player, String game, int elo) {
-        setElo(getPlayerId(player), getGameId(game), elo);
+    default void setElo(String player, String game, int elo, double rd) {
+        setElo(getPlayerId(player), getGameId(game), elo, rd);
     }
-
     /**
      * @return requested PlayerInfo object
      * @throws NullPointerException if player or game does not exist

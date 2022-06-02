@@ -29,9 +29,13 @@ public class DatabaseManager implements DataManager {
     private PreparedStatement getPlayerName, getPlayerPassword, getPlayerId, insertPlayers;
     private PreparedStatement getGameName, getGameId, insertGames;
     private PreparedStatement showGameStatistics;
-    private PreparedStatement getElo, modifyElo, insertElo;
+
+    private PreparedStatement getElo, getRD, modifyElo, modifyRD, insertElo;
     private PreparedStatement insertGameInstance;
     private PreparedStatement getGameStates[] = new PreparedStatement[2];
+
+
+
     private PreparedStatement nextId;
 
     public void close() {
@@ -47,7 +51,9 @@ public class DatabaseManager implements DataManager {
             insertGames.close();
             showGameStatistics.close();
             getElo.close();
+            getRD.close();
             modifyElo.close();
+            modifyRD.close();
             insertElo.close();
             insertGameInstance.close();
             getGameStates[0].close();
@@ -60,8 +66,10 @@ public class DatabaseManager implements DataManager {
             conn = null;
             getPlayerName = getPlayerPassword = getPlayerId = insertPlayers = null;
             getGameName = getGameId = null;
-            getElo = modifyElo = insertElo = null;
+
+            getElo = getRD = modifyElo = modifyRD = insertElo = null;
             insertGameInstance = getGameStates[0] = getGameStates[1] = null;
+
             nextId = null;
         }
     }
@@ -85,8 +93,10 @@ public class DatabaseManager implements DataManager {
             showGameStatistics  = conn.prepareStatement("SELECT NAME, (SELECT VAL FROM ELO WHERE ELO.PLAYER = us.ID AND ELO.GAME = ?) FROM USERS us");
 
             getElo              = conn.prepareStatement("SELECT VAL FROM ELO WHERE PLAYER = ? AND GAME = ?");
+            getRD               = conn.prepareStatement("SELECT RATING_DEVIATION FROM ELO WHERE PLAYER = ? AND GAME = ?");
             modifyElo           = conn.prepareStatement("UPDATE ELO SET VAL = ? WHERE PLAYER = ? AND GAME = ?");
-            insertElo           = conn.prepareStatement("INSERT INTO ELO VALUES (?, ?, ?)");
+            modifyRD            = conn.prepareStatement("UPDATE ELO SET RATING_DEVIATION = ? WHERE PLAYER = ? AND GAME = ?");
+            insertElo           = conn.prepareStatement("INSERT INTO ELO VALUES (?, ?, ?, ?)");
 
             insertGameInstance  = conn.prepareStatement("INSERT INTO GAMES_HISTORY VALUES (?, ?, ?, ?, ?)");
             getGameStates[0]    = conn.prepareStatement("SELECT COUNT(*) FROM GAMES_HISTORY WHERE GAME_ID = ? AND PLAYER_0 = ? AND WINNER = ?");
@@ -99,7 +109,7 @@ public class DatabaseManager implements DataManager {
     }
 
     private void initSchema() throws SQLException {
-        final int VERSION = 10; // increase this to reset database;
+        final int VERSION = 12; // increase this to reset database; //kinda based ngl
 
         try (PreparedStatement st = conn.prepareStatement("SELECT * FROM VERSION")) {
             if (queryInt(st) == VERSION)
@@ -131,6 +141,7 @@ public class DatabaseManager implements DataManager {
                 "VAL INT NOT NULL, " +
                 "PLAYER INT NOT NULL REFERENCES USERS(ID), " +
                 "GAME INT NOT NULL REFERENCES GAMES(ID), " +
+                "RATING_DEVIATION DOUBLE NOT NULL," +
                 "UNIQUE (PLAYER, GAME))"
         ));
 
@@ -188,6 +199,15 @@ public class DatabaseManager implements DataManager {
             Service.DB_QUERY_CALL_STREAM.println(st);
             String res = rs.next() ? rs.getString(1) : null;
             Service.DB_QUERY_RESULT_STREAM.println(st + "\tresult: " + res);
+            return res;
+        }
+    }
+
+    private Double queryDouble(PreparedStatement st) throws SQLException {
+        try (ResultSet rs = st.executeQuery()) {
+            Service.DB_QUERY_CALL_STREAM.println(st);
+            Double res = rs.next() ? rs.getDouble(1) : null;
+            Service.DB_QUERY_RESULT_STREAM.println(st + "\tresult:" + res);
             return res;
         }
     }
@@ -305,21 +325,38 @@ public class DatabaseManager implements DataManager {
     }
 
     @Override
-    public void setElo(int player, int game, int elo) {
+    public double getRD(int player,int game){
+        try{
+            getRD.setInt(1,player);
+            getRD.setInt(2,game);
+            Double q=queryDouble(getRD);
+            return q != null ? q : Service.DEFAULT_DEVIATION;
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setElo(int player, int game, int elo, double rd) {
         try {
             modifyElo.setInt(1, elo);
             modifyElo.setInt(2, player);
             modifyElo.setInt(3, game);
+            modifyRD.setDouble(1,rd);
+            modifyRD.setInt(2,player);
+            modifyRD.setInt(3,game);
             if (update(modifyElo) == 0) {
                 insertElo.setInt(1, elo);
                 insertElo.setInt(2, player);
                 insertElo.setInt(3, game);
+                insertElo.setDouble(4,rd);
                 update(insertElo);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public void insertGameInstance(int game, int p0, int p1, int win) {

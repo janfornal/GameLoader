@@ -16,7 +16,7 @@ public class Server implements Service {
     public final GameManager gameManager = new GameManager(this);
     public final DataManager dataManager = new DatabaseManager(this, new DatabaseConnectionFactory());
     public final UserManager userManager = new UserManager(this);
-    public final EloManager eloManager = new SimpleEloManager();
+    public final EloManager eloManager = new Glicko2EloManager();
 
     public Server() {
         this(Service.defaultPort);
