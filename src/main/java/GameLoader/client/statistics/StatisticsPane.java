@@ -19,8 +19,6 @@ import java.util.ArrayList;
 
 public class StatisticsPane {
 
-    private Client user;
-
     @FXML
     private Button returnButton;
 
@@ -39,10 +37,6 @@ public class StatisticsPane {
     @FXML
     private TableColumn<Pair<String, Integer>, String> userColumn;
 
-    public void passData(Client client) {
-        user = client;
-    }
-
     @FXML
     void initialize() {
         userColumn.setCellValueFactory(
@@ -59,7 +53,7 @@ public class StatisticsPane {
     }
 
     private void initializeComboBoxValues() {
-        statisticsChoiceBox.setItems(FXCollections.observableArrayList(user.gameTypeManager.getGameNames()));
+        statisticsChoiceBox.setItems(FXCollections.observableArrayList(StatisticSingleton.user.gameTypeManager.getGameNames()));
     }
 
     public void setItems(ArrayList<Pair<String, Integer>> itemList) {
@@ -67,6 +61,6 @@ public class StatisticsPane {
     }
 
     public void queryStatistics(ActionEvent actionEvent) {
-        user.sendMessage(new Messages.QueryMessage(new Serializables.StatisticsQuery(user.username, statisticsChoiceBox.getValue())));
+        StatisticSingleton.user.sendMessage(new Messages.QueryMessage(new Serializables.StatisticsQuery(StatisticSingleton.user.username, statisticsChoiceBox.getValue())));
     }
 }

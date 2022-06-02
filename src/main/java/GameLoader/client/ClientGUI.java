@@ -1,6 +1,7 @@
 package GameLoader.client;
 
 import GameLoader.client.statistics.MainStatisticsWindow;
+import GameLoader.client.statistics.StatisticSingleton;
 import GameLoader.common.Game;
 import static GameLoader.common.Serializables.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;
@@ -24,7 +25,7 @@ public class ClientGUI extends Application {
 
     private static Stage currentStage;
     static GeneralView view;
-    static Client user;
+    public static Client user;
     static TabPane tabpane;
     static MainStatisticsWindow mainStatisticsWindow;
     private static final Object authorizationLock = new Object();
@@ -116,12 +117,12 @@ public class ClientGUI extends Application {
             mainStatisticsWindow = null;
         });
         try {
+            StatisticSingleton.user = user;
+            StatisticSingleton.playerName = playerName;
             FXMLLoader loader = new FXMLLoader();
-            mainStatisticsWindow = new MainStatisticsWindow();
             loader.setLocation(ClientGUI.class.getResource("/mainStatisticsWindow.fxml"));
-            loader.setController(mainStatisticsWindow);
             Parent root = loader.load();
-            mainStatisticsWindow.passData(user, playerName);
+            mainStatisticsWindow = loader.getController();
             tab.setContent(root);
         } catch (IOException e) {
             e.printStackTrace();
