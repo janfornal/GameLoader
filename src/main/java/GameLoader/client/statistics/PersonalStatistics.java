@@ -1,10 +1,7 @@
 package GameLoader.client.statistics;
 
-import GameLoader.client.Client;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import GameLoader.common.Messages;
+import GameLoader.common.Serializables;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,9 +26,12 @@ public class PersonalStatistics {
 
     @FXML
     void initialize() {
-        int position = 0;
         titleLabel.setText("Statistic for " + playerName);
         personalGameControllers = new HashMap<>();
+    }
+
+    public void setBars() {
+        int position = 0;
         try {
             for(String s : user.gameTypeManager.getGameNames()) {
                 FXMLLoader loader = new FXMLLoader();
@@ -48,6 +48,8 @@ public class PersonalStatistics {
         }
         for(Map.Entry<String, PersonalGameStats> t : personalGameControllers.entrySet()) {
             t.getValue().setGameLabel(t.getKey());
+            user.sendMessage(new Messages.QueryMessage(new Serializables.EloQuery(playerName, t.getKey())));
+            user.sendMessage(new Messages.QueryMessage(new Serializables.GamesQuery(playerName, t.getKey())));
         }
     }
 

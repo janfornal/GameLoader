@@ -27,7 +27,7 @@ public class ClientGUI extends Application {
     static GeneralView view;
     public static Client user;
     static TabPane tabpane;
-    static MainStatisticsWindow mainStatisticsWindow;
+    public static MainStatisticsWindow mainStatisticsWindow;
     private static final Object authorizationLock = new Object();
 
     public static void authorizationLockNotify() {
@@ -122,7 +122,6 @@ public class ClientGUI extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientGUI.class.getResource("/mainStatisticsWindow.fxml"));
             Parent root = loader.load();
-            mainStatisticsWindow = loader.getController();
             tab.setContent(root);
         } catch (IOException e) {
             e.printStackTrace();

@@ -325,12 +325,12 @@ public class DatabaseManager implements DataManager {
     public void insertGameInstance(int game, int p0, int p1, int win) {
         try {
             int id = nextId();
-            insertGames.setInt(1, id);
-            insertGames.setInt(2, game);
-            insertGames.setInt(3, p0);
-            insertGames.setInt(4, p1);
-            insertGames.setInt(5, win);
-            update(insertGames);
+            insertGameInstance.setInt(1, id);
+            insertGameInstance.setInt(2, game);
+            insertGameInstance.setInt(3, p0);
+            insertGameInstance.setInt(4, p1);
+            insertGameInstance.setInt(5, win);
+            update(insertGameInstance);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -81,7 +81,7 @@ public class Client implements Service {
             ClientGUI.authorizationLockNotify();
         }
         else if(message instanceof AnswerMessage messageCast) {
-            if(ClientGUI.mainStatisticsWindow == null) c.sendError("Message not recognized");
+            if(ClientGUI.mainStatisticsWindow == null) c.sendError("Statistics menu is closed");
             Serializables.DatabaseAnswer ans = messageCast.answer();
             if(ans == null) c.sendError("Got null database query answer");
             if(ans instanceof Serializables.EloAnswer eloans) {

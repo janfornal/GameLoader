@@ -58,11 +58,14 @@ public class PersonalGameStats {
     }
 
     public void setBar(int won, int draw, int lost) {
-        greenSegment.setValue((double) won);
-        greenSegment.setText("" + won);
-        blueSegment.setValue((double) draw);
-        blueSegment.setText("" + draw);
-        redSegment.setValue((double) lost);
-        redSegment.setText("" + lost);
+        if(won + draw + lost > 0) {
+            greenSegment.setValue((double) won);
+            greenSegment.setText("" + won);
+            blueSegment.setValue((double) draw);
+            blueSegment.setText("" + draw);
+            redSegment.setValue((double) lost);
+            redSegment.setText("" + lost);
+            greySegment.setValue(0);
+        }
     }
 }

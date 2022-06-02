@@ -1,6 +1,7 @@
 package GameLoader.client.statistics;
 
 import GameLoader.client.Client;
+import GameLoader.client.ClientGUI;
 import GameLoader.common.Messages;
 import GameLoader.common.Serializables;
 import javafx.collections.FXCollections;
@@ -20,6 +21,8 @@ public class MainStatisticsWindow {
 
     @FXML
     void initialize() {
+        ClientGUI.mainStatisticsWindow = this;
+        personalStatisticsController.setBars();
     }
 
 
