@@ -4,6 +4,7 @@ import GameLoader.common.Messages;
 import GameLoader.common.Serializables;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -11,8 +12,8 @@ import javafx.scene.layout.AnchorPane;
 import java.io.IOException;
 import java.util.*;
 
-import static GameLoader.client.statistics.StatisticSingleton.playerName;
-import static GameLoader.client.statistics.StatisticSingleton.user;
+import static GameLoader.client.statistics.StatisticsSingleton.playerName;
+import static GameLoader.client.statistics.StatisticsSingleton.user;
 
 public class PersonalStatistics {
 
@@ -26,11 +27,13 @@ public class PersonalStatistics {
 
     @FXML
     void initialize() {
-        titleLabel.setText("Statistic for " + playerName);
+        setTitleLabel();
         personalGameControllers = new HashMap<>();
     }
 
     public void setBars() {
+        personalStatistics.getChildren().removeIf(node -> node != titleLabel);
+        personalGameControllers.clear();
         int position = 0;
         try {
             for(String s : user.gameTypeManager.getGameNames()) {
@@ -59,6 +62,10 @@ public class PersonalStatistics {
 
     public void setElo(String game, int value) {
         personalGameControllers.get(game).setEloLabel(value);
+    }
+
+    public void setTitleLabel() {
+        titleLabel.setText("Statistics for " + playerName);
     }
 
 }

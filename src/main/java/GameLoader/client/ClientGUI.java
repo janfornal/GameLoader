@@ -1,13 +1,14 @@
 package GameLoader.client;
 
 import GameLoader.client.statistics.MainStatisticsWindow;
-import GameLoader.client.statistics.StatisticSingleton;
+import GameLoader.client.statistics.StatisticsSingleton;
 import GameLoader.common.Game;
 import static GameLoader.common.Serializables.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;
 import static GameLoader.common.Messages.*;
 import javafx.application.Application;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -18,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 
@@ -117,17 +119,34 @@ public class ClientGUI extends Application {
             mainStatisticsWindow = null;
         });
         try {
-            StatisticSingleton.user = user;
-            StatisticSingleton.playerName = playerName;
+            StatisticsSingleton.user = user;
+            StatisticsSingleton.playerName = playerName;
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientGUI.class.getResource("/mainStatisticsWindow.fxml"));
             Parent root = loader.load();
             tab.setContent(root);
+            StatisticsSingleton.tab = tab;
         } catch (IOException e) {
             e.printStackTrace();
         }
         tabpane.getTabs().add(tab);
         tabpane.getSelectionModel().select(tab);
+    }
+
+    public static void closeStatisticsTab() {
+        try {
+            tabpane.getTabs().removeIf(tab -> {
+                if (tab == StatisticsSingleton.tab) {
+                    EventHandler<Event> handler = tab.getOnClosed();
+                    if (handler != null) {
+                        handler.handle(null);
+                    }
+                }
+                return tab == StatisticsSingleton.tab;
+            });
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 
 }

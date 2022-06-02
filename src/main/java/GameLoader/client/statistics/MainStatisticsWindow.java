@@ -1,15 +1,8 @@
 package GameLoader.client.statistics;
 
-import GameLoader.client.Client;
 import GameLoader.client.ClientGUI;
-import GameLoader.common.Messages;
-import GameLoader.common.Serializables;
-import javafx.collections.FXCollections;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
-import java.io.IOException;
 
 public class MainStatisticsWindow {
 
@@ -25,5 +18,11 @@ public class MainStatisticsWindow {
         personalStatisticsController.setBars();
     }
 
-
+    public void reload(String playerName) {
+        StatisticsSingleton.playerName = playerName;
+        Platform.runLater(() -> {
+            personalStatisticsController.setTitleLabel();
+            personalStatisticsController.setBars();
+        });
+    }
 }
