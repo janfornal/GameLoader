@@ -2,6 +2,7 @@ package GameLoader.client.statistics;
 
 import GameLoader.common.Messages;
 import GameLoader.common.Serializables;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -57,7 +58,9 @@ public class PersonalStatistics {
     }
 
     public void setBar(String game, int won, int draw, int lost) {
-        personalGameControllers.get(game).setBar(won, draw, lost);
+        Platform.runLater(() -> {
+            personalGameControllers.get(game).setBar(won, draw, lost);
+        });
     }
 
     public void setElo(String game, int value) {
@@ -65,7 +68,9 @@ public class PersonalStatistics {
     }
 
     public void setTitleLabel() {
-        titleLabel.setText("Statistics for " + playerName);
+        Platform.runLater(() -> {
+            titleLabel.setText("Statistics for " + playerName);
+        });
     }
 
 }

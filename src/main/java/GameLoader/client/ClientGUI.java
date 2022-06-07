@@ -6,6 +6,8 @@ import GameLoader.common.Game;
 import static GameLoader.common.Serializables.ResignationCommand;
 import GameLoader.games.chat.ChatWindow;
 import static GameLoader.common.Messages.*;
+import static java.lang.Thread.currentThread;
+
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;

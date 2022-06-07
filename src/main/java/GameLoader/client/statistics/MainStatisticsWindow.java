@@ -20,9 +20,7 @@ public class MainStatisticsWindow {
 
     public void reload(String playerName) {
         StatisticsSingleton.playerName = playerName;
-        Platform.runLater(() -> {
-            personalStatisticsController.setTitleLabel();
-            personalStatisticsController.setBars();
-        });
+        personalStatisticsController.setTitleLabel();
+        personalStatisticsController.setBars();
     }
 }
