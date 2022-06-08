@@ -43,8 +43,9 @@ public class Client implements Service {
         if(message instanceof SuccessfulAuthorizationMessage)
             ClientGUI.authorizationLockNotify();
         else if(message instanceof RoomListMessage messageCast) {
-            System.out.println(FXCollections.observableArrayList(messageCast.rooms()));
-            currentModel.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()));
+            Platform.runLater(
+                    () -> currentModel.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()))
+            );
         }
         else if(message instanceof StartGameMessage messageCast) {
             Game starterInstance = gameTypeManager.createGame(messageCast.game(), messageCast.settings());
@@ -65,7 +66,9 @@ public class Client implements Service {
             );
         }
         else if(message instanceof ChatMessageToClient messageCast) {
-            chatManager.update(messageCast.sender(), messageCast.sender(), messageCast.text());
+            Platform.runLater(
+                    () -> chatManager.update(messageCast.sender(), messageCast.sender(), messageCast.text())
+            );
         }
         else if(message instanceof MoveMessage messageCast) {
             if (messageCast.move() instanceof ResignationCommand res && currentPlayModel.playingAs() != res.getPlayer())
@@ -90,18 +93,22 @@ public class Client implements Service {
             ClientGUI.authorizationLockNotify();
         }
         else if(message instanceof AnswerMessage messageCast) {
-            if(ClientGUI.mainStatisticsWindow == null) c.sendError("Statistics menu is closed");
-            Serializables.DatabaseAnswer ans = messageCast.answer();
-            if(ans == null) c.sendError("Got null database query answer");
-            if(ans instanceof Serializables.EloAnswer eloans) {
-                ClientGUI.mainStatisticsWindow.personalStatisticsController.setElo(eloans.game(), eloans.value());
-            }
-            if(ans instanceof Serializables.StatisticsAnswer statans) {
-                ClientGUI.mainStatisticsWindow.statisticsPaneController.setItems(statans.eloList());
-            }
-            if(ans instanceof Serializables.GamesAnswer gameans) {
-                ClientGUI.mainStatisticsWindow.personalStatisticsController.setBar(gameans.game(), gameans.won(), gameans.draw(), gameans.lost());
-            }
+            Platform.runLater(
+                    () -> {
+                        if(ClientGUI.mainStatisticsWindow == null) c.sendError("Statistics menu is closed");
+                        Serializables.DatabaseAnswer ans = messageCast.answer();
+                        if(ans == null) c.sendError("Got null database query answer");
+                        if(ans instanceof Serializables.EloAnswer eloans) {
+                            ClientGUI.mainStatisticsWindow.personalStatisticsController.setElo(eloans.game(), eloans.value());
+                        }
+                        if(ans instanceof Serializables.StatisticsAnswer statans) {
+                            ClientGUI.mainStatisticsWindow.statisticsPaneController.setItems(statans.eloList());
+                        }
+                        if(ans instanceof Serializables.GamesAnswer gameans) {
+                            ClientGUI.mainStatisticsWindow.personalStatisticsController.setBar(gameans.game(), gameans.won(), gameans.draw(), gameans.lost());
+                        }
+                    }
+            );
         }
         else c.sendError("Message not recognized");
     }
