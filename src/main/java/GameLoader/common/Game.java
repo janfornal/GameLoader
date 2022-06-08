@@ -15,7 +15,7 @@ public interface Game {
     void start(String settings, int seed);
     String getSettings();
 
-    enum state { UNFINISHED, DRAW, P0_WON, P1_WON };
+    enum state { UNFINISHED, DRAW, P0_WON, P1_WON }
     state getState();
     PlayViewModel createViewModel(Client user, int id);
 

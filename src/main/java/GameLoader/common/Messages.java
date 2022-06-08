@@ -1,7 +1,5 @@
 package GameLoader.common;
 
-import javafx.util.Pair;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import static GameLoader.common.Serializables.*;

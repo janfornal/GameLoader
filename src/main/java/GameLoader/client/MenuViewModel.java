@@ -8,6 +8,8 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 
+import java.util.List;
+
 public class MenuViewModel implements ViewModel {
 
     @Override
@@ -103,6 +105,12 @@ public class MenuViewModel implements ViewModel {
                 ),
                 choiceGame.valueProperty()
         ));
+
+        choiceGame.valueProperty().addListener((a, b, gameName) -> {
+            List<String> poss = modelUser.gameTypeManager.possibleSettings(gameName);
+            if (!poss.isEmpty())
+                choiceSettings.setValue(poss.get(0));
+        });
     }
 
     void addGetRoomHandler(Button button) {

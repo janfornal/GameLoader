@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Objects;
 import static GameLoader.common.Messages.*;
-import static GameLoader.common.Utility.ObjectInputStreamWithClassLoader;
 
 public class Connection {
     private final Service service;

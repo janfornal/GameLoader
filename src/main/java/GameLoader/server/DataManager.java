@@ -113,7 +113,7 @@ public interface DataManager extends AutoCloseable {
 
     default void insertGameInstance(String game, String p0, String p1, int win) {
         insertGameInstance(getGameId(game), getPlayerId(p0), getPlayerId(p1), win);
-    };
+    }
 
     /**
      * @return show ranking of all players
@@ -131,5 +131,5 @@ public interface DataManager extends AutoCloseable {
         int s0 = getGameStates(0, gameId, playerId, win);
         int s1 = getGameStates(1, gameId, playerId, -win);
         return s0 + s1;
-    };
+    }
 }

@@ -203,7 +203,7 @@ public class GameManager {
             c.sendMessage(new AnswerMessage(new StatisticsAnswer(ret)));
         }
         if(que instanceof GamesQuery) {
-            int won[] = new int[3];
+            int[] won = new int[3];
             for(int i=0; i<3; i++) {
                 won[i] = server.dataManager.getGameStates(que.getPlayer(), que.getGame(), i-1);
             }

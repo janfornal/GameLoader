@@ -32,7 +32,7 @@ public class DatabaseManager implements DataManager {
 
     private PreparedStatement getElo, getRD, modifyElo, modifyRD, insertElo;
     private PreparedStatement insertGameInstance;
-    private PreparedStatement getGameStates[] = new PreparedStatement[2];
+    private PreparedStatement[] getGameStates = new PreparedStatement[2];
 
 
 
@@ -141,7 +141,7 @@ public class DatabaseManager implements DataManager {
                 "VAL INT NOT NULL, " +
                 "PLAYER INT NOT NULL REFERENCES USERS(ID), " +
                 "GAME INT NOT NULL REFERENCES GAMES(ID), " +
-                "RATING_DEVIATION DOUBLE NOT NULL," +
+                "RATING_DEVIATION REAL NOT NULL," +
                 "UNIQUE (PLAYER, GAME))"
         ));
 
