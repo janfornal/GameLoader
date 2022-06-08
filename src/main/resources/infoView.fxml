@@ -27,7 +27,7 @@
                         </Text>
                     </children>
                 </StackPane>
-                <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS" />
+                <TextArea fx:id="textArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
                 <TextField fx:id="textField" />
                 <StackPane>
                     <children>

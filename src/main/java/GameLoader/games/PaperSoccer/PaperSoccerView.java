@@ -158,14 +158,13 @@ public class PaperSoccerView extends VBox { // TODO refactor everything
 
             cursorProperty().bind(
                     Bindings.createObjectBinding(
-                            () -> gvm.getModelUser().currentPlayModel == gvm && clickable.get() ?
-                                    Cursor.HAND : Cursor.DEFAULT,
+                            () -> clickable.get() ? Cursor.HAND : Cursor.DEFAULT,
                             obs
                     )
             );
 
             setOnMouseClicked(event -> {
-                if (gvm.getModelUser().currentPlayModel == gvm && event.getButton() == MouseButton.PRIMARY && clickable.get())
+                if (event.getButton() == MouseButton.PRIMARY && clickable.get())
                     gvm.userCmd(new PaperSoccerCommand(gvm.playingAs(), PaperSoccer.calcDir(game.getCurrField(), f)));
             });
         }};
