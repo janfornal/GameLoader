@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Client implements Service {
     private MenuViewModel currentModel;
@@ -42,8 +43,12 @@ public class Client implements Service {
         if(message instanceof SuccessfulAuthorizationMessage)
             ClientGUI.authorizationLockNotify();
         else if(message instanceof RoomListMessage messageCast) {
+            var rooms = FXCollections.observableArrayList(
+                    messageCast.rooms().stream().filter(x -> gameTypeManager.checkGame(x.game())).toList()
+            );
+
             Platform.runLater(
-                    () -> currentModel.getElements().roomTableView().setItems(FXCollections.observableArrayList(messageCast.rooms()))
+                    () -> currentModel.getElements().roomTableView().setItems(rooms)
             );
         }
         else if(message instanceof StartGameMessage messageCast) {

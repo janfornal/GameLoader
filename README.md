@@ -43,3 +43,10 @@ If not specified ``port`` defaults to ``6666``, and ``ip`` defaults to ``localho
 
 ## Games
 Currently, there are three hardcoded games: dots and boxes, tic-tac-toe, paper soccer. Games can also be loaded as plugins, as the ``games`` folder is scanned for ``.jar`` files containing classes that implement ``GameLoader.common.Game`` interface.
+
+## Contribution percentage
+|     Person      | Contribution |
+|:---------------:|:------------:|
+|   Jan Fornal    |    33 ⅓ %    |
+| Kacper Topolski |    33 ⅓ %    |
+|    Jakub Wąs    |    33 ⅓ %    |

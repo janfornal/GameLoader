@@ -212,7 +212,8 @@ public class DotsAndBoxesView extends VBox { // TODO refactor everything
 
             cursorProperty().bind(
                     Bindings.createObjectBinding(
-                            () -> !game.isMarked(c) && game.getTurn() == gvm.playingAs() ? Cursor.HAND : Cursor.DEFAULT,
+                            () -> game.getState() == Game.state.UNFINISHED && !game.isMarked(c)
+                                    && game.getTurn() == gvm.playingAs() ? Cursor.HAND : Cursor.DEFAULT,
                             obs
                     )
             );

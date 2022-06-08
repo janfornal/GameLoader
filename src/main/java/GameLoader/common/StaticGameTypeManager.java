@@ -36,6 +36,12 @@ public class StaticGameTypeManager implements GameTypeManager {
     }
 
     @Override
+    public boolean checkGame(String game) {
+        GameType type = game != null ? gameTypes.get(game) : null;
+        return type != null;
+    }
+
+    @Override
     public boolean checkSettings(String game, String settings) {
         GameType type = game != null ? gameTypes.get(game) : null;
         if (type == null)

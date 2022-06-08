@@ -16,6 +16,11 @@ public interface GameTypeManager {
     List<String> possibleSettings(String game);
 
     /**
+     * @return check whether game exists
+     */
+    boolean checkGame(String game);
+
+    /**
      * @return check whether settings are correct for a given game
      */
     boolean checkSettings(String game, String settings);
