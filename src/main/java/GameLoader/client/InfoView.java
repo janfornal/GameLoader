@@ -3,14 +3,10 @@ package GameLoader.client;
 import static GameLoader.common.Serializables.*;
 import static GameLoader.common.Messages.*;
 
-import GameLoader.common.Messages;
-import GameLoader.common.UtilityGUI;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
-
-import java.util.List;
 
 public class InfoView {
     private final InfoViewModel ivm;

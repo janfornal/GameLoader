@@ -1,5 +1,7 @@
 package GameLoader.server;
 
+import GameLoader.common.Messages;
+import GameLoader.common.Serializables;
 import GameLoader.common.Service;
 import javafx.util.Pair;
 
@@ -90,7 +92,7 @@ public class DatabaseManager implements DataManager {
             getGameId           = conn.prepareStatement("SELECT ID FROM GAMES WHERE NAME = ?");
             insertGames         = conn.prepareStatement("INSERT INTO GAMES VALUES (?, ?)");
 
-            showGameStatistics  = conn.prepareStatement("SELECT NAME, (SELECT VAL FROM ELO WHERE ELO.PLAYER = us.ID AND ELO.GAME = ?) FROM USERS us");
+            showGameStatistics  = conn.prepareStatement("SELECT (SELECT NAME FROM USERS WHERE ID = PLAYER), VAL FROM ELO WHERE GAME = ?");
 
             getElo              = conn.prepareStatement("SELECT VAL FROM ELO WHERE PLAYER = ? AND GAME = ?");
             getRD               = conn.prepareStatement("SELECT RATING_DEVIATION FROM ELO WHERE PLAYER = ? AND GAME = ?");
@@ -396,6 +398,30 @@ public class DatabaseManager implements DataManager {
             return queryInt(getGameStates[which]);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void processQueryMessage(Messages.QueryMessage m, GameLoader.common.Connection c) {
+        Serializables.Query que = m.query();
+        if (que == null) {
+            c.sendError("query is null");
+            return;
+        }
+        if(que instanceof Serializables.StatisticsQuery) {
+            ArrayList<Pair<String, Integer>> ret = showGameStatistics(que.getGame());
+            c.sendMessage(new Messages.AnswerMessage(new Serializables.StatisticsAnswer(ret)));
+        }
+        if(que instanceof Serializables.GamesQuery) {
+            int[] won = new int[3];
+            for(int i=0; i<3; i++) {
+                won[i] = getGameStates(que.getPlayer(), que.getGame(), i-1);
+            }
+            c.sendMessage(new Messages.AnswerMessage(new Serializables.GamesAnswer(que.getGame(), won[2], won[1], won[0])));
+        }
+        if(que instanceof Serializables.EloQuery) {
+            int elo = getElo(que.getPlayer(), que.getGame());
+            c.sendMessage(new Messages.AnswerMessage(new Serializables.EloAnswer(que.getGame(), elo)));
         }
     }
 }

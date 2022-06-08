@@ -19,8 +19,9 @@ Client and server apps allowing users to play simple games online, made as an as
 #### Second presentation (26.05)
 
 - [x] loading games as plugins (28.05)
-- [ ] game history
-- [ ] rejoining games after disconnection
+- [x] [chess](https://github.com/KacperTopolski/chessGameLoader) game wrapper (30.05)
+- [x] in-game statistics display (02.06)
+- [x] Glicko2 elo system (02.06)
 
 #### Third presentation (09.06)
 

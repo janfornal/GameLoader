@@ -44,7 +44,7 @@ public class MenuView extends GridPane {
             new Button("Create Room"),
             new Button("Get Room List"),
             new TableColumn<RoomInfo, String>("Game"),
-            new TableColumn<RoomInfo, String>("Size"),
+            new TableColumn<RoomInfo, String>("Settings"),
             new TableColumn<RoomInfo, String>("User"),
             new TableColumn<RoomInfo, Integer>("Elo"),
             new Label("LET'S GO " + nvm.getModelUser().username)

@@ -4,7 +4,6 @@ import GameLoader.common.*;
 import static GameLoader.common.Serializables.ResignationCommand;
 import static GameLoader.common.Messages.*;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 

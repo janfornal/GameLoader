@@ -2,8 +2,6 @@ package GameLoader.client;
 
 import GameLoader.common.Service;
 
-import java.io.IOException;
-
 public class ClientRun {
     public static void main(String[] args) {
         String ip = args.length > 0 ? args[0] : Service.defaultIP;

@@ -1,7 +1,6 @@
 package GameLoader.server;
 
 import GameLoader.common.*;
-import javafx.util.Pair;
 
 import static GameLoader.common.Utility.IntDoublePair;
 import static GameLoader.common.Messages.*;
@@ -184,28 +183,5 @@ public class GameManager {
 
         Command res = new ResignationCommand(g.p0.equals(name) ? 0 : 1);
         processMoveMessage(new MoveMessage(res), c);
-    }
-
-    public void processQueryMessage(QueryMessage m, Connection c) {
-        Query que = m.query();
-        if (que == null) {
-            c.sendError("query is null");
-            return;
-        }
-        if(que instanceof StatisticsQuery) {
-            ArrayList<Pair<String, Integer>> ret = server.dataManager.showGameStatistics(que.getGame());
-            c.sendMessage(new AnswerMessage(new StatisticsAnswer(ret)));
-        }
-        if(que instanceof GamesQuery) {
-            int[] won = new int[3];
-            for(int i=0; i<3; i++) {
-                won[i] = server.dataManager.getGameStates(que.getPlayer(), que.getGame(), i-1);
-            }
-            c.sendMessage(new AnswerMessage(new GamesAnswer(que.getGame(), won[2], won[1], won[0])));
-        }
-        if(que instanceof EloQuery) {
-            int elo = server.dataManager.getElo(que.getPlayer(), que.getGame());
-            c.sendMessage(new AnswerMessage(new EloAnswer(que.getGame(), elo)));
-        }
     }
 }

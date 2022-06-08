@@ -1,7 +1,6 @@
 package GameLoader.client;
 
 import GameLoader.common.Game;
-import GameLoader.common.Service;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.beans.Observable;

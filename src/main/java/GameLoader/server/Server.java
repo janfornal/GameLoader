@@ -107,7 +107,7 @@ public class Server implements Service {
             return;
         }
         if (msg instanceof QueryMessage m) {
-            gameManager.processQueryMessage(m, c);
+            dataManager.processQueryMessage(m, c);
             return;
         }
         c.sendError("Message not recognized");

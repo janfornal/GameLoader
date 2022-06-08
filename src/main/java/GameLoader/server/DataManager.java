@@ -1,5 +1,7 @@
 package GameLoader.server;
 
+import GameLoader.common.Connection;
+import GameLoader.common.Messages;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -132,4 +134,6 @@ public interface DataManager extends AutoCloseable {
         int s1 = getGameStates(1, gameId, playerId, -win);
         return s0 + s1;
     }
+
+    void processQueryMessage(Messages.QueryMessage m, Connection c);
 }
