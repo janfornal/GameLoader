@@ -17,6 +17,7 @@ public interface Game {
 
     enum state { UNFINISHED, DRAW, P0_WON, P1_WON }
     state getState();
+    int getTurn();
     PlayViewModel createViewModel(Client user, int id);
 
     // "static" methods

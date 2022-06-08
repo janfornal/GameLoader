@@ -136,6 +136,7 @@ public class PaperSoccer implements Game {
         return currState;
     }
 
+    @Override
     public int getTurn() {
         return turn;
     }

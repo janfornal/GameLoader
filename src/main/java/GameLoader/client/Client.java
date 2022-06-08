@@ -49,7 +49,10 @@ public class Client implements Service {
             }
 
             starterInstance.start(messageCast.settings(), messageCast.seed());
-            currentPlayModel = starterInstance.createViewModel(this, messageCast.p0().name().equals(username) ? 0 : 1);
+            currentPlayModel = new InfoViewModel(
+                    starterInstance.createViewModel(this, messageCast.p0().name().equals(username) ? 0 : 1),
+                    messageCast.p0(), messageCast.p1()
+            );
             String [] playerNames = new String[]{messageCast.p0().name(), messageCast.p1().name()};
             Platform.runLater(
                     () -> ClientGUI.startNewTab(currentPlayModel, playerNames[0].equals(username) ? playerNames[1] : playerNames[0])

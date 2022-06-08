@@ -181,6 +181,7 @@ public class DotsAndBoxes implements Game {
         return score[i];
     }
 
+    @Override
     public int getTurn() {
         return turn;
     }

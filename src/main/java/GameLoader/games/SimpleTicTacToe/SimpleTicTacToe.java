@@ -121,6 +121,7 @@ public class SimpleTicTacToe implements Game {
         return T[i][j];
     }
 
+    @Override
     public int getTurn() {
         return turn;
     }
