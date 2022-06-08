@@ -3,7 +3,6 @@ package GameLoader.client.statistics;
 import GameLoader.client.ClientGUI;
 import GameLoader.common.Messages;
 import GameLoader.common.Serializables;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -14,7 +13,6 @@ import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Objects;
 
 import static GameLoader.client.ClientGUI.mainStatisticsWindow;
 

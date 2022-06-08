@@ -1,7 +1,6 @@
 package GameLoader.client.statistics;
 
 import GameLoader.client.ClientGUI;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 public class MainStatisticsWindow {

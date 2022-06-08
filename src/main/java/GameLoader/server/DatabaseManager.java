@@ -32,7 +32,7 @@ public class DatabaseManager implements DataManager {
 
     private PreparedStatement getElo, getRD, modifyElo, modifyRD, insertElo;
     private PreparedStatement insertGameInstance;
-    private PreparedStatement getGameStates[] = new PreparedStatement[2];
+    private PreparedStatement[] getGameStates = new PreparedStatement[2];
 
 
 

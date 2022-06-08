@@ -2,7 +2,6 @@ package GameLoader.server;
 
 import GameLoader.common.Game;
 import GameLoader.common.Utility.*;
-import java.lang.Math.*;
 import static GameLoader.common.Utility.IntDoublePair;
 
 //it works, I guess
