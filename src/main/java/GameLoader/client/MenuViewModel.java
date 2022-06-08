@@ -32,6 +32,7 @@ public class MenuViewModel implements ViewModel {
     }
 
     record guiElements(
+            Button statisticsButton,
             ChoiceBox<String> choiceGameBox,
             ChoiceBox<String> choiceSizeBox,
             //Label createRoomLabel,
@@ -116,6 +117,12 @@ public class MenuViewModel implements ViewModel {
         button.setOnMouseClicked(event -> {
             Message crm = new GetRoomListMessage();
             modelUser.sendMessage(crm);
+        });
+    }
+
+    void addGetToStatisticsHandler(Button button) {
+        button.setOnMouseClicked(event -> {
+            ClientGUI.startStatisticsTab(modelUser.username);
         });
     }
 }

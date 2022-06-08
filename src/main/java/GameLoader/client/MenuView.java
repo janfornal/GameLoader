@@ -36,6 +36,7 @@ public class MenuView extends GridPane {
         }
 
         nvm.setElements(new MenuViewModel.guiElements(
+            new Button("Show our statistics"),
             new ChoiceBox<String>(FXCollections.observableArrayList(nvm.getModelUser().gameTypeManager.getGameNames())),
             new ChoiceBox<String>(),
             //new Label("Create Room"),
@@ -51,7 +52,7 @@ public class MenuView extends GridPane {
         ));
 
         nvm.getElements().titleLabel().setFont(new Font("Helvetica", 40));
-        add(nvm.getElements().titleLabel(), 0, 0, 4, 1);
+        add(nvm.getElements().titleLabel(), 0, 0, 2, 1);
 
         add(nvm.getElements().roomTableView(), 0, 3, 1, 6);
 
@@ -84,9 +85,10 @@ public class MenuView extends GridPane {
 
 
 
-        //add(nvm.getElements().createRoomLabel(), 2, 2, 1, 1);
-        //nvm.getElements().createRoomLabel().setTextAlignment(TextAlignment.CENTER);
-        //setHalignment(nvm.getElements().createRoomLabel(), HPos.CENTER);
+        add(nvm.getElements().statisticsButton(), 2, 0, 1, 1);
+        nvm.getElements().statisticsButton().setTextAlignment(TextAlignment.CENTER);
+        setHalignment(nvm.getElements().statisticsButton(), HPos.CENTER);
+        nvm.addGetToStatisticsHandler(nvm.getElements().statisticsButton());
 
         add(nvm.getElements().choiceGameBox(),  2, 4, 1, 1);
 //        nvm.getElements().choiceGameBox().getSelectionModel().select("Last game?");
