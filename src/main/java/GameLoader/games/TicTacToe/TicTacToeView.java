@@ -94,12 +94,12 @@ public class TicTacToeView extends GridPane {
     private static Background playerBackground(int player) {
 
         if(player==0){
-            BackgroundImage image=new BackgroundImage(new Image("file:src/main/java/GameLoader/images/tcs5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
+            BackgroundImage image=new BackgroundImage(new Image("file:src/main/resources/images/tcs5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
             BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
             return new Background(new BackgroundFill[]{fill},new BackgroundImage[]{image});
         }
         else if (player==1){
-            BackgroundImage image=new BackgroundImage(new Image("file:src/main/java/GameLoader/images/agh5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
+            BackgroundImage image=new BackgroundImage(new Image("file:src/main/resources/images/agh5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT);
             BackgroundFill fill = new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY);
             return new Background(new BackgroundFill[]{fill},new BackgroundImage[]{image});
         }
