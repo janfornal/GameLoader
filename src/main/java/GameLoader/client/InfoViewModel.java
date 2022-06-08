@@ -1,6 +1,7 @@
 package GameLoader.client;
 
 import GameLoader.common.Game;
+import javafx.scene.Node;
 
 import java.util.List;
 
@@ -26,11 +27,6 @@ public class InfoViewModel implements PlayViewModel {
     }
 
     @Override
-    public void setElements(GuiElements fooElements) {
-        pvm.setElements(fooElements);
-    }
-
-    @Override
     public void processMoveMessage(MoveMessage msg) {
         pvm.processMoveMessage(msg);
     }
@@ -45,7 +41,7 @@ public class InfoViewModel implements PlayViewModel {
         return pvm.getModelUser();
     }
 
-    public GeneralView createGameView() {
+    public Node createGameView() {
         return pvm.createView();
     }
 

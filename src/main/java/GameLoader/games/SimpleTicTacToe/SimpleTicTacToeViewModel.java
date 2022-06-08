@@ -1,7 +1,6 @@
 package GameLoader.games.SimpleTicTacToe;
 
 import GameLoader.client.Client;
-import GameLoader.client.GuiElements;
 import GameLoader.client.PlayViewModel;
 import static GameLoader.common.Serializables.Command;
 import static GameLoader.common.Messages.*;
@@ -25,11 +24,6 @@ public class SimpleTicTacToeViewModel implements PlayViewModel {
     @Override
     public Client getModelUser() {
         return modelUser;
-    }
-
-    @Override
-    public void setElements(GuiElements fooElements) {
-
     }
 
     @Override

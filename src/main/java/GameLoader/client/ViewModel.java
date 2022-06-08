@@ -1,7 +1,8 @@
 package GameLoader.client;
 
+import javafx.scene.Node;
+
 public interface ViewModel {
     Client getModelUser();
-    void setElements(GuiElements fooElements);
-    GeneralView createView();
+    Node createView();
 }

@@ -11,7 +11,7 @@ import javafx.scene.text.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class MenuView extends GridPane implements GeneralView {
+public class MenuView extends GridPane {
 
     public MenuView(MenuViewModel nvm) {
 

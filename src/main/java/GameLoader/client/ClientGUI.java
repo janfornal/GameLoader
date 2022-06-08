@@ -26,7 +26,7 @@ import java.util.Optional;
 public class ClientGUI extends Application {
 
     private static Stage currentStage;
-    static GeneralView view;
+    static Node view;
     public static Client user;
     static TabPane tabpane;
     public static MainStatisticsWindow mainStatisticsWindow;
@@ -72,7 +72,7 @@ public class ClientGUI extends Application {
         view = new MenuView(currentModel);
         tabpane = new TabPane();
         Tab tab = new Tab("Menu");
-        tab.setContent((Node) view);
+        tab.setContent(view);
         tabpane.getTabs().add(tab);
         currentStage = stage;
         user.sendMessage(new GetRoomListMessage());
@@ -90,7 +90,7 @@ public class ClientGUI extends Application {
         Tab tab = new Tab(viewModel.getGame().getName() + " (with " + opponentName + ")");
         ChatWindow chatWindow = new ChatWindow(viewModel.getModelUser().username, viewModel.getModelUser());
         BorderPane bp = new BorderPane();
-        bp.setCenter((Node) view);
+        bp.setCenter(view);
         bp.setBottom(chatWindow);
         tab.setContent(bp);
         tab.setOnCloseRequest(e -> {

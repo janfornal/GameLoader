@@ -1,6 +1,5 @@
 package GameLoader.games.TicTacToe;
 
-import GameLoader.client.PlayView;
 import GameLoader.common.Game;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -18,7 +17,7 @@ import javafx.scene.text.Font;
 
 import java.util.stream.Stream;
 
-public class TicTacToeView extends GridPane implements PlayView {
+public class TicTacToeView extends GridPane {
     private final TicTacToeViewModel gvm;
     private final TicTacToe game;
     private final ReadOnlyIntegerProperty obs;

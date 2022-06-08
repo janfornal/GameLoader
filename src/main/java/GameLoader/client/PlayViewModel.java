@@ -8,10 +8,6 @@ public interface PlayViewModel extends ViewModel {
     Game getGame();
     int playingAs();
 
-    @Override
-    default void setElements(GuiElements fooElements) {
-    }
-
     default void processMoveMessage(MoveMessage msg) {
         Command cmd = msg.move();
         if (cmd.getPlayer() == playingAs())

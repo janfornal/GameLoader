@@ -1,6 +1,5 @@
 package GameLoader.games.DotsAndBoxes;
 
-import GameLoader.client.PlayView;
 import GameLoader.common.Game;
 import static GameLoader.common.UtilityGUI.HBoxFixedRatio;
 import javafx.beans.binding.Bindings;
@@ -14,7 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class DotsAndBoxesView extends VBox implements PlayView { // TODO refactor everything
+public class DotsAndBoxesView extends VBox { // TODO refactor everything
     private final DotsAndBoxesViewModel gvm;
     private final DotsAndBoxes game;
     private final ReadOnlyIntegerProperty obs;

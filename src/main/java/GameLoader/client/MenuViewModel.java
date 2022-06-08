@@ -6,6 +6,7 @@ import static GameLoader.common.Messages.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 
 import java.util.List;
@@ -17,13 +18,12 @@ public class MenuViewModel implements ViewModel {
         return modelUser;
     }
 
-    @Override
-    public void setElements(GuiElements fooElements) {
-        guiVisual = (guiElements) fooElements;
+    public void setElements(guiElements fooElements) {
+        guiVisual = fooElements;
     }
 
     @Override
-    public GeneralView createView() {
+    public Node createView() {
         return new MenuView(this);
     }
 
@@ -43,7 +43,7 @@ public class MenuViewModel implements ViewModel {
             TableColumn<RoomInfo, String> userColumn,
             TableColumn<RoomInfo, Integer> eloColumn,
             Label titleLabel
-    ) implements GuiElements {
+    ) {
     }
 
     int prefWindowWidth = 800;

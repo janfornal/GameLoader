@@ -1,6 +1,5 @@
 package GameLoader.games.PaperSoccer;
 
-import GameLoader.client.PlayView;
 import GameLoader.common.Game;
 import static GameLoader.common.UtilityGUI.HBoxFixedRatio;
 import static GameLoader.common.Utility.IntPair;
@@ -22,7 +21,7 @@ import java.util.function.Supplier;
 
 import static java.lang.Math.max;
 
-public class PaperSoccerView extends VBox implements PlayView { // TODO refactor everything
+public class PaperSoccerView extends VBox { // TODO refactor everything
     private final PaperSoccerViewModel gvm;
     private final PaperSoccer game;
     private final ReadOnlyIntegerProperty obs;

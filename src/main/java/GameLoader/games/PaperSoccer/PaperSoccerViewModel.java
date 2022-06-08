@@ -1,7 +1,6 @@
 package GameLoader.games.PaperSoccer;
 
 import GameLoader.client.Client;
-import GameLoader.client.GeneralView;
 import GameLoader.client.PlayViewModel;
 
 public class PaperSoccerViewModel implements PlayViewModel {
@@ -31,7 +30,7 @@ public class PaperSoccerViewModel implements PlayViewModel {
     }
 
     @Override
-    public GeneralView createView() {
+    public PaperSoccerView createView() {
         return new PaperSoccerView(this);
     }
 }

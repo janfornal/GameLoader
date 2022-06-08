@@ -1,6 +1,5 @@
 package GameLoader.games.SimpleTicTacToe;
 
-import GameLoader.client.PlayView;
 import GameLoader.common.Game;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -14,7 +13,7 @@ import javafx.scene.paint.Paint;
 
 import java.util.stream.Stream;
 
-public class SimpleTicTacToeView extends GridPane implements PlayView {
+public class SimpleTicTacToeView extends GridPane {
     private final SimpleTicTacToeViewModel gvm;
     private final SimpleTicTacToe game;
 
