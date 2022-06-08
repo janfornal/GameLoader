@@ -2,6 +2,7 @@ package GameLoader.games.PaperSoccer;
 
 import GameLoader.client.Client;
 import GameLoader.client.PlayViewModel;
+import javafx.beans.Observable;
 
 public class PaperSoccerViewModel implements PlayViewModel {
     public PaperSoccerViewModel(Client user, int id, PaperSoccer game) {
@@ -32,5 +33,10 @@ public class PaperSoccerViewModel implements PlayViewModel {
     @Override
     public PaperSoccerView createView() {
         return new PaperSoccerView(this);
+    }
+
+    @Override
+    public Observable getObservable() {
+        return getGame().getMoveCountProperty();
     }
 }

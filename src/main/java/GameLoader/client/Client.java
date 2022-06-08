@@ -15,12 +15,18 @@ public class Client implements Service {
     private MenuViewModel currentModel;
     public PlayViewModel currentPlayModel;
     private final Connection activeConnection;
-    private SimpleObjectProperty<ChatMessage> messageProperty = null;
+    public final ChatManager chatManager = new ChatManager();
     public String username;
 
-    public Client(String ip, int port) throws IOException {
+    public Client(String ip, int port) {
         ClientGUI.user = this;
-        activeConnection = new Connection(Client.this, ip, port);
+        Connection tmp = null;
+        try {
+            tmp = new Connection(this, ip, port);
+        } catch (IOException e) {
+            throw new RuntimeException("Connection attempt to ip:" + ip + ", port:" + port + " was unsuccessful.", e);
+        }
+        activeConnection = tmp;
         ClientGUI.launch(ClientGUI.class);
     }
 
@@ -58,8 +64,8 @@ public class Client implements Service {
                     () -> ClientGUI.startNewTab(currentPlayModel, playerNames[0].equals(username) ? playerNames[1] : playerNames[0])
             );
         }
-        else if(message instanceof ChatMessage messageCast) {
-            messageProperty.set(messageCast);
+        else if(message instanceof ChatMessageToClient messageCast) {
+            chatManager.update(messageCast.sender(), messageCast.sender(), messageCast.text());
         }
         else if(message instanceof MoveMessage messageCast) {
             if (messageCast.move() instanceof ResignationCommand res && currentPlayModel.playingAs() != res.getPlayer())
@@ -118,11 +124,4 @@ public class Client implements Service {
         }
         activeConnection.sendMessage(message);
     }
-
-    public SimpleObjectProperty<ChatMessage> getMessageProperty() {   // why am I here?
-        if (messageProperty == null)
-            messageProperty = new SimpleObjectProperty<ChatMessage>(new ChatMessage(""));
-        return messageProperty;
-    }
-
 }

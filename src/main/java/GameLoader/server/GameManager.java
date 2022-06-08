@@ -186,12 +186,6 @@ public class GameManager {
         processMoveMessage(new MoveMessage(res), c);
     }
 
-    public synchronized void processChatMessage(ChatMessage m, Connection c) {
-        GameInstance g = gameMap.get(c.getName());
-        server.userManager.sendMessageTo(m, g.p0);
-        server.userManager.sendMessageTo(m, g.p1);
-    }
-
     public void processQueryMessage(QueryMessage m, Connection c) {
         Query que = m.query();
         if (que == null) {

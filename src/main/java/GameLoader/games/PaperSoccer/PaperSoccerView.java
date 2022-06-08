@@ -181,8 +181,6 @@ public class PaperSoccerView extends VBox { // TODO refactor everything
             endXProperty().bind(b.layoutXProperty().add(b.widthProperty().divide(2)));
             endYProperty().bind(b.layoutYProperty().add(b.heightProperty().divide(2)));
 
-//            toBack(); // FIXME does this do something?
-
             setManaged(false);
 
             if (e.border) {
@@ -209,7 +207,7 @@ public class PaperSoccerView extends VBox { // TODO refactor everything
     private Circle getGUIBall(Map<IntPair, VBox> fields) {
         return new Circle() {{
             VBox any = fields.get(game.getCurrField().pos);
-            radiusProperty().bind(any.widthProperty().divide(4));
+            radiusProperty().bind(any.widthProperty().divide(10));
 
             centerXProperty().bind(
                     Bindings.createObjectBinding(

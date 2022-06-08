@@ -126,7 +126,7 @@ public class DatabaseManager implements DataManager {
                         "ID INT PRIMARY KEY, " +
                         "NAME VARCHAR(40) UNIQUE NOT NULL, " +
                         "PASSWORD VARCHAR(50) NOT NULL)"
-        )); // FIXME how long should be password field?
+        ));
 
         updateOnce(conn.prepareStatement("DROP TABLE IF EXISTS GAMES CASCADE"));
         updateOnce(conn.prepareStatement("" +

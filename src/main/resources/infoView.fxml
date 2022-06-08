@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<SplitPane fx:id="splitPane" dividerPositions="0.7" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+    <items>
+        <Region />
+        <VBox>
+            <children>
+                <StackPane>
+                    <children>
+                        <Text fx:id="opponent" text="Opponent's username">
+                            <font>
+                                <Font size="20.0" />
+                            </font>
+                        </Text>
+                    </children>
+                </StackPane>
+                <StackPane>
+                    <children>
+                        <Text fx:id="opponentElo" text="Opponent's elo">
+                            <font>
+                                <Font size="16.0" />
+                            </font>
+                        </Text>
+                    </children>
+                </StackPane>
+                <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS" />
+                <TextField fx:id="textField" />
+                <StackPane>
+                    <children>
+                        <Text fx:id="user" text="User's username">
+                            <font>
+                                <Font size="20.0" />
+                            </font>
+                        </Text>
+                    </children>
+                </StackPane>
+                <StackPane>
+                    <children>
+                        <Text fx:id="userElo" text="User's elo">
+                            <font>
+                                <Font size="16.0" />
+                            </font>
+                        </Text>
+                    </children>
+                </StackPane>
+            </children>
+        </VBox>
+    </items>
+</SplitPane>

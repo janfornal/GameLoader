@@ -51,7 +51,7 @@ public interface Service {
 
     void reportConnectionClosed(Connection connection);
 
-    static void main(String[] args) throws IOException {
+    static void main(String[] args) {
         if (args.length > 0 && args[0].equalsIgnoreCase("server")) {
             int port = args.length > 1 ? Integer.parseInt(args[1]) : defaultPort;
 

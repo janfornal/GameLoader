@@ -2,6 +2,8 @@ package GameLoader.games.SimpleTicTacToe;
 
 import GameLoader.client.Client;
 import GameLoader.client.PlayViewModel;
+import javafx.beans.Observable;
+
 import static GameLoader.common.Serializables.Command;
 import static GameLoader.common.Messages.*;
 
@@ -56,5 +58,10 @@ public class SimpleTicTacToeViewModel implements PlayViewModel {
     @Override
     public int playingAs() {
         return myPlayer;
+    }
+
+    @Override
+    public Observable getObservable() {
+        return getGame().getMoveCountProperty();
     }
 }

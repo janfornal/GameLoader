@@ -1,8 +1,12 @@
 package GameLoader.client;
 
 import GameLoader.common.Game;
+import GameLoader.common.Service;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.beans.Observable;
 
+import java.io.IOException;
 import java.util.List;
 
 import static GameLoader.common.Messages.*;
@@ -46,8 +50,23 @@ public class InfoViewModel implements PlayViewModel {
     }
 
     @Override
-    public InfoView createView() {
-        return new InfoView(this);
+    public Node createView() {
+        InfoView info = new InfoView(this);
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/infoView.fxml"));
+        loader.setController(info);
+        try {
+            loader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return info.getMainNode();
+    }
+
+    @Override
+    public Observable getObservable() {
+        return pvm.getObservable();
     }
 
     public List<PlayerInfo> getPlayers() {

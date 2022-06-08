@@ -2,6 +2,7 @@ package GameLoader.server;
 
 import GameLoader.common.Connection;
 import static GameLoader.common.Messages.*;
+import static GameLoader.common.Serializables.*;
 
 import java.net.Socket;
 import java.util.*;
@@ -75,7 +76,7 @@ public class UserManager {
         connectionMap.put(name, c);
         c.sendMessage(new SuccessfulAuthorizationMessage());
 //        c.sendMessages(new SuccessfulAuthorizationMessage(),
-//                new StartGameMessage("Paper soccer", "Small", 1, new PlayerInfo("1", 1), new PlayerInfo("2", 2)));
+//                new StartGameMessage("Paper soccer", "Small", 1, new PlayerInfo("firstname", 1000), new PlayerInfo("secondname", 2000)));
     }
 
     public synchronized void processRegistrationAttemptMessage(RegistrationAttemptMessage msg, Connection c) {

@@ -35,7 +35,9 @@ public interface Messages {
 
     record GameListMessage() implements Message {} // to jest na razie nieistotne
     record GetGameListMessage() implements Message {} // to jest na razie nieistotne
-    record ChatMessage(String text) implements Message {}
+
+    record ChatMessageToServer(String text, String receiver) implements ClientToServerMessage {}
+    record ChatMessageToClient(String text, String sender) implements ServerToClientMessage {}
 
     record QueryMessage(Query query) implements ClientToServerMessage {};
     record AnswerMessage(DatabaseAnswer answer) implements ServerToClientMessage {}

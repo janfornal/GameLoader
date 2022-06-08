@@ -4,7 +4,6 @@ import GameLoader.client.statistics.MainStatisticsWindow;
 import GameLoader.client.statistics.StatisticsSingleton;
 import GameLoader.common.Game;
 import static GameLoader.common.Serializables.ResignationCommand;
-import GameLoader.games.chat.ChatWindow;
 import static GameLoader.common.Messages.*;
 
 import javafx.application.Application;
@@ -15,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -88,11 +86,11 @@ public class ClientGUI extends Application {
     public static void startNewTab (PlayViewModel viewModel, String opponentName) {
         view = viewModel.createView();
         Tab tab = new Tab(viewModel.getGame().getName() + " (with " + opponentName + ")");
-        ChatWindow chatWindow = new ChatWindow(viewModel.getModelUser().username, viewModel.getModelUser());
-        BorderPane bp = new BorderPane();
-        bp.setCenter(view);
-        bp.setBottom(chatWindow);
-        tab.setContent(bp);
+//        ChatWindow chatWindow = new ChatWindow(viewModel.getModelUser().username, viewModel.getModelUser());
+//        BorderPane bp = new BorderPane();
+//        bp.setCenter(view);
+//        bp.setBottom(chatWindow);
+        tab.setContent(view);
         tab.setOnCloseRequest(e -> {
             if(viewModel.getGame().getState() != Game.state.UNFINISHED || viewModel.getModelUser().currentPlayModel != viewModel) {
                 return;

@@ -2,11 +2,14 @@ package GameLoader.client;
 
 import static GameLoader.common.Serializables.*;
 import GameLoader.common.Game;
+import javafx.beans.Observable;
+
 import static GameLoader.common.Messages.*;
 
 public interface PlayViewModel extends ViewModel {
     Game getGame();
     int playingAs();
+    Observable getObservable();
 
     default void processMoveMessage(MoveMessage msg) {
         Command cmd = msg.move();

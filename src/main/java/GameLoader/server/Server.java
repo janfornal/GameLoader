@@ -102,8 +102,8 @@ public class Server implements Service {
             gameManager.processJoinRoomMessage(m, c);
             return;
         }
-        if (msg instanceof ChatMessage m) {
-            gameManager.processChatMessage(m, c);
+        if (msg instanceof ChatMessageToServer m) {
+            userManager.sendMessageTo(new ChatMessageToClient(m.text(), c.getName()), m.receiver());
             return;
         }
         if (msg instanceof QueryMessage m) {
